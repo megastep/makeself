@@ -301,10 +301,12 @@ else
     if test "\$keep" = y; then
 	echo "Creating directory \$targetdir" >&2
 	tmpdir="\$targetdir"
+	dashp="-p"
     else
 	tmpdir="\$TMPROOT/selfgz\$\$\$RANDOM"
+	dashp=""
     fi
-    mkdir -p \$tmpdir || {
+    mkdir \$dashp \$tmpdir || {
 	echo 'Cannot create target directory' \$tmpdir >&2
 	echo 'You should try option --target OtherDirectory' >&2
 	eval \$finish
