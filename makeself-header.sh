@@ -254,7 +254,12 @@ done
 
 case "\$copy" in
 copy)
-    SCRIPT_COPY="\$TMPROOT/makeself\$\$"
+    tmpdir=\$TMPROOT/makeself.\$RANDOM.\`date +"%y%m%d%H%M%S"\`.\$\$
+    mkdir "\$tmpdir" || {
+	echo "Could not create temporary directory \$tmpdir" >&2
+	exit 1
+    }
+    SCRIPT_COPY="\$tmpdir/makeself"
     echo "Copying to a temporary location..." >&2
     cp "\$0" "\$SCRIPT_COPY"
     chmod +x "\$SCRIPT_COPY"
@@ -262,7 +267,7 @@ copy)
     exec "\$SCRIPT_COPY" --phase2
     ;;
 phase2)
-    finish="\$finish ; rm -f \$0"
+    finish="\$finish ; rm -rf \`dirname \$0\`"
     ;;
 esac
 
@@ -297,7 +302,7 @@ else
 	echo "Creating directory \$targetdir" >&2
 	tmpdir="\$targetdir"
     else
-	tmpdir="\$TMPROOT/selfgz\$\$"
+	tmpdir="\$TMPROOT/selfgz\$\$\$RANDOM"
     fi
     mkdir -p \$tmpdir || {
 	echo 'Cannot create target directory' \$tmpdir >&2
