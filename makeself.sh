@@ -1,8 +1,8 @@
 #! /bin/sh
 #
-# makeself 1.5.5
+# makeself 1.6.0
 #
-# $Id: makeself.sh,v 1.21 2002-02-21 19:28:26 icculus Exp $
+# $Id: makeself.sh,v 1.22 2002-04-03 08:10:25 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -33,6 +33,7 @@
 # - 1.5.4 : Many bugfixes. Print out a message if the extraction failed.
 # - 1.5.5 : More bugfixes. Added support for SETUP_NOCHECK environment variable to
 #           bypass checksum verification of archives.
+# - 1.6.0 : Compute MD5 checksums with the md5sum command (patch from Ryan Gordon)
 #
 # (C) 1998-2001 by Stéphane Peter <megastep@megastep.org>
 #
