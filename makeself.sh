@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.51 2004-09-07 22:16:53 megastep Exp $
+# $Id: makeself.sh,v 1.52 2004-10-19 00:39:37 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -302,6 +302,7 @@ if test "." = "$archdirname"; then
 	fi
 fi
 
+test -d "$archdir" || { echo "Error: $archdir does not exist."; rm -f "$tmpfile"; exit 1; }
 echo About to compress $USIZE KB of data...
 echo Adding files to archive named \"$archname\"...
 (cd "$archdir" && ( tar $TAR_ARGS - * | eval "$GZIP_CMD" ) >> "$tmpfile") || { echo Aborting: Archive directory not found or temporary file: "$tmpfile" could not be created.; rm -f "$tmpfile"; exit 1; }
