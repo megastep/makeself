@@ -322,7 +322,7 @@ if test x"\$script" != x; then
 	\$script \$scriptargs \$*; res=\$?
     fi
     if test \$res -ne 0; then
-	echo "The program returned an error code (\$res)" >&2
+	test x"\$verbose" = xy && echo "The program '\$script' returned an error code (\$res)" >&2
     fi
 fi
 if test "\$keep" = n; then
