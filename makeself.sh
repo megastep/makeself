@@ -216,7 +216,7 @@ EOF
 
 if [ $NOX11 = n ]; then
 cat << EOF >> $archname
-if tty -s; then                 # Do we have a terminal?
+if ! tty -s; then                 # Do we have a terminal?
     if [ x"\$DISPLAY" != x -a x"\$xterm_loop" = x ]; then  # No, but do we have X?
 		if xset q > /dev/null 2>&1; then # Check for valid DISPLAY variable
 			GUESS_XTERMS="dtterm eterm Eterm xterm rxvt kvt konsole"
