@@ -142,6 +142,7 @@ do
 	echo Compression: $COMPRESS
 	echo Date of packaging: $DATE
 	echo Built with Makeself version $MS_VERSION on $OSTYPE
+	echo Build command was: "$MS_COMMAND"
 	if test x\$script != x; then
 	    echo Script run after extraction:
 	    echo "    " \$script \$scriptargs

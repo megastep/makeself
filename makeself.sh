@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.42 2004-02-25 02:32:12 icculus Exp $
+# $Id: makeself.sh,v 1.43 2004-03-06 00:14:47 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -48,8 +48,10 @@
 # - 2.1.3 : Bug fixes with command line when spawning terminals.
 #           Added --tar for archives, allowing to give arbitrary arguments to tar on the contents of the archive.
 #           Added --noexec to prevent execution of embedded scripts.
+#           Added --nomd5 and --nocrc to avoid creating checksums in archives.
+#           Added command used to create the archive in --info output.
 #
-# (C) 1998-2003 by Stéphane Peter <megastep@megastep.org>
+# (C) 1998-2004 by Stéphane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
@@ -190,6 +192,7 @@ done
 
 archdir="$1"
 archname="$2"
+MS_COMMAND="$0 $*"
 
 if test "$APPEND" = y; then
     if test $# -lt 2; then
