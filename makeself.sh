@@ -2,7 +2,7 @@
 #
 # makeself 1.5.4
 #
-# $Id: makeself.sh,v 1.12 2000-11-18 07:01:55 megastep Exp $
+# $Id: makeself.sh,v 1.13 2000-11-20 08:15:16 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -317,7 +317,7 @@ if [ \$MD5 != \"00000000000000000000000000000000\" ]; then
     }
   fi
 fi
-UnTAR() { tar xvf - || { echo Extraction failed. > /dev/tty; kill \$1; } ; }
+UnTAR() { tar xvf - || { echo Extraction failed. > /dev/tty; kill -INT \$1; } ; }
 \$echo -n "Uncompressing \$label"
 cd \$tmpdir ; res=3
 [ "\$keep" = y ] || trap 'echo Signal trapped > /dev/tty; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit \$res'
