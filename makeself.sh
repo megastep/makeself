@@ -1,8 +1,9 @@
-#! /bin/sh
+#!/bin/sh
 #
-# makeself 1.6.0
+# Makeself version 2.x
+#  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.23 2002-05-10 20:55:41 megastep Exp $
+# $Id: makeself.sh,v 1.24 2002-09-09 22:25:22 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -10,6 +11,8 @@
 # directory and then executes a given script from withing that directory.
 #
 # Makeself home page: http://www.megastep.org/makeself/
+#
+# Version 2.0 is a rewrite of version 1.0 to make the code easier to read and maintain.
 #
 # Version history :
 # - 1.0 : Initial public release
@@ -34,13 +37,43 @@
 # - 1.5.5 : More bugfixes. Added support for SETUP_NOCHECK environment variable to
 #           bypass checksum verification of archives.
 # - 1.6.0 : Compute MD5 checksums with the md5sum command (patch from Ryan Gordon)
+# - 2.0   : Brand new rewrite, cleaner architecture, separated header and UNIX ports.
 #
-# (C) 1998-2001 by Stéphane Peter <megastep@megastep.org>
+# (C) 1998-2002 by Stéphane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
-VERSION=1.5.5
+
+MS_VERSION=2.0
+
+# Procedures
+
+MS_Usage()
+{
+    echo "Usage: $0 [params] archive_dir file_name label [startup_script] [args]"
+    echo "params can be one or more of the following :"
+    echo "    --version | -v  : Print out Makeself version number and exit"
+    echo "    --bzip2         : Compress using bzip2 instead of gzip"
+    echo "    --compress      : Compress using the UNIX 'compress' command"
+    echo "    --nocomp        : Do not compress the data"
+    echo "    --notemp        : The archive will create archive_dir in the"
+    echo "                      current directory and uncompress in ./archive_dir"
+    echo "    --current       : Files will be extracted to the current directory."
+    echo "                      Implies --notemp."
+    echo "    --header file   : Specify location of the header script"
+    echo "    --follow        : Follow the symlinks in the archive"
+    echo "    --nox11         : Disable automatic spawn of a xterm"
+    echo "    --nowait        : Do not wait for user input after executing embedded"
+    echo "                      program from an xterm"
+    echo "    --lsm file      : LSM file describing the package"
+    echo
+    echo "Do not forget to give a fully qualified startup script name"
+    echo "(i.e. with a ./ prefix if inside the archive)."
+    exit 1
+}
+
+# Default settings
 GZIP_CMD="gzip -c9"
 GUNZIP_CMD="gzip -cd"
 KEEP=n
@@ -48,338 +81,157 @@ CURRENT=n
 NOX11=n
 COMPRESS=gzip
 TAR_ARGS=cvf
-if [ "$1" = --version ]; then
-	echo Makeself version $VERSION
+HEADER=`dirname $0`/makeself-header.sh
+
+# LSM file stuff
+LSM_LINES=1
+LSM_CMD="echo No LSM. >> \"\$archname\""
+
+while true
+do
+    case "$1" in
+    --version | -v)
+	echo Makeself version $MS_VERSION
 	exit 0
-fi
-if [ "$1" = --bzip2 ]; then
-	if which bzip2 2>&1 > /dev/null; then
-		GZIP_CMD="bzip2 -9"
-		GUNZIP_CMD="bzip2 -d"
-		COMPRESS=bzip2
-		shift 1
-	else
-		echo Unable to locate the bzip2 program in your \$PATH.>&2
-		exit 1
-	fi
-else
-	if [ "$1" = --nocomp ]; then
-		GZIP_CMD=cat; GUNZIP_CMD=cat; COMPRESS=none
-		shift 1
-	fi
-fi
-if [ "$1" = --notemp ]; then
+	;;
+    --bzip2)
+	GZIP_CMD="bzip2 -9"
+	GUNZIP_CMD="bzip2 -d"
+	COMPRESS=bzip2
+	shift
+	;;
+    --compress)
+	GZIP_CMD="compress -c"
+	GUNZIP_CMD="compress -cd"
+	COMPRESS=Unix
+	shift
+	;;
+    --nocomp)
+	GZIP_CMD="cat"
+	GUNZIP_CMD="cat"
+	COMPRESS=none
+	shift
+	;;
+    --notemp)
 	KEEP=y
-	shift 1
-	if [ "$1" = --current ]; then
-		CURRENT=y
-		shift 1
-	fi
-fi
-if [ "$1" = --nox11 ]; then
-	NOX11=y
-	shift 1
-fi
-if [ "$1" = --follow ]; then
+	shift
+	;;
+    --current)
+	CURRENT=y
+	KEEP=y
+	shift
+	;;
+    --header)
+	HEADER="$2"
+	shift 2
+	;;
+    --follow)
 	TAR_ARGS=cvfh
-	shift 1
+	shift
+	;;
+    --nox11)
+	NOX11=y
+	shift
+	;;
+    --nowait)
+	shift
+	;;
+    --lsm)
+	LSM_LINES=`cat "$2" | wc -l`
+	LSM_CMD="cat \"$2\" >> \"\$archname\""
+	shift 2
+	;;
+    -*)
+	echo Unrecognized flag : "$1"
+	MS_Usage
+	;;
+    *)
+	break
+	;;
+    esac
+done
+
+if test "$KEEP" = n -a $# = 3; then
+    echo "ERROR: Making a temporary archive with no embedded command does not make sense!"
+    echo
+    MS_Usage
 fi
-skip=151
-if [ x"$1" = x--lsm -o x"$1" = x-lsm ]; then
-	shift 1
-   lsm_file=$1
-   [ -r $lsm_file ] && {
-     nl_supp=`cat $lsm_file | wc -l`
-} ||  {
-   echo "can't read LSM file " $lsm_file ;
-  lsm_file="no_LSM";
-  nl_supp=1; }
-	shift 1
-else
-  lsm_file="no_LSM"
-  nl_supp=1
+if test $# -lt 3; then
+    MS_Usage
 fi
-skip=`expr $skip + $nl_supp`
-if [ "$KEEP" = n -a $# = 3 ]; then
-	echo "Making a temporary archive with no embedded command does not make sense!"
-	echo
-	shift 1 # To force the command usage
-fi
-if [ $# -lt 3 ]; then
-    echo "Usage: $0 [params] archive_dir file_name label [startup_script] [args]"
-	echo "params can be one of those :"
-	echo "    --version  : Print out Makeself version number and exit"
-	echo "    --bzip2    : Compress using bzip2 instead of gzip"
-	echo "    --nocomp   : Do not compress the data"
-	echo "    --notemp   : The archive will create archive_dir in the"
-	echo "                 current directory and uncompress in ./archive_dir"
-	echo "    --current  : Used with --notemp, files will be extracted to the"
-	echo "                 current directory."
-    echo "    --follow   : Follow the symlinks in the archive"
-	echo "    --nox11    : Disable automatic spawn of a xterm"
-	echo "    --nowait   : Do not wait for user input after executing embedded program from an xterm"
-	echo "    --lsm file : LSM file describing the package"
-    echo Do not forget to give a fully qualified startup script name
-    echo "(i.e. with a ./ prefix if inside the archive)."
+
+if test "$KEEP" = n -a "$CURRENT" = y; then
+    echo "ERROR: It is A VERY DANGEROUS IDEA to try to combine --notemp and --current."
     exit 1
 fi
 
-archdir=$1
-archname=$2
+if test -f $HEADER; then
+    SKIP=`cat $HEADER|wc -l`
+    # There are 5 extra lines in header.sh
+    SKIP=`expr $SKIP - 5 + $LSM_LINES`
+    echo Header is $SKIP lines long
+else
+    echo "Unable to open header file: $HEADER"
+    exit 1
+fi
+
+archdir="$1"
+archname="$2"
 # We don't really want to create an absolute directory...
-archdirname=`basename "$1"`
-USIZE=`du -ks $archdir | cut -f1`
-DATE=`date`
-
-# The following is the shell script stub code
-echo '#! /bin/sh' > $archname
-if [ $NOX11 = n ]; then
-	skip=`expr $skip + 21`
+if test "$CURRENT" = y; then
+    archdirname="."
+else
+    archdirname=`basename "$1"`
 fi
-if [ $CURRENT = n ]; then
-	skip=`expr $skip + 6`
-fi
-echo skip=$skip >> $archname
-echo \# This script was generated using Makeself $VERSION >> $archname
-echo 'CRCsum=0000000000' >> $archname
-echo 'MD5=00000000000000000000000000000000' >> $archname
-# echo lsm=\"$lsm_contents\" >> $archname
-echo label=\"$3\" >> $archname
-echo script=$4 >> $archname
-[ x"$4" = x ] || shift 1
-echo targetdir="$archdirname" >>$archname
+LABEL="$3"
+SCRIPT="$4"
+test x$SCRIPT = x || shift 1
 shift 3
-echo scriptargs=\"$*\" >> $archname
-echo "keep=$KEEP" >> $archname
+SCRIPTARGS="$*"
 
-cat << EODF  >> $archname
-TMPROOT=\${TMPDIR:=/tmp}
-finish=true; xterm_loop=;
-[ x"\$1" = x-xwin ] && {
- finish="echo Press Return to close this window...; read junk"; xterm_loop=1; shift 1;
-}
-if [ x"\$1" = "x-help" -o x"\$1" = "x--help" ]; then
-  cat << tac
- 1) Getting help or info about \$0 :
-  \$0 --help   Print this message
-  \$0 --info   Print embedded info : title, default target directory, embedded script ...
-  \$0 --lsm    Print embedded lsm entry (or no LSM)
-  \$0 --list   Print the list of files in the archive
-  \$0 --check  Checks integrity of the archive
- 
- 2) Running \$0 :
-  \$0 [options] [additional arguments to embedded script]
-  with following options (in that order)
-  --confirm             Ask before running embedded script
-  --keep                Do not erase target directory after running embedded script
-  --target NewDirectory Extract in NewDirectory
-tac
-  exit 0;
-fi
-if [ x"\$1" = "x-lsm" -o x"\$1" = "x--lsm" ]; then
-  cat << EOF_LSM
-EODF
- if [ x"$lsm_file" = "xno_LSM" ]; then
-    echo "no LSM" >> $archname
- else
-    cat $lsm_file >> $archname
- fi
-cat << EOF >> $archname
-EOF_LSM
-  exit 0;
-fi
-if [ "\$1" = "--info" ]; then
-	echo Identification: \$label
-	echo Target directory: \$targetdir
-	echo Uncompressed size: $USIZE KB
-	echo Compression: $COMPRESS
-	echo Date of packaging: $DATE
-	echo script run after extraction: \$script \$scriptargs
-	[ x"\$keep" = xy ] && echo "directory \$targetdir is permanent" || echo "\$targetdir will be removed after extraction"
-	exit 0;
-fi
-if [ "\$1" = "--list" ]; then
-	echo Target directory: \$targetdir
-	tail +\$skip \$0  | $GUNZIP_CMD | tar tvf -
-	exit 0;
-fi
-if [ "\$1" = "--check" ]; then
-sum1=\`tail +6 \$0 | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
-[ "\$sum1" != "\$CRCsum" ] && {
-  echo Error in checksums \$sum1 \$CRCsum
-  exit 2;
-}
-if [ \$MD5 != "00000000000000000000000000000000" ]; then
-# space separated list of directories
-  [ x"\$GUESS_MD5_PATH" = "x" ] && GUESS_MD5_PATH="/usr/local/ssl/bin /usr/local/bin /usr/bin"
-  MD5_PATH=""
-  for a in \$GUESS_MD5_PATH; do
-    #if which \$a/md5 >/dev/null 2>&1 ; then
-    if [ -x "\$a/md5sum" ]; then
-       MD5_PATH=\$a;
-    fi
-  done
-  if [ -x \$MD5_PATH/md5sum ]; then
-    md5sum=\`tail +6 \$0 | \$MD5_PATH/md5sum | cut -b-32\`;
-    [ \$md5sum != \$MD5 ] && {
-      echo Error in md5 sums \$md5sum \$MD5
-      exit 2
-    } || { echo check sums and md5 sums are ok; exit 0; }
-  fi
-  if [ ! -x \$MD5_PATH/md5sum ]; then
-      echo an embedded md5 sum of the archive exists but no md5 program was found in \$GUESS_MD5_PATH
-      echo if you have md5 on your system, you should try :
-      echo env GUESS_MD5_PATH=\"FirstDirectory SecondDirectory ...\" \$0 -check
-  fi
-else
-  echo check sums are OK ; echo \$0 does not contain embedded md5 sum ;
-fi
-	exit 0;
-fi
-EOF
-
-cat << EOF >> $archname
-[ x"\$finish" = x ] && finish=true
-parsing=yes
-x11=y
-while [ x"\$parsing" != x ]; do
-    case "\$1" in
-      --confirm) verbose=y; shift;;
-      --keep) keep=y; shift;;
-      --nox11)  x11=n; shift;;
-      --target) if [ x"\$2" != x ]; then targetdir="\$2"; keep=y; shift 2; fi;;
-      *) parsing="";;
-    esac
-done
-EOF
-
-if [ $NOX11 = n ]; then
-cat << EOF >> $archname
-if [ "\$x11" = "y" ]; then
-    if ! tty -s; then                 # Do we have a terminal?
-        if [ x"\$DISPLAY" != x -a x"\$xterm_loop" = x ]; then  # No, but do we have X?
-            if xset q > /dev/null 2>&1; then # Check for valid DISPLAY variable
-                GUESS_XTERMS="xterm dtterm eterm Eterm rxvt kvt konsole aterm"
-                for a in \$GUESS_XTERMS; do
-                    if which \$a >/dev/null 2>&1; then
-                        XTERM=\$a
-                        break
-                    fi
-                done
-                chmod a+x \$0 || echo Please add execution rights on \$0
-                if [ \`echo "\$0" | cut -c1\` = / ]; then # Spawn a terminal!
-                    exec \$XTERM -title "\$label" -e "\$0" -xwin "\$@"
-                else
-                    exec \$XTERM -title "\$label" -e "./\$0" -xwin "\$@"
-                fi
-            fi
-        fi
-    fi
-fi
-EOF
-fi
-
-if [ $CURRENT = n ]; then
-cat << EOF >> $archname
-if [ "\$keep" = y ]; then echo "Creating directory \$targetdir"; tmpdir=\$targetdir;
-else tmpdir="\$TMPROOT/selfgz\$\$"; fi
-mkdir \$tmpdir || {
-        \$echo 'Cannot create target directory' \$tmpdir >&2
-        \$echo 'you should perhaps try option -target OtherDirectory' >&2
-		eval \$finish; exit 1;
-}
-EOF
-else
-cat << EOF >> $archname
-tmpdir=.
-EOF
-fi
-cat << EOF >> $archname
-location="\`pwd\`"
-echo=echo; [ -x /usr/ucb/echo ] && echo=/usr/ucb/echo
-if [ x\$SETUP_NOCHECK != x1 ]; then
-    \$echo -n Verifying archive integrity...
-    sum1=\`tail +6 \$0 | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
-    [ \$sum1 != \$CRCsum ] && {
-        \$echo Error in check sums \$sum1 \$CRCsum
-        eval \$finish; exit 2;
-    }
-    echo OK
-fi
-if [ \$MD5 != \"00000000000000000000000000000000\" ]; then
-# space separated list of directories
-  [ x"\$GUESS_MD5_PATH" = "x" ] && GUESS_MD5_PATH="/usr/local/ssl/bin /usr/local/bin /usr/bin"
-  MD5_PATH=""
-  for a in \$GUESS_MD5_PATH; do
-    #if which \$a/md5 >/dev/null 2>&1 ; then
-    if [ -x "\$a/md5sum" ]; then
-       MD5_PATH=\$a;
-    fi
-  done
-  if [ -x \$MD5_PATH/md5sum ]; then
-    md5sum=\`tail +6 \$0 | \$MD5_PATH/md5sum | cut -b-32\`;
-    [ \$md5sum != \$MD5 ] && {
-      \$echo Error in md5 sums \$md5sum \$MD5
-      eval \$finish; exit 2;
-    }
-  fi
-fi
-UnTAR() { tar xvf - || { echo Extraction failed. > /dev/tty; kill -15 \$$; } ; }
-\$echo -n "Uncompressing \$label"
-cd \$tmpdir ; res=3
-[ "\$keep" = y ] || trap 'echo Signal caught, cleaning up > /dev/tty; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit 15' 1 2 15
-if (cd "\$location"; tail +\$skip \$0; ) | $GUNZIP_CMD | UnTAR | \
- (while read a; do \$echo -n .; done; echo; ); then
-	chown -Rf \`id -u\`.\`id -g\` .
-    res=0; if [ x"\$script" != x ]; then
-		if [ x"\$verbose" = xy ]; then
-			\$echo "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
-			read yn
-			[ x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY ] && { \$script \$scriptargs \$*; res=\$?; }
-		else
-			\$script \$scriptargs \$*; res=\$?
-		fi
-		[ \$res != 0 ] && echo "The program returned an error code (\$res)"
-	fi
-    [ "\$keep" = y ] || { cd \$TMPROOT; /bin/rm -rf \$tmpdir; }
-else
-  echo "Cannot decompress \$0"; eval \$finish; exit 1
-fi
-eval \$finish; exit \$res
-END_OF_STUB
-EOF
-
-# Append the compressed tar data after the stub
-echo Adding files to archive named \"$archname\"...
-# (cd $archdir; tar cvf - *| $GZIP_CMD ) >> $archname && chmod +x $archname && ..
-dotfiles=.[^.]*
-if [ "$dotfiles" = '.[^.]*' ]; then
-	dotfiles=
-fi
-(cd "$archdir"; tar $TAR_ARGS - * $dotfiles | $GZIP_CMD ) >> "$archname" || { echo Aborting; exit 1; }
 echo
-echo >> "$archname" >&- ; # try to close the archive
-# echo Self-extractible archive \"$archname\" successfully created.
-sum1=`tail +6 "$archname" | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
+if test -f "$archname"; then
+    echo "WARNING: Overwriting existing file: $archname"
+fi
+
+USIZE=`du -ks $archdir | cut -f1`
+DATE=`LC_ALL=C date`
+tmpfile="${TMPDIR:=/tmp}/mkself$$"
+
+echo About to compress $USIZE KB of data...
+echo Adding files to archive named \"$archname\"...
+(cd "$archdir"; tar $TAR_ARGS - * | $GZIP_CMD ) >> "$tmpfile" || { echo Aborting; rm -f "$tmpfile"; exit 1; }
+echo >> "$tmpfile" >&- # try to close the archive
+
+# Compute the checksums
+
+md5sum=00000000000000000000000000000000
+crcsum=`cat "$tmpfile" | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
+
 # space separated list of directories
-[ x"$GUESS_MD5_PATH" = "x" ] && GUESS_MD5_PATH="/usr/local/ssl/bin /usr/bin /usr/local/bin"
+test x"$GUESS_MD5_PATH" = "x" && GUESS_MD5_PATH="/usr/local/ssl/bin /usr/bin /usr/local/bin /opt/openssl/bin"
 MD5_PATH=""
 for a in $GUESS_MD5_PATH; do
-  #if which $a/md5sum >/dev/null 2>&1 ; then
-  if [ -x "$a/md5sum" ]; then
-     MD5_PATH=$a;
-  fi
+	if test -x "$a/md5sum"; then
+		MD5_PATH=$a;
+	fi
 done
 
-tmpfile="${TMPDIR:=/tmp}/mkself$$"
-if [ -x $MD5_PATH/md5sum ]; then
-  md5sum=`tail +6 "$archname" | $MD5_PATH/md5sum | cut -b-32`;
-  echo -e "CRC: $sum1\nMD5: $md5sum\n"
-  sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" -e "s/^MD5=00000000000000000000000000000000/MD5=$md5sum/" "$archname" > "$tmpfile"
+if test -x $MD5_PATH/md5sum; then
+	md5sum=`cat "$tmpfile" | $MD5_PATH/md5sum | cut -b-32`;
+	echo "CRC: $crcsum"
+	echo "MD5: $md5sum"
 else
-  echo -e "CRC: $sum1\nMD5: none, md5sum binary not found\n"
-  sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" "$archname" > "$tmpfile"
+	echo "CRC: $crcsum"
+	echo "MD5: none, md5sum binary not found"
 fi
-mv "$tmpfile" "$archname"
+
+# Generate the header
+. $HEADER
+
+# Append the compressed tar data after the stub
+echo
+cat "$tmpfile" >> "$archname"
 chmod +x "$archname"
 echo Self-extractible archive \"$archname\" successfully created.
+rm -f "$tmpfile"
