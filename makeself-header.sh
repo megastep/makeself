@@ -57,6 +57,7 @@ Makeself version $MS_VERSION
   \$0 [options] [--] [additional arguments to embedded script]
   with following options (in that order)
   --confirm             Ask before running embedded script
+  --noexec              Do not run embedded script
   --keep                Do not erase target directory after running
 			the embedded script
   --nox11               Do not spawn an xterm
@@ -204,6 +205,10 @@ EOLSM
 	;;
     --confirm)
 	verbose=y
+	shift
+	;;
+	--noexec)
+	script=""
 	shift
 	;;
     --keep)
