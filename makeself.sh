@@ -2,7 +2,7 @@
 #
 # makeself 1.6.0
 #
-# $Id: makeself.sh,v 1.22 2002-04-03 08:10:25 megastep Exp $
+# $Id: makeself.sh,v 1.23 2002-05-10 20:55:41 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -352,7 +352,11 @@ EOF
 # Append the compressed tar data after the stub
 echo Adding files to archive named \"$archname\"...
 # (cd $archdir; tar cvf - *| $GZIP_CMD ) >> $archname && chmod +x $archname && ..
-(cd "$archdir"; tar $TAR_ARGS - * .[^.]* | $GZIP_CMD ) >> "$archname" || { echo Aborting; exit 1; }
+dotfiles=.[^.]*
+if [ "$dotfiles" = '.[^.]*' ]; then
+	dotfiles=
+fi
+(cd "$archdir"; tar $TAR_ARGS - * $dotfiles | $GZIP_CMD ) >> "$archname" || { echo Aborting; exit 1; }
 echo
 echo >> "$archname" >&- ; # try to close the archive
 # echo Self-extractible archive \"$archname\" successfully created.
