@@ -2,7 +2,7 @@
 #
 # makeself 1.5.4
 #
-# $Id: makeself.sh,v 1.16 2000-12-06 09:04:39 megastep Exp $
+# $Id: makeself.sh,v 1.17 2001-02-15 22:56:39 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -31,13 +31,15 @@
 #           More verbosity in xterms and check for embedded command's return value.
 #           Bugfix for Debian 2.0 systems that have a different "print" command.
 # - 1.5.4 : Many bugfixes. Print out a message if the extraction failed.
+# - 1.5.5 : More bugfixes. Added support for SETUP_NOCHECK environment variable to
+#           bypass checksum verification of archives.
 #
-# (C) 1998-2000 by Stéphane Peter <megastep@lokigames.com>
+# (C) 1998-2001 by Stéphane Peter <megastep@lokigames.com>
 #
 # This software is released under the terms of the GNU GPL
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
-VERSION=1.5.4
+VERSION=1.5.5
 GZIP_CMD="gzip -c9"
 GUNZIP_CMD="gzip -cd"
 KEEP=n
@@ -81,7 +83,7 @@ if [ "$1" = --follow ]; then
 	TAR_ARGS=cvfh
 	shift 1
 fi
-skip=147
+skip=149
 if [ x"$1" = x--lsm -o x"$1" = x-lsm ]; then
 	shift 1
    lsm_file=$1
@@ -293,13 +295,15 @@ fi
 cat << EOF >> $archname
 location="\`pwd\`"
 echo=echo; [ -x /usr/ucb/echo ] && echo=/usr/ucb/echo
-\$echo -n Verifying archive integrity...
-sum1=\`tail +6 \$0 | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
-[ \$sum1 -ne \$CRCsum ] && {
-  \$echo Error in check sums \$sum1 \$CRCsum
-  eval \$finish; exit 2;
-}
-echo OK
+if [ x\$SETUP_NOCHECK != x1 ]; then
+    \$echo -n Verifying archive integrity...
+    sum1=\`tail +6 \$0 | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
+    [ \$sum1 -ne \$CRCsum ] && {
+        \$echo Error in check sums \$sum1 \$CRCsum
+        eval \$finish; exit 2;
+    }
+    echo OK
+fi
 if [ \$MD5 != \"00000000000000000000000000000000\" ]; then
 # space separated list of directories
   [ x\$GUESS_MD5_PATH = x ] && GUESS_MD5_PATH=\"/usr/local/ssl/bin\"
