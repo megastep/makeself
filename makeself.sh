@@ -2,7 +2,7 @@
 #
 # makeself 1.5.5
 #
-# $Id: makeself.sh,v 1.20 2002-01-28 01:13:32 megastep Exp $
+# $Id: makeself.sh,v 1.21 2002-02-21 19:28:26 icculus Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -83,7 +83,7 @@ if [ "$1" = --follow ]; then
 	TAR_ARGS=cvfh
 	shift 1
 fi
-skip=149
+skip=151
 if [ x"$1" = x--lsm -o x"$1" = x-lsm ]; then
 	shift 1
    lsm_file=$1
@@ -210,21 +210,22 @@ sum1=\`tail +6 \$0 | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
 }
 if [ \$MD5 != "00000000000000000000000000000000" ]; then
 # space separated list of directories
-  [ x"\$GUESS_MD5_PATH" = "x" ] && GUESS_MD5_PATH="/usr/local/ssl/bin"
+  [ x"\$GUESS_MD5_PATH" = "x" ] && GUESS_MD5_PATH="/usr/local/ssl/bin /usr/local/bin /usr/bin"
   MD5_PATH=""
   for a in \$GUESS_MD5_PATH; do
-    if which \$a/md5 >/dev/null 2>&1 ; then
+    #if which \$a/md5 >/dev/null 2>&1 ; then
+    if [ -x "\$a/md5sum" ]; then
        MD5_PATH=\$a;
     fi
   done
-  if [ -x \$MD5_PATH/md5 ]; then
-    md5sum=\`tail +6 \$0 | \$MD5_PATH/md5\`;
+  if [ -x \$MD5_PATH/md5sum ]; then
+    md5sum=\`tail +6 \$0 | \$MD5_PATH/md5sum | cut -b-32\`;
     [ \$md5sum != \$MD5 ] && {
       echo Error in md5 sums \$md5sum \$MD5
       exit 2
     } || { echo check sums and md5 sums are ok; exit 0; }
   fi
-  if [ ! -x \$MD5_PATH/md5 ]; then
+  if [ ! -x \$MD5_PATH/md5sum ]; then
       echo an embedded md5 sum of the archive exists but no md5 program was found in \$GUESS_MD5_PATH
       echo if you have md5 on your system, you should try :
       echo env GUESS_MD5_PATH=\"FirstDirectory SecondDirectory ...\" \$0 -check
@@ -306,15 +307,16 @@ if [ x\$SETUP_NOCHECK != x1 ]; then
 fi
 if [ \$MD5 != \"00000000000000000000000000000000\" ]; then
 # space separated list of directories
-  [ x\$GUESS_MD5_PATH = x ] && GUESS_MD5_PATH=\"/usr/local/ssl/bin\"
-  MD5_PATH=\"\"
+  [ x"\$GUESS_MD5_PATH" = "x" ] && GUESS_MD5_PATH="/usr/local/ssl/bin /usr/local/bin /usr/bin"
+  MD5_PATH=""
   for a in \$GUESS_MD5_PATH; do
-    if which \$a/md5 >/dev/null 2>&1 ; then
+    #if which \$a/md5 >/dev/null 2>&1 ; then
+    if [ -x "\$a/md5sum" ]; then
        MD5_PATH=\$a;
     fi
   done
-  if [ -x \$MD5_PATH/md5 ]; then
-    md5sum=\`tail +6 \$0 | \$MD5_PATH/md5\`;
+  if [ -x \$MD5_PATH/md5sum ]; then
+    md5sum=\`tail +6 \$0 | \$MD5_PATH/md5sum | cut -b-32\`;
     [ \$md5sum != \$MD5 ] && {
       \$echo Error in md5 sums \$md5sum \$MD5
       eval \$finish; exit 2;
@@ -355,21 +357,22 @@ echo >> "$archname" >&- ; # try to close the archive
 # echo Self-extractible archive \"$archname\" successfully created.
 sum1=`tail +6 "$archname" | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
 # space separated list of directories
-[ x"$GUESS_MD5_PATH" = "x" ] && GUESS_MD5_PATH="/usr/local/ssl/bin"
+[ x"$GUESS_MD5_PATH" = "x" ] && GUESS_MD5_PATH="/usr/local/ssl/bin /usr/bin /usr/local/bin"
 MD5_PATH=""
 for a in $GUESS_MD5_PATH; do
-  if which $a/md5 >/dev/null 2>&1 ; then
+  #if which $a/md5sum >/dev/null 2>&1 ; then
+  if [ -x "$a/md5sum" ]; then
      MD5_PATH=$a;
   fi
 done
 
 tmpfile="${TMPDIR:=/tmp}/mkself$$"
-if [ -x $MD5_PATH/md5 ]; then
-  md5sum=`tail +6 "$archname" | $MD5_PATH/md5`;
+if [ -x $MD5_PATH/md5sum ]; then
+  md5sum=`tail +6 "$archname" | $MD5_PATH/md5sum | cut -b-32`;
   echo -e "CRC: $sum1\nMD5: $md5sum\n"
   sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" -e "s/^MD5=00000000000000000000000000000000/MD5=$md5sum/" "$archname" > "$tmpfile"
 else
-  echo -e "CRC: $sum1\nMD5: none, md5 binary not found\n"
+  echo -e "CRC: $sum1\nMD5: none, md5sum binary not found\n"
   sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" "$archname" > "$tmpfile"
 fi
 mv "$tmpfile" "$archname"
