@@ -2,14 +2,14 @@
 #
 # makeself 1.5.5
 #
-# $Id: makeself.sh,v 1.19 2001-06-08 22:02:17 megastep Exp $
+# $Id: makeself.sh,v 1.20 2002-01-28 01:13:32 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
 # a small Shell script stub that uncompresses the archive to a temporary
 # directory and then executes a given script from withing that directory.
 #
-# Makeself home page: http://www.linuxgames.com/megastep/makeself/
+# Makeself home page: http://www.megastep.org/makeself/
 #
 # Version history :
 # - 1.0 : Initial public release
@@ -34,7 +34,7 @@
 # - 1.5.5 : More bugfixes. Added support for SETUP_NOCHECK environment variable to
 #           bypass checksum verification of archives.
 #
-# (C) 1998-2001 by Stéphane Peter <megastep@linuxgames.com>
+# (C) 1998-2001 by Stéphane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
@@ -204,7 +204,7 @@ if [ "\$1" = "--list" ]; then
 fi
 if [ "\$1" = "--check" ]; then
 sum1=\`tail +6 \$0 | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
-[ \$sum1 -ne \$CRCsum ] && {
+[ "\$sum1" != "\$CRCsum" ] && {
   echo Error in checksums \$sum1 \$CRCsum
   exit 2;
 }
@@ -298,7 +298,7 @@ echo=echo; [ -x /usr/ucb/echo ] && echo=/usr/ucb/echo
 if [ x\$SETUP_NOCHECK != x1 ]; then
     \$echo -n Verifying archive integrity...
     sum1=\`tail +6 \$0 | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
-    [ \$sum1 -ne \$CRCsum ] && {
+    [ \$sum1 != \$CRCsum ] && {
         \$echo Error in check sums \$sum1 \$CRCsum
         eval \$finish; exit 2;
     }
@@ -349,7 +349,7 @@ EOF
 # Append the compressed tar data after the stub
 echo Adding files to archive named \"$archname\"...
 # (cd $archdir; tar cvf - *| $GZIP_CMD ) >> $archname && chmod +x $archname && ..
-(cd "$archdir"; tar $TAR_ARGS - * | $GZIP_CMD ) >> "$archname" || { echo Aborting; exit 1; }
+(cd "$archdir"; tar $TAR_ARGS - * .[^.]* | $GZIP_CMD ) >> "$archname" || { echo Aborting; exit 1; }
 echo
 echo >> "$archname" >&- ; # try to close the archive
 # echo Self-extractible archive \"$archname\" successfully created.
@@ -366,9 +366,10 @@ done
 tmpfile="${TMPDIR:=/tmp}/mkself$$"
 if [ -x $MD5_PATH/md5 ]; then
   md5sum=`tail +6 "$archname" | $MD5_PATH/md5`;
-# echo md5sum $md5sum
+  echo -e "CRC: $sum1\nMD5: $md5sum\n"
   sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" -e "s/^MD5=00000000000000000000000000000000/MD5=$md5sum/" "$archname" > "$tmpfile"
 else
+  echo -e "CRC: $sum1\nMD5: none, md5 binary not found\n"
   sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" "$archname" > "$tmpfile"
 fi
 mv "$tmpfile" "$archname"
