@@ -1,10 +1,6 @@
 What needs to be done next :
 
-- Correctly parse options so that they can be given in any order
 - Generic compression code (thru a user-defined command)
-- Find a way to differentiate between the arguments used by the
-  shell stub and those passed to the embedded command (using -- as
-  a separator ?)
 - Collect names of directories potentially containing md5 program. GUESS_MD5_PATH
 
 Stéphane Peter <megastep@megastep.org>
