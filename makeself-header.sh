@@ -35,7 +35,7 @@ Makeself version $MS_VERSION
   \$0 --lsm    Print embedded lsm entry (or no LSM)
   \$0 --list   Print the list of files in the archive
   \$0 --check  Checks integrity of the archive
-
+ 
  2) Running \$0 :
   \$0 [options] [additional arguments to embedded script]
   with following options (in that order)
