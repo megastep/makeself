@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.53 2004-11-12 01:06:13 megastep Exp $
+# $Id: makeself.sh,v 1.54 2005-01-12 19:21:47 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -55,6 +55,7 @@
 #           Generate random directory name when extracting files to . to avoid problems. (Jason Trent)
 #           Better handling of errors with wrong permissions for the directory containing the files. (Jason Trent)
 #           Avoid some race conditions (Ludwig Nussel)
+#           Unset the $CDPATH variable to avoid problems if it is set. (Debian)
 #
 # (C) 1998-2004 by Stéphane Peter <megastep@megastep.org>
 #
@@ -64,6 +65,7 @@
 
 MS_VERSION=2.1.4
 MS_COMMAND="$0"
+unset CDPATH
 
 for f in "${1+"$@"}"; do
     MS_COMMAND="$MS_COMMAND \\\\

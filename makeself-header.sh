@@ -22,6 +22,8 @@ else
     print_cmd="echo"
 fi
 
+unset CDPATH
+
 MS_Printf()
 {
     \$print_cmd \$print_cmd_arg "\$1"
