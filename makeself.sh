@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-# Makeself version 2.x
+# Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.29 2002-12-07 00:57:32 megastep Exp $
+# $Id: makeself.sh,v 1.30 2003-02-28 10:31:57 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -39,14 +39,17 @@
 # - 1.6.0 : Compute MD5 checksums with the md5sum command (patch from Ryan Gordon)
 # - 2.0   : Brand new rewrite, cleaner architecture, separated header and UNIX ports.
 # - 2.0.1 : Added --copy
+# - 2.1.0 : Allow multiple tarballs to be stored in one archive, and incremental updates.
+#           Added --nochown for archives
+#           Stopped doing redundant checksums when not necesary
 #
-# (C) 1998-2002 by Stéphane Peter <megastep@megastep.org>
+# (C) 1998-2003 by Stéphane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
 
-MS_VERSION=2.0.1
+MS_VERSION=2.1.0
 
 # Procedures
 
@@ -64,6 +67,8 @@ MS_Usage()
     echo "                      current directory and uncompress in ./archive_dir"
     echo "    --copy          : Upon extraction, the archive will first copy itself to"
     echo "                      a temporary directory"
+    echo "    --append        : Append more files to an existing Makeself archive"
+    echo "                      The label and startup scripts will then be ignored"
     echo "    --current       : Files will be extracted to the current directory."
     echo "                      Implies --notemp."
     echo "    --header file   : Specify location of the header script"
@@ -80,17 +85,14 @@ MS_Usage()
 
 # Default settings
 if type gzip 2>&1 > /dev/null; then
-	GZIP_CMD="gzip -c9"
-	GUNZIP_CMD="gzip -cd"
-	COMPRESS=gzip
+    COMPRESS=gzip
 else
-	GZIP_CMD="compress -c"
-	GUNZIP_CMD="compress -cd"
-	COMPRESS=Unix
+    COMPRESS=Unix
 fi
 KEEP=n
 CURRENT=n
 NOX11=n
+APPEND=n
 COPY=none
 TAR_ARGS=cvf
 HEADER=`dirname $0`/makeself-header.sh
@@ -107,26 +109,18 @@ do
 	exit 0
 	;;
     --bzip2)
-	GZIP_CMD="bzip2 -9"
-	GUNZIP_CMD="bzip2 -d"
 	COMPRESS=bzip2
 	shift
 	;;
     --gzip)
-	GZIP_CMD="gzip -c9"
-	GUNZIP_CMD="gzip -cd"
 	COMPRESS=gzip
 	shift
 	;;
     --compress)
-	GZIP_CMD="compress -c"
-	GUNZIP_CMD="compress -cd"
 	COMPRESS=Unix
 	shift
 	;;
     --nocomp)
-	GZIP_CMD="cat"
-	GUNZIP_CMD="cat"
 	COMPRESS=none
 	shift
 	;;
@@ -158,12 +152,16 @@ do
     --nowait)
 	shift
 	;;
+    --append)
+	APPEND=y
+	shift
+	;;
     --lsm)
 	LSM_LINES=`cat "$2" | wc -l`
 	LSM_CMD="cat \"$2\" >> \"\$archname\""
 	shift 2
 	;;
-	-h | --help)
+    -h | --help)
 	MS_Usage
 	;;
     -*)
@@ -176,13 +174,44 @@ do
     esac
 done
 
-if test "$KEEP" = n -a $# = 3; then
-    echo "ERROR: Making a temporary archive with no embedded command does not make sense!"
-    echo
-    MS_Usage
-fi
-if test $# -lt 3; then
-    MS_Usage
+archdir="$1"
+archname="$2"
+
+if test "$APPEND" = y; then
+    if test $# -lt 2; then
+	MS_Usage
+    fi
+
+    # Gather the info from the original archive
+    OLDENV=`sh "$archname" --dumpconf`
+    if test $? != 0; then
+	echo "Unable to update archive: $archname"
+	exit 1
+    else
+	eval "$OLDENV"
+    fi
+else
+    if test "$KEEP" = n -a $# = 3; then
+	echo "ERROR: Making a temporary archive with no embedded command does not make sense!"
+	echo
+	MS_Usage
+    fi
+    # We don't really want to create an absolute directory...
+    if test "$CURRENT" = y; then
+	archdirname="."
+    else
+	archdirname=`basename "$1"`
+    fi
+
+    if test $# -lt 3; then
+	MS_Usage
+    fi
+
+    LABEL="$3"
+    SCRIPT="$4"
+    test x$SCRIPT = x || shift 1
+    shift 3
+    SCRIPTARGS="$*"
 fi
 
 if test "$KEEP" = n -a "$CURRENT" = y; then
@@ -190,33 +219,41 @@ if test "$KEEP" = n -a "$CURRENT" = y; then
     exit 1
 fi
 
+case $COMPRESS in
+gzip)
+    GZIP_CMD="gzip -c9"
+    GUNZIP_CMD="gzip -cd"
+    ;;
+bzip2)
+    GZIP_CMD="bzip2 -9"
+    GUNZIP_CMD="bzip2 -d"
+    ;;
+Unix)
+    GZIP_CMD="compress -c"
+    GUNZIP_CMD="compress -cd"
+    ;;
+none)
+    GZIP_CMD="cat"
+    GUNZIP_CMD="cat"
+    ;;
+esac
+
 if test -f $HEADER; then
     SKIP=`cat $HEADER|wc -l`
-    # There are 5 extra lines in header.sh
-    SKIP=`expr $SKIP - 5 + $LSM_LINES`
+    # There are 6 extra lines in the header
+    SKIP=`expr $SKIP - 6 + $LSM_LINES`
     echo Header is $SKIP lines long
 else
     echo "Unable to open header file: $HEADER"
     exit 1
 fi
 
-archdir="$1"
-archname="$2"
-# We don't really want to create an absolute directory...
-if test "$CURRENT" = y; then
-    archdirname="."
-else
-    archdirname=`basename "$1"`
-fi
-LABEL="$3"
-SCRIPT="$4"
-test x$SCRIPT = x || shift 1
-shift 3
-SCRIPTARGS="$*"
-
 echo
-if test -f "$archname"; then
-    echo "WARNING: Overwriting existing file: $archname"
+
+if test "$APPEND" = n; then
+    if test -f "$archname"; then
+	echo "WARNING: Overwriting existing file: $archname"
+    fi
 fi
 
 USIZE=`du -ks $archdir | cut -f1`
@@ -228,10 +265,13 @@ echo Adding files to archive named \"$archname\"...
 (cd "$archdir"; tar $TAR_ARGS - * | $GZIP_CMD ) >> "$tmpfile" || { echo Aborting; rm -f "$tmpfile"; exit 1; }
 echo >> "$tmpfile" >&- # try to close the archive
 
+fsize=`cat "$tmpfile" | wc -c | tr -d " "`
+
 # Compute the checksums
 
 md5sum=00000000000000000000000000000000
 crcsum=`cat "$tmpfile" | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
+echo "CRC: $crcsum"
 
 # Try to locate a MD5 binary
 OLD_PATH=$PATH
@@ -239,21 +279,44 @@ PATH=${GUESS_MD5_PATH:-"$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/lo
 MD5_PATH=`type -p md5sum`
 MD5_PATH=${MD5_PATH:-`type -p md5`}
 PATH=$OLD_PATH
+
 if test -x "$MD5_PATH"; then
 	md5sum=`cat "$tmpfile" | "$MD5_PATH" | cut -b-32`;
-	echo "CRC: $crcsum"
 	echo "MD5: $md5sum"
 else
-	echo "CRC: $crcsum"
 	echo "MD5: none, md5sum binary not found"
 fi
 
-# Generate the header
-. $HEADER
+if test "$APPEND" = y; then
+    mv "$archname" "$archname".bak || exit
 
-# Append the compressed tar data after the stub
-echo
-cat "$tmpfile" >> "$archname"
-chmod +x "$archname"
-echo Self-extractible archive \"$archname\" successfully created.
+    # Prepare entry for new archive
+    filesizes="$filesizes $fsize"
+    CRCsum="$CRCsum $crcsum"
+    MD5sum="$MD5sum $md5sum"
+    USIZE=`expr $USIZE + $OLDUSIZE`
+    # Generate the header
+    . $HEADER
+    # Append the original data
+    tail +$OLDSKIP "$archname".bak >> "$archname"
+    # Append the new data
+    cat "$tmpfile" >> "$archname"
+
+    chmod +x "$archname"
+    rm -f "$archname".bak
+    echo Self-extractible archive \"$archname\" successfully updated.
+else
+    filesizes="$fsize"
+    CRCsum="$crcsum"
+    MD5sum="$md5sum"
+
+    # Generate the header
+    . $HEADER
+
+    # Append the compressed tar data after the stub
+    echo
+    cat "$tmpfile" >> "$archname"
+    chmod +x "$archname"
+    echo Self-extractible archive \"$archname\" successfully created.
+fi
 rm -f "$tmpfile"

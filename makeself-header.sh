@@ -1,14 +1,15 @@
 cat << EOF  > "$archname"
 #!/bin/sh
 # This script was generated using Makeself $MS_VERSION
-CRCsum=$crcsum
-MD5=$md5sum
+CRCsum="$CRCsum"
+MD5="$MD5sum"
 TMPROOT=\${TMPDIR:=/tmp}
 
 label="$LABEL"
 script="$SCRIPT"
 scriptargs="$SCRIPTARGS"
 targetdir="$archdirname"
+filesizes="$filesizes"
 keep=$KEEP
 
 print_cmd_arg=""
@@ -25,9 +26,17 @@ MS_Printf()
     \$print_cmd \$print_cmd_arg "\$1"
 }
 
+MS_dd()
+{
+    blocks=\`expr \$3 / 1024\`
+    bytes=\`expr \$3 % 1024\`
+    dd if="\$1" ibs=\$2 skip=1 obs=1024 conv=sync 2> /dev/null | \
+    ( dd ibs=1024 obs=1024 count=\$blocks && dd ibs=1 obs=1024 count=\$bytes ) 2> /dev/null
+}
+
 MS_Help()
 {
-    cat << EOH
+    cat << EOH >&2
 Makeself version $MS_VERSION
  1) Getting help or info about \$0 :
   \$0 --help   Print this message
@@ -37,52 +46,58 @@ Makeself version $MS_VERSION
   \$0 --check  Checks integrity of the archive
  
  2) Running \$0 :
-  \$0 [options] [additional arguments to embedded script]
+  \$0 [options] [--] [additional arguments to embedded script]
   with following options (in that order)
   --confirm             Ask before running embedded script
   --keep                Do not erase target directory after running
 			the embedded script
   --nox11               Do not spawn an xterm
+  --nochown             Do not give the extracted files to the current user
   --target NewDirectory Extract in NewDirectory
+  --                    Following arguments will be passed to the embedded script
 EOH
 }
 
 MS_Check()
 {
+    OLD_PATH=\$PATH
+    PATH=\${GUESS_MD5_PATH:-"\$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
+    MD5_PATH=\`which md5sum 2>/dev/null || type md5sum 2>/dev/null\`
+    MD5_PATH=\${MD5_PATH:-\`which md5 2>/dev/null || type md5 2>/dev/null\`}
+    PATH=\$OLD_PATH
     MS_Printf "Verifying archive integrity..."
-    if test \$CRCsum = "0000000000"; then
-	test x\$2 = xy && echo " \$1 does not contain a CRC checksum."
-    else
-	sum1=\`tail +$SKIP \$1 | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
-	if test "\$sum1" = "\$CRCsum"; then
-	    test x\$2 = xy && MS_Printf " Checksums are OK."
-	else
-	    echo "Error in checksums: \$sum1 is different from \$CRCsum"
-	    exit 2;
-	fi
-    fi
-    if test \$MD5 = "00000000000000000000000000000000"; then
-	test x\$2 = xy && echo " \$1 does not contain an embedded MD5 checksum."
-    else
-	OLD_PATH=\$PATH
-	PATH=\${GUESS_MD5_PATH:-"\$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
-	MD5_PATH=\`type -p md5sum\`
-	MD5_PATH=\${MD5_PATH:-\`type -p md5\`}
-	PATH=\$OLD_PATH
+    offset=\`head -$SKIP "\$1" | wc -c | tr -d " "\`
+    i=1
+    for s in \$filesizes
+    do
+	crc=\`echo \$CRCsum | cut -d" " -f\$i\`
 	if test -x "\$MD5_PATH"; then
-	    md5sum=\`tail +$SKIP \$1 | "\$MD5_PATH" | cut -b-32\`;
-	    if test "\$md5sum" != "\$MD5"; then
-		echo "Error in MD5 checksums: \$md5sum is different from  \$MD5"
-		exit 2
+	    md5=\`echo \$MD5 | cut -d" " -f\$i\`
+	    if test \$md5 = "00000000000000000000000000000000"; then
+		test x\$2 = xy && echo " \$1 does not contain an embedded MD5 checksum." >&2
 	    else
-		test x\$2 = xy && MS_Printf " MD5 checksums are OK."
+		md5sum=\`MS_dd "\$1" \$offset \$s | "\$MD5_PATH" | cut -b-32\`;
+		if test "\$md5sum" != "\$md5"; then
+		    echo "Error in MD5 checksums: \$md5sum is different from \$md5" >&2
+		    exit 2
+		else
+		    test x\$2 = xy && MS_Printf " MD5 checksums are OK." >&2
+		fi
 	    fi
+	elif test \$crc = "0000000000"; then
+	    test x\$2 = xy && echo " \$1 does not contain a CRC checksum." >&2
 	else
-	    echo An embedded MD5 sum of the archive exists but no md5sum program was found in \$PATH
-	    echo If you have md5sum on your system, you should try :
-	    echo env GUESS_MD5_PATH=\"FirstDirectory:SecondDirectory:...\" \$0 -check
-        fi
-    fi
+	    sum1=\`MS_dd "\$1" \$offset \$s | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
+	    if test "\$sum1" = "\$crc"; then
+		test x\$2 = xy && MS_Printf " Checksums are OK." >&2
+	    else
+		echo "Error in checksums: \$sum1 is different from \$crc"
+		exit 2;
+	    fi
+	fi
+	i=\`expr \$i + 1\`
+	offset=\`expr \$offset + \$s\`
+    done
     echo " All good."
 }
 
@@ -95,6 +110,7 @@ finish=true
 xterm_loop=
 nox11=$NOX11
 copy=$COPY
+ownership=
 
 while true
 do
@@ -121,17 +137,36 @@ do
 	fi
 	exit 0
 	;;
+    --dumpconf)
+	echo LABEL=\"\$label\"
+	echo SCRIPT=\"\$script\"
+	echo SCRIPTARGS=\"\$scriptargs\"
+	echo archdirname=\"$archdirname\"
+	echo KEEP=$KEEP
+	echo COMPRESS=$COMPRESS
+	echo filesizes=\"\$filesizes\"
+	echo CRCsum=\"\$CRCsum\"
+	echo MD5sum=\"\$MD5\"
+	echo OLDUSIZE=$USIZE
+	echo OLDSKIP=`expr $SKIP + 1`
+	exit 0
+	;;
     --lsm)
 cat << EOLSM
 EOF
-eval $LSM_CMD
+eval "$LSM_CMD"
 cat << EOF  >> "$archname"
 EOLSM
 	exit 0
 	;;
     --list)
 	echo Target directory: \$targetdir
-	tail +$SKIP \$0  | $GUNZIP_CMD | tar tvf -
+	offset=\`head -$SKIP "\$0" | wc -c | tr -d " "\`
+	for s in \$filesizes
+	do
+	    MS_dd "\$0" \$offset \$s | $GUNZIP_CMD | tar tvf -
+	    offset=\`expr \$offset + \$s\`
+	done
 	exit 0
 	;;
     --check)
@@ -155,6 +190,10 @@ EOLSM
 	nox11=y
 	shift
 	;;
+    --nochown)
+	ownership=n
+	shift
+	;;
     --xwin)
 	finish="echo Press Return to close this window...; read junk"
 	xterm_loop=1
@@ -164,8 +203,11 @@ EOLSM
 	copy=phase2
 	shift
 	;;
+    --)
+	shift
+	break ;;
     -*)
-	echo Unrecognized flag : "\$1"
+	echo Unrecognized flag : "\$1" >&2
 	MS_Help
 	exit 1
 	;;
@@ -177,7 +219,7 @@ done
 case "\$copy" in
 copy)
     SCRIPT_COPY="\$TMPROOT/makeself\$\$"
-    echo "Copying to a temporary location..."
+    echo "Copying to a temporary location..." >&2
     cp "\$0" "\$SCRIPT_COPY"
     chmod +x "\$SCRIPT_COPY"
     cd "\$TMPROOT"
@@ -216,14 +258,14 @@ if test "\$targetdir" = "."; then
     tmpdir="."
 else
     if test "\$keep" = y; then
-	echo "Creating directory \$targetdir"
+	echo "Creating directory \$targetdir" >&2
 	tmpdir="\$targetdir"
     else
 	tmpdir="\$TMPROOT/selfgz\$\$"
     fi
     mkdir \$tmpdir || {
 	echo 'Cannot create target directory' \$tmpdir >&2
-	echo 'You should perhaps try option -target OtherDirectory' >&2
+	echo 'You should try option --target OtherDirectory' >&2
 	eval \$finish
 	exit 1
     }
@@ -233,38 +275,49 @@ location="\`pwd\`"
 if test x\$SETUP_NOCHECK != x1; then
     MS_Check "\$0"
 fi
+offset=\`head -$SKIP "\$0" | wc -c | tr -d " "\`
 
 MS_Printf "Uncompressing \$label"
 cd \$tmpdir
 res=3
 if test "\$keep" = n; then
-    trap 'echo Signal caught, cleaning up > /dev/tty; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit 15' 1 2 15
+    trap 'echo Signal caught, cleaning up >&2; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit 15' 1 2 15
 fi
-if (cd "\$location"; tail +$SKIP \$0; ) | $GUNZIP_CMD | UnTAR | \
-    (while read a; do MS_Printf .; done; echo; ); then
-	(PATH=/usr/xpg4/bin:\$PATH; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
-	res=0
-	if test x"\$script" != x; then
-		if test x"\$verbose" = xy; then
-			MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
-			read yn
-			if test x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY; then
-			    \$script \$scriptargs \$*; res=\$?;
-			fi
-		else
-			\$script \$scriptargs \$*; res=\$?
-		fi
-		if test \$res != 0; then
-		    echo "The program returned an error code (\$res)"
-		fi
+
+for s in \$filesizes
+do
+    if (cd "\$location"; MS_dd "\$0" \$offset \$s; ) | $GUNZIP_CMD | UnTAR | \
+	(while read a; do MS_Printf .; done; ); then
+	if test x"\$ownership" != x; then
+	    (PATH=/usr/xpg4/bin:\$PATH; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
 	fi
-	if test "\$keep" = n; then
-	    cd \$TMPROOT
-	    /bin/rm -rf \$tmpdir
+    else
+	echo
+	echo "Unable to decompress \$0" >&2
+	eval \$finish; exit 1
+    fi
+    offset=\`expr \$offset + \$s\`
+done
+echo
+
+res=0
+if test x"\$script" != x; then
+    if test x"\$verbose" = xy; then
+	MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
+	read yn
+	if test x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY; then
+	    \$script \$scriptargs \$*; res=\$?;
 	fi
-else
-    echo "Unable to decompress \$0"
-    eval \$finish; exit 1
+    else
+	\$script \$scriptargs \$*; res=\$?
+    fi
+    if test \$res != 0; then
+	echo "The program returned an error code (\$res)" >&2
+    fi
+fi
+if test "\$keep" = n; then
+    cd \$TMPROOT
+    /bin/rm -rf \$tmpdir
 fi
 eval \$finish; exit \$res
 EOF
