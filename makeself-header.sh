@@ -62,6 +62,7 @@ Makeself version $MS_VERSION
   --nox11               Do not spawn an xterm
   --nochown             Do not give the extracted files to the current user
   --target NewDirectory Extract in NewDirectory
+  --tar arg1 [arg2 ...] Access the contents of the archive through the tar command
   --                    Following arguments will be passed to the embedded script
 EOH
 }
@@ -182,6 +183,17 @@ EOLSM
 	for s in \$filesizes
 	do
 	    MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | UnTAR t
+	    offset=\`expr \$offset + \$s\`
+	done
+	exit 0
+	;;
+	--tar)
+	offset=\`head -n $SKIP "\$0" | wc -c | tr -d " "\`
+	arg1="\$2"
+	shift 2
+	for s in \$filesizes
+	do
+	    MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | tar "\$arg1" - \$*
 	    offset=\`expr \$offset + \$s\`
 	done
 	exit 0

@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.39 2003-07-31 22:40:01 megastep Exp $
+# $Id: makeself.sh,v 1.40 2003-09-12 02:19:29 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -46,6 +46,7 @@
 #           Cleaned up the code to handle error codes from compress. Simplified the extraction code.
 # - 2.1.2 : Some bug fixes. Use head -n to avoid problems.
 # - 2.1.3 : Bug fixes with command line when spawning terminals.
+#           Added --tar for archives, allowing to give arbitrary arguments to tar on the contents of the archive.
 #
 # (C) 1998-2003 by Stéphane Peter <megastep@megastep.org>
 #
