@@ -121,7 +121,10 @@ finish=true
 xterm_loop=
 nox11=$NOX11
 copy=$COPY
-ownership=
+ownership=y
+verbose=n
+
+initargs="\$@"
 
 while true
 do
@@ -259,9 +262,9 @@ if test "\$nox11" = "n"; then
                 done
                 chmod a+x \$0 || echo Please add execution rights on \$0
                 if test \`echo "\$0" | cut -c1\` = "/"; then # Spawn a terminal!
-                    exec \$XTERM -title "\$label" -e "\$0" --xwin "\$@"
+                    exec \$XTERM -title "\$label" -e "\$0" --xwin "\$initargs"
                 else
-                    exec \$XTERM -title "\$label" -e "./\$0" --xwin "\$@"
+                    exec \$XTERM -title "\$label" -e "./\$0" --xwin "\$initargs"
                 fi
             fi
         fi
@@ -308,13 +311,13 @@ fi
 for s in \$filesizes
 do
     if MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | ( cd "\$tmpdir"; UnTAR x ) | MS_Progress; then
-	if test x"\$ownership" != x; then
-	    (PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
-	fi
+		if test x"\$ownership" = xy; then
+			(PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
+		fi
     else
-	echo
-	echo "Unable to decompress \$0" >&2
-	eval \$finish; exit 1
+		echo
+		echo "Unable to decompress \$0" >&2
+		eval \$finish; exit 1
     fi
     offset=\`expr \$offset + \$s\`
 done
@@ -324,16 +327,16 @@ cd "\$tmpdir"
 res=0
 if test x"\$script" != x; then
     if test x"\$verbose" = xy; then
-	MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
-	read yn
-	if test x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY; then
-	    \$script \$scriptargs \$*; res=\$?;
-	fi
+		MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
+		read yn
+		if test x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY; then
+			\$script \$scriptargs \$*; res=\$?;
+		fi
     else
-	\$script \$scriptargs \$*; res=\$?
+		\$script \$scriptargs \$*; res=\$?
     fi
     if test \$res -ne 0; then
-	test x"\$verbose" = xy && echo "The program '\$script' returned an error code (\$res)" >&2
+		test x"\$verbose" = xy && echo "The program '\$script' returned an error code (\$res)" >&2
     fi
 fi
 if test "\$keep" = n; then
