@@ -94,6 +94,7 @@ UnTAR()
 finish=true
 xterm_loop=
 nox11=$NOX11
+copy=$COPY
 
 while true
 do
@@ -159,6 +160,10 @@ EOLSM
 	xterm_loop=1
 	shift
 	;;
+    --phase2)
+	copy=phase2
+	shift
+	;;
     -*)
 	echo Unrecognized flag : "\$1"
 	MS_Help
@@ -168,6 +173,20 @@ EOLSM
 	break ;;
     esac
 done
+
+case "\$copy" in
+copy)
+    SCRIPT_COPY="\$TMPROOT/makeself\$\$"
+    echo "Copying to a temporary location..."
+    cp "\$0" "\$SCRIPT_COPY"
+    chmod +x "\$SCRIPT_COPY"
+    cd "\$TMPROOT"
+    exec "\$SCRIPT_COPY" --phase2
+    ;;
+phase2)
+    finish="\$finish ; rm -f \$0"
+    ;;
+esac
 
 if test "\$nox11" = "n"; then
     if tty -s; then                 # Do we have a terminal?

@@ -3,7 +3,7 @@
 # Makeself version 2.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.25 2002-09-17 22:40:49 megastep Exp $
+# $Id: makeself.sh,v 1.26 2002-09-18 09:26:32 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -38,6 +38,7 @@
 #           bypass checksum verification of archives.
 # - 1.6.0 : Compute MD5 checksums with the md5sum command (patch from Ryan Gordon)
 # - 2.0   : Brand new rewrite, cleaner architecture, separated header and UNIX ports.
+# - 2.0.1 : Added --copy
 #
 # (C) 1998-2002 by Stéphane Peter <megastep@megastep.org>
 #
@@ -45,7 +46,7 @@
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
 
-MS_VERSION=2.0
+MS_VERSION=2.0.1
 
 # Procedures
 
@@ -61,6 +62,8 @@ MS_Usage()
     echo "    --nocomp        : Do not compress the data"
     echo "    --notemp        : The archive will create archive_dir in the"
     echo "                      current directory and uncompress in ./archive_dir"
+    echo "    --copy          : Upon extraction, the archive will first copy itself to"
+    echo "                      a temporary directory"
     echo "    --current       : Files will be extracted to the current directory."
     echo "                      Implies --notemp."
     echo "    --header file   : Specify location of the header script"
@@ -88,6 +91,7 @@ fi
 KEEP=n
 CURRENT=n
 NOX11=n
+COPY=none
 TAR_ARGS=cvf
 HEADER=`dirname $0`/makeself-header.sh
 
@@ -128,6 +132,10 @@ do
 	;;
     --notemp)
 	KEEP=y
+	shift
+	;;
+    --copy)
+	COPY=copy
 	shift
 	;;
     --current)
