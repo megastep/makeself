@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.48 2004-07-01 22:55:37 megastep Exp $
+# $Id: makeself.sh,v 1.49 2004-07-01 22:58:52 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -52,10 +52,12 @@
 #           Added command used to create the archive in --info output.
 #           Run the embedded script through eval.
 # - 2.1.4 : Fixed --info output.
+#           Generate random directory name when extracting files to . to avoid problems. (Jason Trent)
+#           Better handling of errors with wrong permissions for the directory containing the files. (Jason Trent)
 #
 # (C) 1998-2004 by Stéphane Peter <megastep@megastep.org>
 #
-# This software is released under the terms of the GNU GPL
+# This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
 
