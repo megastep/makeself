@@ -312,7 +312,7 @@ if test x"\$script" != x; then
     else
 	\$script \$scriptargs \$*; res=\$?
     fi
-    if test \$res != 0; then
+    if test \$res -ne 0; then
 	echo "The program returned an error code (\$res)" >&2
     fi
 fi

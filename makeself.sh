@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.31 2003-02-28 22:46:40 megastep Exp $
+# $Id: makeself.sh,v 1.32 2003-03-01 02:32:49 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -184,7 +184,7 @@ if test "$APPEND" = y; then
 
     # Gather the info from the original archive
     OLDENV=`sh "$archname" --dumpconf`
-    if test $? != 0; then
+    if test $? -ne 0; then
 	echo "Unable to update archive: $archname"
 	exit 1
     else
