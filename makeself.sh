@@ -3,7 +3,7 @@
 # Makeself version 2.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.26 2002-09-18 09:26:32 megastep Exp $
+# $Id: makeself.sh,v 1.27 2002-09-20 23:10:05 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -239,8 +239,8 @@ PATH=${GUESS_MD5_PATH:-"$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/lo
 MD5_PATH=`type -p md5sum`
 MD5_PATH=${MD5_PATH:-`type -p md5`}
 PATH=$OLD_PATH
-if test -x $MD5_PATH; then
-	md5sum=`cat "$tmpfile" | $MD5_PATH | cut -b-32`;
+if test -x "$MD5_PATH"; then
+	md5sum=`cat "$tmpfile" | "$MD5_PATH" | cut -b-32`;
 	echo "CRC: $crcsum"
 	echo "MD5: $md5sum"
 else
