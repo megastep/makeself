@@ -1,6 +1,7 @@
 cat << EOF  > "$archname"
 #!/bin/sh
 # This script was generated using Makeself $MS_VERSION
+
 CRCsum="$CRCsum"
 MD5="$MD5sum"
 TMPROOT=\${TMPDIR:=/tmp}

@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.44 2004-04-23 18:28:48 megastep Exp $
+# $Id: makeself.sh,v 1.45 2004-05-26 23:02:07 chunky Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -59,6 +59,12 @@
 #
 
 MS_VERSION=2.1.3
+MS_COMMAND="$0"
+
+for f in "${1+"$@"}"; do
+    MS_COMMAND="$MS_COMMAND \\\\
+    \\\"$f\\\""
+done
 
 # Procedures
 
@@ -193,7 +199,6 @@ done
 
 archdir="$1"
 archname="$2"
-MS_COMMAND="$0 $*"
 
 if test "$APPEND" = y; then
     if test $# -lt 2; then
