@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.46 2004-05-26 23:03:01 megastep Exp $
+# $Id: makeself.sh,v 1.47 2004-07-01 20:53:14 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -295,7 +295,7 @@ DATE=`LC_ALL=C date`
 
 echo About to compress $USIZE KB of data...
 echo Adding files to archive named \"$archname\"...
-(cd "$archdir"; tar $TAR_ARGS - * | eval "$GZIP_CMD" ) >> "$tmpfile" || { echo Aborting; rm -f "$tmpfile"; exit 1; }
+(cd "$archdir" && ( tar $TAR_ARGS - * | eval "$GZIP_CMD" ) >> "$tmpfile") || { echo Aborting: Archive directory not found or temporary file: "$tmpfile" could not be created.; rm -f "$tmpfile"; exit 1; }
 echo >> "$tmpfile" >&- # try to close the archive
 
 fsize=`cat "$tmpfile" | wc -c | tr -d " "`
