@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.41 2003-11-04 21:35:05 megastep Exp $
+# $Id: makeself.sh,v 1.42 2004-02-25 02:32:12 icculus Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -77,6 +77,8 @@ MS_Usage()
     echo "                      The label and startup scripts will then be ignored"
     echo "    --current       : Files will be extracted to the current directory."
     echo "                      Implies --notemp."
+    echo "    --nomd5         : Don't calculate an MD5 for archive"
+    echo "    --nocrc         : Don't calculate a CRC for archive"
     echo "    --header file   : Specify location of the header script"
     echo "    --follow        : Follow the symlinks in the archive"
     echo "    --nox11         : Disable automatic spawn of a xterm"
@@ -155,6 +157,14 @@ do
 	shift
 	;;
     --nowait)
+	shift
+	;;
+    --nomd5)
+	NOMD5=y
+	shift
+	;;
+    --nocrc)
+	NOCRC=y
 	shift
 	;;
     --append)
@@ -283,8 +293,14 @@ fsize=`cat "$tmpfile" | wc -c | tr -d " "`
 # Compute the checksums
 
 md5sum=00000000000000000000000000000000
-crcsum=`cat "$tmpfile" | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
-echo "CRC: $crcsum"
+crcsum=0000000000
+
+if test "$NOCRC" = y; then
+	echo "skipping crc at user request"
+else
+	crcsum=`cat "$tmpfile" | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
+	echo "CRC: $crcsum"
+fi
 
 # Try to locate a MD5 binary
 OLD_PATH=$PATH
@@ -293,11 +309,15 @@ MD5_PATH=`type -p md5sum`
 MD5_PATH=${MD5_PATH:-`type -p md5`}
 PATH=$OLD_PATH
 
-if test -x "$MD5_PATH"; then
-	md5sum=`cat "$tmpfile" | "$MD5_PATH" | cut -b-32`;
-	echo "MD5: $md5sum"
+if test "$NOMD5" = y; then
+	echo "skipping md5sum at user request"
 else
-	echo "MD5: none, md5sum binary not found"
+	if test -x "$MD5_PATH"; then
+		md5sum=`cat "$tmpfile" | "$MD5_PATH" | cut -b-32`;
+		echo "MD5: $md5sum"
+	else
+		echo "MD5: none, md5sum binary not found"
+	fi
 fi
 
 if test "$APPEND" = y; then
