@@ -2,7 +2,7 @@
 #
 # makeself 1.5.4
 #
-# $Id: makeself.sh,v 1.15 2000-11-20 21:56:24 hercules Exp $
+# $Id: makeself.sh,v 1.16 2000-12-06 09:04:39 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -291,7 +291,7 @@ tmpdir=.
 EOF
 fi
 cat << EOF >> $archname
-location=\`pwd\`
+location="\`pwd\`"
 echo=echo; [ -x /usr/ucb/echo ] && echo=/usr/ucb/echo
 \$echo -n Verifying archive integrity...
 sum1=\`tail +6 \$0 | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
@@ -321,7 +321,7 @@ UnTAR() { tar xvf - || { echo Extraction failed. > /dev/tty; kill -15 \$$; } ; }
 \$echo -n "Uncompressing \$label"
 cd \$tmpdir ; res=3
 [ "\$keep" = y ] || trap 'echo Signal caught, cleaning up > /dev/tty; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit 15' 1 2 15
-if (cd \$location; tail +\$skip \$0; ) | $GUNZIP_CMD | UnTAR | \
+if (cd "\$location"; tail +\$skip \$0; ) | $GUNZIP_CMD | UnTAR | \
  (while read a; do \$echo -n .; done; echo; ); then
 	chown -Rf \`id -u\`.\`id -g\` .
     res=0; if [ x"\$script" != x ]; then
@@ -345,11 +345,11 @@ EOF
 # Append the compressed tar data after the stub
 echo Adding files to archive named \"$archname\"...
 # (cd $archdir; tar cvf - *| $GZIP_CMD ) >> $archname && chmod +x $archname && ..
-(cd $archdir; tar $TAR_ARGS - * | $GZIP_CMD ) >> $archname || { echo Aborting; exit 1; }
+(cd "$archdir"; tar $TAR_ARGS - * | $GZIP_CMD ) >> "$archname" || { echo Aborting; exit 1; }
 echo
-echo >> $archname >&- ; # try to close the archive
+echo >> "$archname" >&- ; # try to close the archive
 # echo Self-extractible archive \"$archname\" successfully created.
-sum1=`tail +6 $archname | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
+sum1=`tail +6 "$archname" | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
 # space separated list of directories
 [ x"$GUESS_MD5_PATH" = "x" ] && GUESS_MD5_PATH="/usr/local/ssl/bin"
 MD5_PATH=""
@@ -359,14 +359,14 @@ for a in $GUESS_MD5_PATH; do
   fi
 done
 
-tmpfile=${TMPDIR:=/tmp}/mkself$$
+tmpfile="${TMPDIR:=/tmp}/mkself$$"
 if [ -x $MD5_PATH/md5 ]; then
-  md5sum=`tail +6 $archname | $MD5_PATH/md5`;
+  md5sum=`tail +6 "$archname" | $MD5_PATH/md5`;
 # echo md5sum $md5sum
-  sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" -e "s/^MD5=00000000000000000000000000000000/MD5=$md5sum/" $archname > $tmpfile
+  sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" -e "s/^MD5=00000000000000000000000000000000/MD5=$md5sum/" "$archname" > "$tmpfile"
 else
-  sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" $archname > $tmpfile
+  sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" "$archname" > "$tmpfile"
 fi
-mv $tmpfile $archname
-chmod +x $archname
+mv "$tmpfile" "$archname"
+chmod +x "$archname"
 echo Self-extractible archive \"$archname\" successfully created.
