@@ -291,6 +291,14 @@ if test x\$SETUP_NOCHECK != x1; then
 fi
 offset=\`head -$SKIP "\$0" | wc -c | tr -d " "\`
 
+if test x"\$verbose" = xy; then
+	MS_Printf "About to extract $USIZE KB in \$tmpdir ... Proceed ? [Y/n] "
+	read yn
+	if test x"\$yn" = xn; then
+		eval \$finish; exit 1
+	fi
+fi
+
 MS_Printf "Uncompressing \$label"
 res=3
 if test "\$keep" = n; then
