@@ -35,7 +35,7 @@ Makeself version $MS_VERSION
   \$0 --lsm    Print embedded lsm entry (or no LSM)
   \$0 --list   Print the list of files in the archive
   \$0 --check  Checks integrity of the archive
- 
+
  2) Running \$0 :
   \$0 [options] [additional arguments to embedded script]
   with following options (in that order)
@@ -242,7 +242,7 @@ if test "\$keep" = n; then
 fi
 if (cd "\$location"; tail +$SKIP \$0; ) | $GUNZIP_CMD | UnTAR | \
     (while read a; do MS_Printf .; done; echo; ); then
-	(PATH=/usr/xpg4/bin:$PATH; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
+	(PATH=/usr/xpg4/bin:\$PATH; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
 	res=0
 	if test x"\$script" != x; then
 		if test x"\$verbose" = xy; then
