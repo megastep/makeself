@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.37 2003-06-30 20:58:56 megastep Exp $
+# $Id: makeself.sh,v 1.38 2003-07-14 23:46:57 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -231,7 +231,7 @@ bzip2)
     ;;
 Unix)
     GZIP_CMD="compress -cf"
-    GUNZIP_CMD="uncompress -c 2>/dev/null || test \\\$? -eq 2 || gzip -cd"
+    GUNZIP_CMD="exec 2>&-; uncompress -c || test \\\$? -eq 2 || gzip -cd"
     ;;
 none)
     GZIP_CMD="cat"
