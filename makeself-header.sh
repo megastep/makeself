@@ -348,10 +348,10 @@ if test x"\$script" != x; then
 		MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
 		read yn
 		if test x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY; then
-			\$script \$scriptargs \$*; res=\$?;
+			eval \$script \$scriptargs \$*; res=\$?;
 		fi
     else
-		\$script \$scriptargs \$*; res=\$?
+		eval \$script \$scriptargs \$*; res=\$?
     fi
     if test \$res -ne 0; then
 		test x"\$verbose" = xy && echo "The program '\$script' returned an error code (\$res)" >&2

@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.43 2004-03-06 00:14:47 megastep Exp $
+# $Id: makeself.sh,v 1.44 2004-04-23 18:28:48 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -50,6 +50,7 @@
 #           Added --noexec to prevent execution of embedded scripts.
 #           Added --nomd5 and --nocrc to avoid creating checksums in archives.
 #           Added command used to create the archive in --info output.
+#           Run the embedded script through eval.
 #
 # (C) 1998-2004 by Stéphane Peter <megastep@megastep.org>
 #
