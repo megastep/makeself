@@ -2,7 +2,7 @@
 #
 # makeself 1.5.3
 #
-# $Id: makeself.sh,v 1.7 2000-07-05 22:18:51 megastep Exp $
+# $Id: makeself.sh,v 1.8 2000-07-21 23:57:04 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -40,6 +40,7 @@ VERSION=1.5.3
 GZIP_CMD="gzip -c9"
 GUNZIP_CMD="gzip -cd"
 KEEP=n
+CURRENT=n
 NOX11=n
 COMPRESS=gzip
 TAR_ARGS=cvf
@@ -66,6 +67,10 @@ fi
 if [ "$1" = --notemp ]; then
 	KEEP=y
 	shift 1
+	if [ "$1" = --current ]; then
+		CURRENT=y
+		shift 1
+	fi
 fi
 if [ "$1" = --nox11 ]; then
 	NOX11=y
@@ -75,7 +80,7 @@ if [ "$1" = --follow ]; then
 	TAR_ARGS=cvfh
 	shift 1
 fi
-skip=150
+skip=144
 if [ x"$1" = x--lsm -o x"$1" = x-lsm ]; then
 	shift 1
    lsm_file=$1
@@ -104,6 +109,8 @@ if [ $# -lt 3 ]; then
 	echo "    --nocomp   : Do not compress the data"
 	echo "    --notemp   : The archive will create archive_dir in the"
 	echo "                 current directory and uncompress in ./archive_dir"
+	echo "    --current  : Used with --notemp, files will be extracted to the"
+	echo "                 current directory."
     echo "    --follow   : Follow the symlinks in the archive"
 	echo "    --nox11    : Disable automatic spawn of a xterm"
 	echo "    --nowait   : Do not wait for user input after executing embedded program from an xterm"
@@ -126,6 +133,9 @@ echo '#! /bin/sh' > $archname
 echo '# This garbage is normal' >> $archname
 if [ $NOX11 = n ]; then
 	skip=`expr $skip + 19`
+fi
+if [ $CURRENT = n ]; then
+	skip=`expr $skip + 6`
 fi
 echo skip=$skip >> $archname
 echo \# This script was generated using Makeself $VERSION >> $archname
@@ -259,15 +269,26 @@ while [ x"\$parsing" != x ]; do
       *) parsing="";;
     esac
 done
+EOF
+
+if [ $CURRENT = n ]; then
+cat << EOF >> $archname
 if [ "\$keep" = y ]; then echo "Creating directory \$targetdir"; tmpdir=\$targetdir;
 else tmpdir="/tmp/selfgz\$\$"; fi
-location=\`pwd\`
-echo=echo; [ -x /usr/ucb/echo ] && echo=/usr/ucb/echo
 mkdir \$tmpdir || {
         \$echo 'Cannot create target directory' \$tmpdir >&2
         \$echo 'you should perhaps try option -target OtherDirectory' >&2
 		eval \$finish; exit 1;
 }
+EOF
+else
+cat << EOF >> $archname
+tmpdir=.
+EOF
+fi
+cat << EOF >> $archname
+location=\`pwd\`
+echo=echo; [ -x /usr/ucb/echo ] && echo=/usr/ucb/echo
 \$echo -n Verifying archive integrity...
 sum1=\`tail +6 \$0 | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
 [ \$sum1 -ne \$CRCsum ] && {
