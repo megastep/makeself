@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.30 2003-02-28 10:31:57 megastep Exp $
+# $Id: makeself.sh,v 1.31 2003-02-28 22:46:40 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -240,8 +240,9 @@ esac
 
 if test -f $HEADER; then
     SKIP=`cat $HEADER|wc -l`
-    # There are 6 extra lines in the header
-    SKIP=`expr $SKIP - 6 + $LSM_LINES`
+    # There are 4 extra lines in the header
+	# Lines that end with a single backslash are concatenated in one!
+    SKIP=`expr $SKIP - 4 + $LSM_LINES`
     echo Header is $SKIP lines long
 else
     echo "Unable to open header file: $HEADER"

@@ -30,8 +30,9 @@ MS_dd()
 {
     blocks=\`expr \$3 / 1024\`
     bytes=\`expr \$3 % 1024\`
-    dd if="\$1" ibs=\$2 skip=1 obs=1024 conv=sync 2> /dev/null | \
-    ( dd ibs=1024 obs=1024 count=\$blocks && dd ibs=1 obs=1024 count=\$bytes ) 2> /dev/null
+    dd if="\$1" ibs=\$2 skip=1 obs=1024 conv=sync 2> /dev/null | \\
+    ( test \$blocks -gt 0 && dd ibs=1024 obs=1024 count=\$blocks ; \\
+      test \$bytes  -gt 0 && dd ibs=1 obs=1024 count=\$bytes ) 2> /dev/null
 }
 
 MS_Help()
@@ -87,7 +88,7 @@ MS_Check()
 	elif test \$crc = "0000000000"; then
 	    test x\$2 = xy && echo " \$1 does not contain a CRC checksum." >&2
 	else
-	    sum1=\`MS_dd "\$1" \$offset \$s | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
+	    sum1=\`MS_dd "\$1" \$offset \$s | cksum | awk '{print \$1}'\`
 	    if test "\$sum1" = "\$crc"; then
 		test x\$2 = xy && MS_Printf " Checksums are OK." >&2
 	    else
@@ -286,7 +287,7 @@ fi
 
 for s in \$filesizes
 do
-    if (cd "\$location"; MS_dd "\$0" \$offset \$s; ) | $GUNZIP_CMD | UnTAR | \
+    if (cd "\$location"; MS_dd "\$0" \$offset \$s; ) | $GUNZIP_CMD | UnTAR | \\
 	(while read a; do MS_Printf .; done; ); then
 	if test x"\$ownership" != x; then
 	    (PATH=/usr/xpg4/bin:\$PATH; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
