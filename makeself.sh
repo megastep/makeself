@@ -1,8 +1,8 @@
 #! /bin/sh
 #
-# makeself 1.5.3
+# makeself 1.5.4
 #
-# $Id: makeself.sh,v 1.8 2000-07-21 23:57:04 megastep Exp $
+# $Id: makeself.sh,v 1.9 2000-09-12 23:53:09 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -30,13 +30,14 @@
 # - 1.5.3 : Check for validity of the DISPLAY variable before launching an xterm.
 #           More verbosity in xterms and check for embedded command's return value.
 #           Bugfix for Debian 2.0 systems that have a different "print" command.
+# - 1.5.4 : Many bugfixes. Print out a message if the extraction failed.
 #
 # (C) 1998-2000 by Stéphane Peter <megastep@lokigames.com>
 #
 # This software is released under the terms of the GNU GPL
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
-VERSION=1.5.3
+VERSION=1.5.4
 GZIP_CMD="gzip -c9"
 GUNZIP_CMD="gzip -cd"
 KEEP=n
@@ -80,7 +81,7 @@ if [ "$1" = --follow ]; then
 	TAR_ARGS=cvfh
 	shift 1
 fi
-skip=144
+skip=147
 if [ x"$1" = x--lsm -o x"$1" = x-lsm ]; then
 	shift 1
    lsm_file=$1
@@ -316,8 +317,12 @@ fi
 \$echo -n "Uncompressing \$label"
 cd \$tmpdir
 [ "\$keep" = y ] || trap 'cd /tmp; /bin/rm -rf \$tmpdir; exit \$res'
-if ( (cd \$location; tail +\$skip \$0; ) | $GUNZIP_CMD | tar xvf - | \
- (while read a; do \$echo -n .; done; echo; )) 2> /dev/null; then
+if ( (cd \$location; tail +\$skip \$0; ) | $GUNZIP_CMD | \
+     { tar xvf - || failed=y } | \
+ (while read a; do \$echo -n .; done; echo; )); then
+	if [ x\$failed = xy ]; then
+		echo 'File extraction failed!'; cd /tmp; /bin/rm -rf \$tmpdir; eval \$finish; exit 1
+	fi
 	chown -Rf \`id -u\`.\`id -g\` .
     res=0; if [ x"\$script" != x ]; then
 		if [ x"\$verbose" = xy ]; then
