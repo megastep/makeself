@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.35 2003-04-30 21:01:30 megastep Exp $
+# $Id: makeself.sh,v 1.36 2003-06-17 02:00:42 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -100,7 +100,6 @@ TAR_ARGS=cvf
 HEADER=`dirname $0`/makeself-header.sh
 
 # LSM file stuff
-LSM_LINES=1
 LSM_CMD="echo No LSM. >> \"\$archname\""
 
 while true
@@ -159,7 +158,6 @@ do
 	shift
 	;;
     --lsm)
-	LSM_LINES=`cat "$2" | wc -l`
 	LSM_CMD="cat \"$2\" >> \"\$archname\""
 	shift 2
 	;;
@@ -240,12 +238,21 @@ none)
     ;;
 esac
 
+tmpfile="${TMPDIR:=/tmp}/mkself$$"
+
 if test -f $HEADER; then
-    SKIP=`cat $HEADER|wc -l`
-    # There are 4 extra lines in the header
-	# Lines that end with a single backslash are concatenated in one!
-    SKIP=`expr $SKIP - 4 + $LSM_LINES`
+	oldarchname="$archname"
+	archname="$tmpfile"
+	# Generate a fake header to count its lines
+	SKIP=0
+    . $HEADER
+    SKIP=`cat "$tmpfile" |wc -l`
+	# Get rid of any spaces
+	SKIP=`expr $SKIP`
+	rm -f "$tmpfile"
     echo Header is $SKIP lines long >&2
+
+	archname="$oldarchname"
 else
     echo "Unable to open header file: $HEADER" >&2
     exit 1
@@ -255,13 +262,12 @@ echo
 
 if test "$APPEND" = n; then
     if test -f "$archname"; then
-	echo "WARNING: Overwriting existing file: $archname" >&2
+		echo "WARNING: Overwriting existing file: $archname" >&2
     fi
 fi
 
 USIZE=`du -ks $archdir | cut -f1`
 DATE=`LC_ALL=C date`
-tmpfile="${TMPDIR:=/tmp}/mkself$$"
 
 echo About to compress $USIZE KB of data...
 echo Adding files to archive named \"$archname\"...
