@@ -2,7 +2,7 @@
 #
 # makeself 1.5.3
 #
-# $Id: makeself.sh,v 1.5 2000-06-02 22:32:39 megastep Exp $
+# $Id: makeself.sh,v 1.6 2000-07-05 21:01:26 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -75,7 +75,7 @@ if [ "$1" = --follow ]; then
 	TAR_ARGS=cvfh
 	shift 1
 fi
-skip=149
+skip=150
 if [ x"$1" = x--lsm -o x"$1" = x-lsm ]; then
 	shift 1
    lsm_file=$1
@@ -295,8 +295,9 @@ fi
 \$echo -n "Uncompressing \$label"
 cd \$tmpdir
 [ "\$keep" = y ] || trap 'cd /tmp; /bin/rm -rf \$tmpdir; exit \$res'
-if ( (cd \$location; tail +\$skip \$0; ) | $GUNZIP_CMD | tar xvof - | \
+if ( (cd \$location; tail +\$skip \$0; ) | $GUNZIP_CMD | tar xvf - | \
  (while read a; do \$echo -n .; done; echo; )) 2> /dev/null; then
+	chown -Rf \`whoami\` \$location
     res=0; if [ x"\$script" != x ]; then
 		if [ x"\$verbose" = xy ]; then
 			\$echo "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
