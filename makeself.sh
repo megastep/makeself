@@ -1,15 +1,15 @@
 #! /bin/sh
 #
-# makeself 1.5.4
+# makeself 1.5.5
 #
-# $Id: makeself.sh,v 1.18 2001-04-30 16:36:03 hercules Exp $
+# $Id: makeself.sh,v 1.19 2001-06-08 22:02:17 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
 # a small Shell script stub that uncompresses the archive to a temporary
 # directory and then executes a given script from withing that directory.
 #
-# Makeself home page: http://www.lokigames.com/~megastep/makeself/
+# Makeself home page: http://www.linuxgames.com/megastep/makeself/
 #
 # Version history :
 # - 1.0 : Initial public release
@@ -34,7 +34,7 @@
 # - 1.5.5 : More bugfixes. Added support for SETUP_NOCHECK environment variable to
 #           bypass checksum verification of archives.
 #
-# (C) 1998-2001 by Stéphane Peter <megastep@lokigames.com>
+# (C) 1998-2001 by Stéphane Peter <megastep@linuxgames.com>
 #
 # This software is released under the terms of the GNU GPL
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
