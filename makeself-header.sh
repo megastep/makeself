@@ -26,13 +26,20 @@ MS_Printf()
     \$print_cmd \$print_cmd_arg "\$1"
 }
 
+MS_Progress()
+{
+    while read a; do
+	MS_Printf .
+    done
+}
+
 MS_dd()
 {
     blocks=\`expr \$3 / 1024\`
     bytes=\`expr \$3 % 1024\`
     dd if="\$1" ibs=\$2 skip=1 obs=1024 conv=sync 2> /dev/null | \\
-    ( test \$blocks -gt 0 && dd ibs=1024 obs=1024 count=\$blocks ; \\
-      test \$bytes  -gt 0 && dd ibs=1 obs=1024 count=\$bytes ) 2> /dev/null
+    { test \$blocks -gt 0 && dd ibs=1024 obs=1024 count=\$blocks ; \\
+      test \$bytes  -gt 0 && dd ibs=1 obs=1024 count=\$bytes ; } 2> /dev/null
 }
 
 MS_Help()
@@ -104,7 +111,7 @@ MS_Check()
 
 UnTAR()
 {
-    tar xvf - 2>&1 || { echo Extraction failed. > /dev/tty; kill -15 \$$; }
+    tar \$1vf - 2>&1 || { echo Extraction failed. > /dev/tty; kill -15 \$$; }
 }
 
 finish=true
@@ -165,7 +172,7 @@ EOLSM
 	offset=\`head -$SKIP "\$0" | wc -c | tr -d " "\`
 	for s in \$filesizes
 	do
-	    MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | tar tvf -
+	    MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | UnTAR t
 	    offset=\`expr \$offset + \$s\`
 	done
 	exit 0
@@ -279,18 +286,16 @@ fi
 offset=\`head -$SKIP "\$0" | wc -c | tr -d " "\`
 
 MS_Printf "Uncompressing \$label"
-cd \$tmpdir
 res=3
 if test "\$keep" = n; then
-    trap 'echo Signal caught, cleaning up >&2; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit 15' 1 2 15
+    trap 'echo Signal caught, cleaning up >&2; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit 15' 1 2 3 15
 fi
 
 for s in \$filesizes
 do
-    if (cd "\$location"; MS_dd "\$0" \$offset \$s; ) | eval "$GUNZIP_CMD" | UnTAR | \\
-	(while read a; do MS_Printf .; done; ); then
+    if MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | ( cd "\$tmpdir"; UnTAR x ) | MS_Progress; then
 	if test x"\$ownership" != x; then
-	    (PATH=/usr/xpg4/bin:\$PATH; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
+	    (PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
 	fi
     else
 	echo
@@ -301,6 +306,7 @@ do
 done
 echo
 
+cd "\$tmpdir"
 res=0
 if test x"\$script" != x; then
     if test x"\$verbose" = xy; then

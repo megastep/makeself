@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.33 2003-03-05 03:04:50 megastep Exp $
+# $Id: makeself.sh,v 1.34 2003-03-06 01:59:27 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -43,6 +43,7 @@
 #           Added --nochown for archives
 #           Stopped doing redundant checksums when not necesary
 # - 2.1.1 : Work around insane behavior from certain Linux distros with no 'uncompress' command
+#           Cleaned up the code to handle error codes from compress. Simplified the extraction code.
 #
 # (C) 1998-2003 by Stéphane Peter <megastep@megastep.org>
 #
@@ -186,14 +187,14 @@ if test "$APPEND" = y; then
     # Gather the info from the original archive
     OLDENV=`sh "$archname" --dumpconf`
     if test $? -ne 0; then
-	echo "Unable to update archive: $archname"
+	echo "Unable to update archive: $archname" >&2
 	exit 1
     else
 	eval "$OLDENV"
     fi
 else
     if test "$KEEP" = n -a $# = 3; then
-	echo "ERROR: Making a temporary archive with no embedded command does not make sense!"
+	echo "ERROR: Making a temporary archive with no embedded command does not make sense!" >&2
 	echo
 	MS_Usage
     fi
@@ -216,7 +217,7 @@ else
 fi
 
 if test "$KEEP" = n -a "$CURRENT" = y; then
-    echo "ERROR: It is A VERY DANGEROUS IDEA to try to combine --notemp and --current."
+    echo "ERROR: It is A VERY DANGEROUS IDEA to try to combine --notemp and --current." >&2
     exit 1
 fi
 
@@ -230,8 +231,8 @@ bzip2)
     GUNZIP_CMD="bzip2 -d"
     ;;
 Unix)
-    GZIP_CMD="compress -c"
-    GUNZIP_CMD="uncompress -c || gzip -cd"
+    GZIP_CMD="compress -cf"
+    GUNZIP_CMD="uncompress -c || test \$? -ne 2 || gzip -cd"
     ;;
 none)
     GZIP_CMD="cat"
@@ -244,9 +245,9 @@ if test -f $HEADER; then
     # There are 4 extra lines in the header
 	# Lines that end with a single backslash are concatenated in one!
     SKIP=`expr $SKIP - 4 + $LSM_LINES`
-    echo Header is $SKIP lines long
+    echo Header is $SKIP lines long >&2
 else
-    echo "Unable to open header file: $HEADER"
+    echo "Unable to open header file: $HEADER" >&2
     exit 1
 fi
 
@@ -254,7 +255,7 @@ echo
 
 if test "$APPEND" = n; then
     if test -f "$archname"; then
-	echo "WARNING: Overwriting existing file: $archname"
+	echo "WARNING: Overwriting existing file: $archname" >&2
     fi
 fi
 
@@ -264,7 +265,7 @@ tmpfile="${TMPDIR:=/tmp}/mkself$$"
 
 echo About to compress $USIZE KB of data...
 echo Adding files to archive named \"$archname\"...
-(cd "$archdir"; tar $TAR_ARGS - * | $GZIP_CMD ) >> "$tmpfile" || { echo Aborting; rm -f "$tmpfile"; exit 1; }
+(cd "$archdir"; tar $TAR_ARGS - * | eval "$GZIP_CMD" ) >> "$tmpfile" || { echo Aborting; rm -f "$tmpfile"; exit 1; }
 echo >> "$tmpfile" >&- # try to close the archive
 
 fsize=`cat "$tmpfile" | wc -c | tr -d " "`
