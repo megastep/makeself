@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.45 2004-05-26 23:02:07 chunky Exp $
+# $Id: makeself.sh,v 1.46 2004-05-26 23:03:01 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -51,6 +51,7 @@
 #           Added --nomd5 and --nocrc to avoid creating checksums in archives.
 #           Added command used to create the archive in --info output.
 #           Run the embedded script through eval.
+# - 2.1.4 : Fixed --info output.
 #
 # (C) 1998-2004 by Stéphane Peter <megastep@megastep.org>
 #
@@ -58,7 +59,7 @@
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
 
-MS_VERSION=2.1.3
+MS_VERSION=2.1.4
 MS_COMMAND="$0"
 
 for f in "${1+"$@"}"; do
