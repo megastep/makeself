@@ -2,7 +2,7 @@
 #
 # makeself 1.5.3
 #
-# $Id: makeself.sh,v 1.3 2000-02-22 22:16:56 megastep Exp $
+# $Id: makeself.sh,v 1.4 2000-04-10 23:35:55 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -70,7 +70,7 @@ if [ "$1" = --nox11 ]; then
 	NOX11=y
 	shift 1
 fi
-skip=143
+skip=149
 if [ x"$1" = x--lsm -o x"$1" = x-lsm ]; then
 	shift 1
    lsm_file=$1
@@ -223,7 +223,7 @@ cat << EOF >> $archname
 if ! tty -s; then                 # Do we have a terminal?
     if [ x"\$DISPLAY" != x -a x"\$xterm_loop" = x ]; then  # No, but do we have X?
 		if xset q > /dev/null 2>&1; then # Check for valid DISPLAY variable
-			GUESS_XTERMS="dtterm eterm Eterm xterm rxvt kvt konsole"
+			GUESS_XTERMS="dtterm eterm Eterm xterm rxvt kvt"
 			for a in \$GUESS_XTERMS; do
 				if which \$a >/dev/null 2>&1; then
 					XTERM=\$a
@@ -244,9 +244,15 @@ fi
 
 cat << EOF >> $archname
 [ x"\$finish" = x ] && finish=true
-if [ "\$1" = "-confirm" ]; then verbose=y; shift 1; fi
-if [ "\$1" = "-keep" ]; then keep=y; shift 1; fi
-if [ "\$1" = "-target" -a x"\$2" != x ]; then targetdir=\$2; keep=y; shift 2; fi
+parsing=yes
+while [ x"\$parsing" != x ]; do
+    case "\$1" in
+      -confirm) verbose=y; shift;;
+      -keep) keep=y; shift;;
+      -target) if [ x"\$2" != x ]; then targetdir="\$2"; keep=y; shift 2; fi;;
+      *) parsing="";;
+    esac
+done
 if [ "\$keep" = y ]; then echo "Creating directory \$targetdir"; tmpdir=\$targetdir;
 else tmpdir="/tmp/selfgz\$\$"; fi
 location=\`pwd\`
