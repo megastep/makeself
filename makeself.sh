@@ -2,7 +2,9 @@
 #
 # makeself 1.5.3
 #
-# Utilty to create self-extracting tar.gz archives.
+# $Id: makeself.sh,v 1.3 2000-02-22 22:16:56 megastep Exp $
+#
+# Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
 # a small Shell script stub that uncompresses the archive to a temporary
 # directory and then executes a given script from withing that directory.
@@ -29,7 +31,7 @@
 #           More verbosity in xterms and check for embedded command's return value.
 #           Bugfix for Debian 2.0 systems that have a different "print" command.
 #
-# (C) 1998-1999 by Stéphane Peter <megastep@lokigames.com>
+# (C) 1998-2000 by Stéphane Peter <megastep@lokigames.com>
 #
 # This software is released under the terms of the GNU GPL
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
@@ -68,7 +70,7 @@ if [ "$1" = --nox11 ]; then
 	NOX11=y
 	shift 1
 fi
-skip=142
+skip=143
 if [ x"$1" = x--lsm -o x"$1" = x-lsm ]; then
 	shift 1
    lsm_file=$1
@@ -114,8 +116,10 @@ DATE=`date`
 
 # The following is the shell script stub code
 echo '#! /bin/sh' > $archname
+# Add some random binary characters to fool programs in thinking it's a binary file
+echo '# This garbage is normal' >> $archname
 if [ $NOX11 = n ]; then
-	skip=`expr $skip + 18`
+	skip=`expr $skip + 19`
 fi
 echo skip=$skip >> $archname
 echo \# This script was generated using Makeself $VERSION >> $archname
@@ -183,7 +187,7 @@ fi
 if [ "\$1" = "-check" ]; then
 sum1=\`tail +6 \$0 | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
 [ \$sum1 -ne \$CRCsum ] && {
-  echo Error in check sums \$sum1 \$CRCsum
+  echo Error in checksums \$sum1 \$CRCsum
   exit 2;
 }
 if [ \$MD5 != "00000000000000000000000000000000" ]; then
@@ -223,6 +227,7 @@ if ! tty -s; then                 # Do we have a terminal?
 			for a in \$GUESS_XTERMS; do
 				if which \$a >/dev/null 2>&1; then
 					XTERM=\$a
+					break
 				fi
 			done
 			chmod a+x \$0 || echo Please add execution rights on \$0
