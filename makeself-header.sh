@@ -70,8 +70,8 @@ MS_Check()
 {
     OLD_PATH=\$PATH
     PATH=\${GUESS_MD5_PATH:-"\$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
-    MD5_PATH=\`which md5sum 2>/dev/null || type md5sum 2>/dev/null\`
-    MD5_PATH=\${MD5_PATH:-\`which md5 2>/dev/null || type md5 2>/dev/null\`}
+    MD5_PATH=\`exec 2>&-; which md5sum || type md5sum\`
+    MD5_PATH=\${MD5_PATH:-\`exec 2>&-; which md5 || type md5\`}
     PATH=\$OLD_PATH
     MS_Printf "Verifying archive integrity..."
     offset=\`head -n $SKIP "\$1" | wc -c | tr -d " "\`
