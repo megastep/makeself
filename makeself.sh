@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.49 2004-07-01 22:58:52 megastep Exp $
+# $Id: makeself.sh,v 1.50 2004-07-02 18:11:06 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -316,7 +316,7 @@ crcsum=0000000000
 if test "$NOCRC" = y; then
 	echo "skipping crc at user request"
 else
-	crcsum=`cat "$tmpfile" | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
+	crcsum=`cat "$tmpfile" | CMD_ENV=xpg4 cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
 	echo "CRC: $crcsum"
 fi
 

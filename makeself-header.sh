@@ -101,7 +101,7 @@ MS_Check()
 	if test \$crc = "0000000000"; then
 	    test x\$verb = xy && echo " \$1 does not contain a CRC checksum." >&2
 	else
-	    sum1=\`MS_dd "\$1" \$offset \$s | cksum | awk '{print \$1}'\`
+	    sum1=\`MS_dd "\$1" \$offset \$s | CMD_ENV=xpg4 cksum | awk '{print \$1}'\`
 	    if test "\$sum1" = "\$crc"; then
 		test x\$verb = xy && MS_Printf " CRC checksums are OK." >&2
 	    else
