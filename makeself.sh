@@ -2,7 +2,7 @@
 #
 # makeself 1.5.4
 #
-# $Id: makeself.sh,v 1.17 2001-02-15 22:56:39 megastep Exp $
+# $Id: makeself.sh,v 1.18 2001-04-30 16:36:03 hercules Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -257,7 +257,7 @@ if [ "\$x11" = "y" ]; then
     if ! tty -s; then                 # Do we have a terminal?
         if [ x"\$DISPLAY" != x -a x"\$xterm_loop" = x ]; then  # No, but do we have X?
             if xset q > /dev/null 2>&1; then # Check for valid DISPLAY variable
-                GUESS_XTERMS="dtterm eterm Eterm xterm rxvt kvt"
+                GUESS_XTERMS="xterm dtterm eterm Eterm rxvt kvt konsole aterm"
                 for a in \$GUESS_XTERMS; do
                     if which \$a >/dev/null 2>&1; then
                         XTERM=\$a
