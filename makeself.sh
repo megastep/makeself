@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.47 2004-07-01 20:53:14 megastep Exp $
+# $Id: makeself.sh,v 1.48 2004-07-01 22:55:37 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -292,6 +292,12 @@ fi
 
 USIZE=`du -ks $archdir | cut -f1`
 DATE=`LC_ALL=C date`
+
+if test "." = "$archdirname"; then
+	if test "$KEEP" = n; then
+		archdirname="makeself-$$-`date +%Y%m%d%H%M%S`"
+	fi
+fi
 
 echo About to compress $USIZE KB of data...
 echo Adding files to archive named \"$archname\"...
