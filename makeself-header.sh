@@ -74,7 +74,7 @@ MS_Check()
     MD5_PATH=\${MD5_PATH:-\`which md5 2>/dev/null || type md5 2>/dev/null\`}
     PATH=\$OLD_PATH
     MS_Printf "Verifying archive integrity..."
-    offset=\`head -$SKIP "\$1" | wc -c | tr -d " "\`
+    offset=\`head -n $SKIP "\$1" | wc -c | tr -d " "\`
     verb=\$2
     i=1
     for s in \$filesizes
@@ -175,7 +175,7 @@ EOLSM
 	;;
     --list)
 	echo Target directory: \$targetdir
-	offset=\`head -$SKIP "\$0" | wc -c | tr -d " "\`
+	offset=\`head -n $SKIP "\$0" | wc -c | tr -d " "\`
 	for s in \$filesizes
 	do
 	    MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | UnTAR t
@@ -289,7 +289,7 @@ location="\`pwd\`"
 if test x\$SETUP_NOCHECK != x1; then
     MS_Check "\$0"
 fi
-offset=\`head -$SKIP "\$0" | wc -c | tr -d " "\`
+offset=\`head -n $SKIP "\$0" | wc -c | tr -d " "\`
 
 if test x"\$verbose" = xy; then
 	MS_Printf "About to extract $USIZE KB in \$tmpdir ... Proceed ? [Y/n] "

@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.36 2003-06-17 02:00:42 megastep Exp $
+# $Id: makeself.sh,v 1.37 2003-06-30 20:58:56 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -44,6 +44,7 @@
 #           Stopped doing redundant checksums when not necesary
 # - 2.1.1 : Work around insane behavior from certain Linux distros with no 'uncompress' command
 #           Cleaned up the code to handle error codes from compress. Simplified the extraction code.
+# - 2.1.2 : Some bug fixes. Use head -n to avoid problems.
 #
 # (C) 1998-2003 by Stéphane Peter <megastep@megastep.org>
 #
@@ -51,7 +52,7 @@
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
 
-MS_VERSION=2.1.1
+MS_VERSION=2.1.2
 
 # Procedures
 
@@ -307,7 +308,7 @@ if test "$APPEND" = y; then
     # Generate the header
     . $HEADER
     # Append the original data
-    tail +$OLDSKIP "$archname".bak >> "$archname"
+    tail -n +$OLDSKIP "$archname".bak >> "$archname"
     # Append the new data
     cat "$tmpfile" >> "$archname"
 
