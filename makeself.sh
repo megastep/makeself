@@ -3,7 +3,7 @@
 # Makeself version 2.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.24 2002-09-09 22:25:22 megastep Exp $
+# $Id: makeself.sh,v 1.25 2002-09-17 22:40:49 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -54,6 +54,8 @@ MS_Usage()
     echo "Usage: $0 [params] archive_dir file_name label [startup_script] [args]"
     echo "params can be one or more of the following :"
     echo "    --version | -v  : Print out Makeself version number and exit"
+    echo "    --help | -h     : Print out this help message"
+    echo "    --gzip          : Compress using gzip (default if detected)"
     echo "    --bzip2         : Compress using bzip2 instead of gzip"
     echo "    --compress      : Compress using the UNIX 'compress' command"
     echo "    --nocomp        : Do not compress the data"
@@ -74,12 +76,18 @@ MS_Usage()
 }
 
 # Default settings
-GZIP_CMD="gzip -c9"
-GUNZIP_CMD="gzip -cd"
+if type gzip 2>&1 > /dev/null; then
+	GZIP_CMD="gzip -c9"
+	GUNZIP_CMD="gzip -cd"
+	COMPRESS=gzip
+else
+	GZIP_CMD="compress -c"
+	GUNZIP_CMD="compress -cd"
+	COMPRESS=Unix
+fi
 KEEP=n
 CURRENT=n
 NOX11=n
-COMPRESS=gzip
 TAR_ARGS=cvf
 HEADER=`dirname $0`/makeself-header.sh
 
@@ -98,6 +106,12 @@ do
 	GZIP_CMD="bzip2 -9"
 	GUNZIP_CMD="bzip2 -d"
 	COMPRESS=bzip2
+	shift
+	;;
+    --gzip)
+	GZIP_CMD="gzip -c9"
+	GUNZIP_CMD="gzip -cd"
+	COMPRESS=gzip
 	shift
 	;;
     --compress)
@@ -140,6 +154,9 @@ do
 	LSM_LINES=`cat "$2" | wc -l`
 	LSM_CMD="cat \"$2\" >> \"\$archname\""
 	shift 2
+	;;
+	-h | --help)
+	MS_Usage
 	;;
     -*)
 	echo Unrecognized flag : "$1"
@@ -208,17 +225,14 @@ echo >> "$tmpfile" >&- # try to close the archive
 md5sum=00000000000000000000000000000000
 crcsum=`cat "$tmpfile" | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
 
-# space separated list of directories
-test x"$GUESS_MD5_PATH" = "x" && GUESS_MD5_PATH="/usr/local/ssl/bin /usr/bin /usr/local/bin /opt/openssl/bin"
-MD5_PATH=""
-for a in $GUESS_MD5_PATH; do
-	if test -x "$a/md5sum"; then
-		MD5_PATH=$a;
-	fi
-done
-
-if test -x $MD5_PATH/md5sum; then
-	md5sum=`cat "$tmpfile" | $MD5_PATH/md5sum | cut -b-32`;
+# Try to locate a MD5 binary
+OLD_PATH=$PATH
+PATH=${GUESS_MD5_PATH:-"$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
+MD5_PATH=`type -p md5sum`
+MD5_PATH=${MD5_PATH:-`type -p md5`}
+PATH=$OLD_PATH
+if test -x $MD5_PATH; then
+	md5sum=`cat "$tmpfile" | $MD5_PATH | cut -b-32`;
 	echo "CRC: $crcsum"
 	echo "MD5: $md5sum"
 else

@@ -65,11 +65,12 @@ MS_Check()
 	test x\$2 = xy && echo " \$1 does not contain an embedded MD5 checksum."
     else
 	OLD_PATH=\$PATH
-	PATH=\${GUESS_MD5_PATH:-"/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin:/usr/bin"}
+	PATH=\${GUESS_MD5_PATH:-"\$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
 	MD5_PATH=\`type -p md5sum\`
+	MD5_PATH=\${MD5_PATH:-\`type -p md5\`}
 	PATH=\$OLD_PATH
-	if test -x \$MD5_PATH; then
-	    md5sum=\`tail +$SKIP \$1 | \$MD5_PATH | cut -b-32\`;
+	if test -x "\$MD5_PATH"; then
+	    md5sum=\`tail +$SKIP \$1 | "\$MD5_PATH" | cut -b-32\`;
 	    if test "\$md5sum" != "\$MD5"; then
 		echo "Error in MD5 checksums: \$md5sum is different from  \$MD5"
 		exit 2
