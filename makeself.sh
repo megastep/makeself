@@ -2,7 +2,7 @@
 #
 # makeself 1.5.4
 #
-# $Id: makeself.sh,v 1.9 2000-09-12 23:53:09 megastep Exp $
+# $Id: makeself.sh,v 1.10 2000-09-13 23:19:17 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -318,7 +318,7 @@ fi
 cd \$tmpdir
 [ "\$keep" = y ] || trap 'cd /tmp; /bin/rm -rf \$tmpdir; exit \$res'
 if ( (cd \$location; tail +\$skip \$0; ) | $GUNZIP_CMD | \
-     { tar xvf - || failed=y } | \
+     { tar xvf - || failed=y ; } | \
  (while read a; do \$echo -n .; done; echo; )); then
 	if [ x\$failed = xy ]; then
 		echo 'File extraction failed!'; cd /tmp; /bin/rm -rf \$tmpdir; eval \$finish; exit 1
