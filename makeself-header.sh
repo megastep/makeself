@@ -280,7 +280,7 @@ else
     else
 	tmpdir="\$TMPROOT/selfgz\$\$"
     fi
-    mkdir \$tmpdir || {
+    mkdir -p \$tmpdir || {
 	echo 'Cannot create target directory' \$tmpdir >&2
 	echo 'You should try option --target OtherDirectory' >&2
 	eval \$finish
