@@ -75,7 +75,7 @@ MS_Check()
     PATH=\$OLD_PATH
     MS_Printf "Verifying archive integrity..."
     offset=\`head -$SKIP "\$1" | wc -c | tr -d " "\`
-    verbose=\$2
+    verb=\$2
     i=1
     for s in \$filesizes
     do
@@ -83,24 +83,24 @@ MS_Check()
 	if test -x "\$MD5_PATH"; then
 	    md5=\`echo \$MD5 | cut -d" " -f\$i\`
 	    if test \$md5 = "00000000000000000000000000000000"; then
-		test x\$verbose = xy && echo " \$1 does not contain an embedded MD5 checksum." >&2
+		test x\$verb = xy && echo " \$1 does not contain an embedded MD5 checksum." >&2
 	    else
 		md5sum=\`MS_dd "\$1" \$offset \$s | "\$MD5_PATH" | cut -b-32\`;
 		if test "\$md5sum" != "\$md5"; then
 		    echo "Error in MD5 checksums: \$md5sum is different from \$md5" >&2
 		    exit 2
 		else
-		    test x\$verbose = xy && MS_Printf " MD5 checksums are OK." >&2
+		    test x\$verb = xy && MS_Printf " MD5 checksums are OK." >&2
 		fi
-		crc="0000000000"; verbose=n
+		crc="0000000000"; verb=n
 	    fi
 	fi
 	if test \$crc = "0000000000"; then
-	    test x\$verbose = xy && echo " \$1 does not contain a CRC checksum." >&2
+	    test x\$verb = xy && echo " \$1 does not contain a CRC checksum." >&2
 	else
 	    sum1=\`MS_dd "\$1" \$offset \$s | cksum | awk '{print \$1}'\`
 	    if test "\$sum1" = "\$crc"; then
-		test x\$verbose = xy && MS_Printf " CRC checksums are OK." >&2
+		test x\$verb = xy && MS_Printf " CRC checksums are OK." >&2
 	    else
 		echo "Error in checksums: \$sum1 is different from \$crc"
 		exit 2;
