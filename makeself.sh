@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.32 2003-03-01 02:32:49 megastep Exp $
+# $Id: makeself.sh,v 1.33 2003-03-05 03:04:50 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -42,6 +42,7 @@
 # - 2.1.0 : Allow multiple tarballs to be stored in one archive, and incremental updates.
 #           Added --nochown for archives
 #           Stopped doing redundant checksums when not necesary
+# - 2.1.1 : Work around insane behavior from certain Linux distros with no 'uncompress' command
 #
 # (C) 1998-2003 by Stéphane Peter <megastep@megastep.org>
 #
@@ -49,7 +50,7 @@
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
 
-MS_VERSION=2.1.0
+MS_VERSION=2.1.1
 
 # Procedures
 
@@ -230,7 +231,7 @@ bzip2)
     ;;
 Unix)
     GZIP_CMD="compress -c"
-    GUNZIP_CMD="compress -cd"
+    GUNZIP_CMD="uncompress -c || gzip -cd"
     ;;
 none)
     GZIP_CMD="cat"

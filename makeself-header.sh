@@ -165,7 +165,7 @@ EOLSM
 	offset=\`head -$SKIP "\$0" | wc -c | tr -d " "\`
 	for s in \$filesizes
 	do
-	    MS_dd "\$0" \$offset \$s | $GUNZIP_CMD | tar tvf -
+	    MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | tar tvf -
 	    offset=\`expr \$offset + \$s\`
 	done
 	exit 0
@@ -287,7 +287,7 @@ fi
 
 for s in \$filesizes
 do
-    if (cd "\$location"; MS_dd "\$0" \$offset \$s; ) | $GUNZIP_CMD | UnTAR | \\
+    if (cd "\$location"; MS_dd "\$0" \$offset \$s; ) | eval "$GUNZIP_CMD" | UnTAR | \\
 	(while read a; do MS_Printf .; done; ); then
 	if test x"\$ownership" != x; then
 	    (PATH=/usr/xpg4/bin:\$PATH; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
