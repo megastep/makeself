@@ -2,7 +2,7 @@
 #
 # makeself 1.5.3
 #
-# $Id: makeself.sh,v 1.4 2000-04-10 23:35:55 megastep Exp $
+# $Id: makeself.sh,v 1.5 2000-06-02 22:32:39 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -42,6 +42,7 @@ GUNZIP_CMD="gzip -cd"
 KEEP=n
 NOX11=n
 COMPRESS=gzip
+TAR_ARGS=cvf
 if [ "$1" = --version ]; then
 	echo Makeself version $VERSION
 	exit 0
@@ -68,6 +69,10 @@ if [ "$1" = --notemp ]; then
 fi
 if [ "$1" = --nox11 ]; then
 	NOX11=y
+	shift 1
+fi
+if [ "$1" = --follow ]; then
+	TAR_ARGS=cvfh
 	shift 1
 fi
 skip=149
@@ -99,6 +104,7 @@ if [ $# -lt 3 ]; then
 	echo "    --nocomp   : Do not compress the data"
 	echo "    --notemp   : The archive will create archive_dir in the"
 	echo "                 current directory and uncompress in ./archive_dir"
+    echo "    --follow   : Follow the symlinks in the archive"
 	echo "    --nox11    : Disable automatic spawn of a xterm"
 	echo "    --nowait   : Do not wait for user input after executing embedded program from an xterm"
 	echo "    --lsm file : LSM file describing the package"
@@ -312,7 +318,7 @@ EOF
 # Append the compressed tar data after the stub
 echo Adding files to archive named \"$archname\"...
 # (cd $archdir; tar cvf - *| $GZIP_CMD ) >> $archname && chmod +x $archname && ..
-(cd $archdir; tar cvf - * | $GZIP_CMD ) >> $archname || { echo Aborting; exit 1; }
+(cd $archdir; tar $TAR_ARGS - * | $GZIP_CMD ) >> $archname || { echo Aborting; exit 1; }
 echo
 echo >> $archname >&- ; # try to close the archive
 # echo Self-extractible archive \"$archname\" successfully created.
