@@ -141,6 +141,9 @@ do
 	    echo Script run after extraction:
 	    echo "    " \$script \$scriptargs
 	fi
+	if test x"$copy" = xcopy; then
+		echo "Archive will copy itself to a temporary location"
+	fi
 	if test x"$KEEP" = xy; then
 	    echo "directory \$targetdir is permanent"
 	else
