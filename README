@@ -1,0 +1,145 @@
+makeself - Make self-extractible archives on Unix
+
+makeself.gz.sh is a small shell script that generates a self-extractible
+tar.gz archive from a directory. The resulting file appears as a shell
+script, and can be launched as is. The archive will then uncompress itself
+to a temporary directory and an optional arbitrary command will be executed
+(for example an installation script). This is pretty similar to archives
+generated with WinZip Self-Extractor in the Windows world.
+
+The makeself.sh script itself is used only to create the archives from a
+directory of files. The resultant archive is actually a gzipped (or bzip2'd
+as of 1.2) TAR archive, with a small shell script stub at the beginning
+(about 20 lines). This small stub performs all the steps of extracting the
+files, running the embedded command, and removing the temporary files when
+it's all over. All what the user has to do to install the software contained
+in such an archive is to "run" the archive, i.e sh nice-software.sh. I
+recommend using the "sh" prefix for such archives not to confuse the users,
+since they it's actually shell scripts (with quite a lot of binary data
+attached to it though!).
+
+I am trying to keep the code of this script as portable as possible, i.e
+it's not relying on any bash-specific features and only calls commands that
+are installed on any functioning UNIX-compatible system. This script as well
+as the archives it generates should run on any Unix flavor, with any
+compatible Bourne shell, provided of course that the compression programs
+are available.
+
+Examples of publicly available archives made using makeself are :
+
+   * SciTech Display Doctor for Linux beta
+   * The Myth II patches for the Linux version of the game by Loki
+   * The final Quake III Arena demo for Linux, published by Loki
+   * The Makeself distribution itself ;-)
+
+Usage
+
+The syntax of makeself is the following:
+
+makeself.sh [args] archive_dir file_name label startup_script [script_args]
+
+   * args are optional options for Makeself. The available ones are :
+        o --version : Prints the version number on stdout, then exits
+          immediately
+        o --bzip2 : Use bzip2 instead of gzip for better compression. The
+          bzip2 command must be available in the command path. I recommend
+          that you set the prefix to something like '.bz2.sh' for the
+          archive, so that potential users know that they'll need bzip2 to
+          extract it.
+        o --nocomp : Do not use any compression for the archive, which will
+          then be an uncompressed TAR.
+        o --notemp : The generated archive will not extract the files to a
+          temporary directory, but in a new directory created in the current
+          directory. This is better to distribute software packages that may
+          extract and compile by themselves (i.e. launch the compilation
+          through the embedded script).
+        o --nox11 : Generate a script that will not try to open a xterm and
+          run the script within it.
+        o --lsm file : Provide and LSM file to makeself, that will be
+          embedded in the generated archive. LSM files are describing a
+          software package in a way that is easily parseable. The LSM entry
+          can then be later retrieved using the '-lsm' argument to the
+          archive. An exemple of a LSM file is provided with Makeself.
+   * archive_dir is the name of the directory that contains the files to be
+     archived
+   * file_name is the name of the archive to be created
+   * label is an arbitrary text string describing the package. It will be
+     displayed while extracting the files.
+   * startup_script is the command to be executed from within the directory
+     of extracted files. Thus, if you wish to execute a program contain in
+     this directory, you must prefix your command with "./". For example,
+     ./program will be fine. The script_args are additionnal arguments for
+     this command.
+
+Here is an example, assuming the user has a package image stored in a
+/home/joe/mysoft, and he wants to generate a self-extracting package named
+mysoft.sh, which will launch the "setup" script initially stored in
+/home/joe/mysoft :
+
+makeself.sh /home/joe/mysoft mysoft.sh "Joe's Nice Software Package" ./setup
+
+Here is also how I created the makeself.gz.sh archive which contains the
+Makeself distribution :
+
+makeself.sh --notemp makeself makeself.gz.sh "Makeself version 1.5.1" echo
+"Makeself has extracted itself"
+
+Archives generated with Makeself can be passed the -keep command line
+argument, which will prevent the files to be extracted in a temporary
+directory that will be removed after the embedded script's execution. The
+files will then be extracted in the current working directory and will stay
+here until you remove them ;-). Starting from version 1.3, the archives
+accept two more options: -verbose will prompt the user before executing the
+embedded command, and -target dir allows to extract the archive in an
+arbitrary place.
+
+License
+
+Makeself is covered by the GNU General Public License (GPL) version 2 and
+above. Archives generated by Makeself don't have to be placed under this
+license (although I encourage it ;-)), since the archive itself is merely
+data for Makeself.
+
+Download
+
+Get the distribution here (version 1.5.2).
+
+Version history
+
+   * v1.0: Initial public release
+   * v1.1: The archive can be passed parameters that will be passed on to
+     the embedded script, thanks to John C. Quillan
+   * v1.2: Cosmetic updates, support for bzip2 compression and non-temporary
+     archives. Many ideas thanks to Francois Petitjean.
+   * v1.3: More patches from Bjarni R. Einarsson and Francois Petitjean:
+     Support for no compression (--nocomp), script is no longer mandatory,
+     automatic launch in an xterm, optional verbose output, and -target
+     archive option to indicate where to extract the files.
+   * v1.4: Many patches from Francois Petitjean: improved UNIX
+     compatibility, automatic integrity checking, support of LSM files to
+     get info on the package at run time..
+   * v1.5: Major bugfixes (1.4 was not working at all!). Optionally disable
+     the automatic spawning of xterms with the --nox11 option.
+   * v1.5.1: More bugfixes, added the archive options -check and -list
+     (Francois Petitjean).
+   * v1.5.2: Cosmetic changes for more verbose output to better handle big
+     archives (Quake III demo).
+
+Links
+
+   * Check out the "Loki setup" installer, used to install Loki games, and
+     which I am the co-author.
+   * Bjarni R. Einarsson also wrote the setup.sh installer script, inspired
+     by Makeself. Check it out !
+
+Contact
+
+This script was written by Stéphane Peter (megastep@lokigames.com). I
+welcome any enhancements and suggestions.
+
+Contributions were included from John C. Quillan, Bjarni R. Einarsson and
+Francois Petitjean, thanks to them!
+
+  ------------------------------------------------------------------------
+Stéphane Peter
+Last modified: Wed Dec 8 18:24:12 PST 1999
