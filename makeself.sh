@@ -2,7 +2,7 @@
 #
 # makeself 1.5.4
 #
-# $Id: makeself.sh,v 1.11 2000-10-24 19:43:29 megastep Exp $
+# $Id: makeself.sh,v 1.12 2000-11-18 07:01:55 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -81,7 +81,7 @@ if [ "$1" = --follow ]; then
 	TAR_ARGS=cvfh
 	shift 1
 fi
-skip=148
+skip=147
 if [ x"$1" = x--lsm -o x"$1" = x-lsm ]; then
 	shift 1
    lsm_file=$1
@@ -150,6 +150,7 @@ echo scriptargs=\"$*\" >> $archname
 echo "keep=$KEEP" >> $archname
 
 cat << EODF  >> $archname
+TMPROOT=\${TMPDIR:=/tmp}
 finish=true; xterm_loop=;
 [ x"\$1" = x-xwin ] && {
  finish="echo Press Return to close this window...; read junk"; xterm_loop=1; shift 1;
@@ -218,7 +219,7 @@ if [ \$MD5 != "00000000000000000000000000000000" ]; then
     md5sum=\`tail +6 \$0 | \$MD5_PATH/md5\`;
     [ \$md5sum != \$MD5 ] && {
       echo Error in md5 sums \$md5sum \$MD5
-      exit 2;
+      exit 2
     } || { echo check sums and md5 sums are ok; exit 0; }
   fi
   if [ ! -x \$MD5_PATH/md5 ]; then
@@ -277,7 +278,7 @@ fi
 if [ $CURRENT = n ]; then
 cat << EOF >> $archname
 if [ "\$keep" = y ]; then echo "Creating directory \$targetdir"; tmpdir=\$targetdir;
-else tmpdir="/tmp/selfgz\$\$"; fi
+else tmpdir="\$TMPROOT/selfgz\$\$"; fi
 mkdir \$tmpdir || {
         \$echo 'Cannot create target directory' \$tmpdir >&2
         \$echo 'you should perhaps try option -target OtherDirectory' >&2
@@ -316,15 +317,12 @@ if [ \$MD5 != \"00000000000000000000000000000000\" ]; then
     }
   fi
 fi
+UnTAR() { tar xvf - || { echo Extraction failed. > /dev/tty; kill \$1; } ; }
 \$echo -n "Uncompressing \$label"
-cd \$tmpdir
-[ "\$keep" = y ] || trap 'cd /tmp; /bin/rm -rf \$tmpdir; exit \$res'
-if ( (cd \$location; tail +\$skip \$0; ) | $GUNZIP_CMD | \
-     { tar xvf - || failed=y ; } | \
- (while read a; do \$echo -n .; done; echo; )); then
-	if [ x\$failed = xy ]; then
-		echo 'File extraction failed!'; cd /tmp; /bin/rm -rf \$tmpdir; eval \$finish; exit 1
-	fi
+cd \$tmpdir ; res=3
+[ "\$keep" = y ] || trap 'echo Signal trapped > /dev/tty; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit \$res'
+if (cd \$location; tail +\$skip \$0; ) | $GUNZIP_CMD | UnTAR \$$ | \
+ (while read a; do \$echo -n .; done; echo; ); then
 	chown -Rf \`id -u\`.\`id -g\` .
     res=0; if [ x"\$script" != x ]; then
 		if [ x"\$verbose" = xy ]; then
@@ -336,7 +334,7 @@ if ( (cd \$location; tail +\$skip \$0; ) | $GUNZIP_CMD | \
 		fi
 		[ \$res != 0 ] && echo "The program returned an error code (\$res)"
 	fi
-    [ "\$keep" = y ] || { cd /tmp; /bin/rm -rf \$tmpdir; }
+    [ "\$keep" = y ] || { cd \$TMPROOT; /bin/rm -rf \$tmpdir; }
 else
   echo "Cannot decompress \$0"; eval \$finish; exit 1
 fi
@@ -361,13 +359,14 @@ for a in $GUESS_MD5_PATH; do
   fi
 done
 
+tmpfile=${TMPDIR:=/tmp}/mkself$$
 if [ -x $MD5_PATH/md5 ]; then
   md5sum=`tail +6 $archname | $MD5_PATH/md5`;
 # echo md5sum $md5sum
-  sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" -e "s/^MD5=00000000000000000000000000000000/MD5=$md5sum/" $archname > /tmp/mkself$$
+  sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" -e "s/^MD5=00000000000000000000000000000000/MD5=$md5sum/" $archname > $tmpfile
 else
-  sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" $archname > /tmp/mkself$$
+  sed -e "s/^CRCsum=0000000000/CRCsum=$sum1/" $archname > $tmpfile
 fi
-mv /tmp/mkself$$ $archname
+mv $tmpfile $archname
 chmod +x $archname
 echo Self-extractible archive \"$archname\" successfully created.
