@@ -2,7 +2,7 @@
 #
 # makeself 1.5.4
 #
-# $Id: makeself.sh,v 1.10 2000-09-13 23:19:17 megastep Exp $
+# $Id: makeself.sh,v 1.11 2000-10-24 19:43:29 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -81,7 +81,7 @@ if [ "$1" = --follow ]; then
 	TAR_ARGS=cvfh
 	shift 1
 fi
-skip=147
+skip=148
 if [ x"$1" = x--lsm -o x"$1" = x-lsm ]; then
 	shift 1
    lsm_file=$1
@@ -130,10 +130,8 @@ DATE=`date`
 
 # The following is the shell script stub code
 echo '#! /bin/sh' > $archname
-# Add some random binary characters to fool programs in thinking it's a binary file
-echo '# This garbage is normal' >> $archname
 if [ $NOX11 = n ]; then
-	skip=`expr $skip + 19`
+	skip=`expr $skip + 21`
 fi
 if [ $CURRENT = n ]; then
 	skip=`expr $skip + 6`
@@ -159,18 +157,18 @@ finish=true; xterm_loop=;
 if [ x"\$1" = "x-help" -o x"\$1" = "x--help" ]; then
   cat << tac
  1) Getting help or info about \$0 :
-  \$0 -help   Print this message
-  \$0 -info   Print embedded info : title, default target directory, embedded script ...
-  \$0 -lsm    Print embedded lsm entry (or no LSM)
-  \$0 -list   Print the list of files in the archive
-  \$0 -check  Checks integrity of the archive
+  \$0 --help   Print this message
+  \$0 --info   Print embedded info : title, default target directory, embedded script ...
+  \$0 --lsm    Print embedded lsm entry (or no LSM)
+  \$0 --list   Print the list of files in the archive
+  \$0 --check  Checks integrity of the archive
  
  2) Running \$0 :
   \$0 [options] [additional arguments to embedded script]
   with following options (in that order)
-  -confirm             Ask before running embedded script
-  -keep                Do not erase target directory after running embedded script
-  -target NewDirectory Extract in NewDirectory
+  --confirm             Ask before running embedded script
+  --keep                Do not erase target directory after running embedded script
+  --target NewDirectory Extract in NewDirectory
 tac
   exit 0;
 fi
@@ -186,7 +184,7 @@ cat << EOF >> $archname
 EOF_LSM
   exit 0;
 fi
-if [ "\$1" = "-info" ]; then
+if [ "\$1" = "--info" ]; then
 	echo Identification: \$label
 	echo Target directory: \$targetdir
 	echo Uncompressed size: $USIZE KB
@@ -196,12 +194,12 @@ if [ "\$1" = "-info" ]; then
 	[ x"\$keep" = xy ] && echo "directory \$targetdir is permanent" || echo "\$targetdir will be removed after extraction"
 	exit 0;
 fi
-if [ "\$1" = "-list" ]; then
+if [ "\$1" = "--list" ]; then
 	echo Target directory: \$targetdir
 	tail +\$skip \$0  | $GUNZIP_CMD | tar tvf -
 	exit 0;
 fi
-if [ "\$1" = "-check" ]; then
+if [ "\$1" = "--check" ]; then
 sum1=\`tail +6 \$0 | cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1\`
 [ \$sum1 -ne \$CRCsum ] && {
   echo Error in checksums \$sum1 \$CRCsum
@@ -235,42 +233,46 @@ fi
 fi
 EOF
 
-if [ $NOX11 = n ]; then
-cat << EOF >> $archname
-if ! tty -s; then                 # Do we have a terminal?
-    if [ x"\$DISPLAY" != x -a x"\$xterm_loop" = x ]; then  # No, but do we have X?
-		if xset q > /dev/null 2>&1; then # Check for valid DISPLAY variable
-			GUESS_XTERMS="dtterm eterm Eterm xterm rxvt kvt"
-			for a in \$GUESS_XTERMS; do
-				if which \$a >/dev/null 2>&1; then
-					XTERM=\$a
-					break
-				fi
-			done
-			chmod a+x \$0 || echo Please add execution rights on \$0
-			if [ \`echo "\$0" | cut -c1\` = / ]; then # Spawn a terminal!
-				exec \$XTERM -title "\$label" -e "\$0" -xwin "\$@"
-			else
-				exec \$XTERM -title "\$label" -e "./\$0" -xwin "\$@"
-			fi
-		fi
-    fi
-fi
-EOF
-fi
-
 cat << EOF >> $archname
 [ x"\$finish" = x ] && finish=true
 parsing=yes
+x11=y
 while [ x"\$parsing" != x ]; do
     case "\$1" in
-      -confirm) verbose=y; shift;;
-      -keep) keep=y; shift;;
-      -target) if [ x"\$2" != x ]; then targetdir="\$2"; keep=y; shift 2; fi;;
+      --confirm) verbose=y; shift;;
+      --keep) keep=y; shift;;
+      --nox11)  x11=n; shift;;
+      --target) if [ x"\$2" != x ]; then targetdir="\$2"; keep=y; shift 2; fi;;
       *) parsing="";;
     esac
 done
 EOF
+
+if [ $NOX11 = n ]; then
+cat << EOF >> $archname
+if [ "\$x11" = "y" ]; then
+    if ! tty -s; then                 # Do we have a terminal?
+        if [ x"\$DISPLAY" != x -a x"\$xterm_loop" = x ]; then  # No, but do we have X?
+            if xset q > /dev/null 2>&1; then # Check for valid DISPLAY variable
+                GUESS_XTERMS="dtterm eterm Eterm xterm rxvt kvt"
+                for a in \$GUESS_XTERMS; do
+                    if which \$a >/dev/null 2>&1; then
+                        XTERM=\$a
+                        break
+                    fi
+                done
+                chmod a+x \$0 || echo Please add execution rights on \$0
+                if [ \`echo "\$0" | cut -c1\` = / ]; then # Spawn a terminal!
+                    exec \$XTERM -title "\$label" -e "\$0" -xwin "\$@"
+                else
+                    exec \$XTERM -title "\$label" -e "./\$0" -xwin "\$@"
+                fi
+            fi
+        fi
+    fi
+fi
+EOF
+fi
 
 if [ $CURRENT = n ]; then
 cat << EOF >> $archname
