@@ -67,6 +67,7 @@ MS_Check()
 	OLD_PATH=\$PATH
 	PATH=\${GUESS_MD5_PATH:-"/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin:/usr/bin"}
 	MD5_PATH=\`type -p md5sum\`
+	PATH=\$OLD_PATH
 	if test -x \$MD5_PATH; then
 	    md5sum=\`tail +$SKIP \$1 | \$MD5_PATH | cut -b-32\`;
 	    if test "\$md5sum" != "\$MD5"; then
@@ -80,7 +81,6 @@ MS_Check()
 	    echo If you have md5sum on your system, you should try :
 	    echo env GUESS_MD5_PATH=\"FirstDirectory:SecondDirectory:...\" \$0 -check
         fi
-	PATH=\$OLD_PATH
     fi
     echo " All good."
 }
