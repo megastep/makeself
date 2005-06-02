@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.54 2005-01-12 19:21:47 megastep Exp $
+# $Id: makeself.sh,v 1.55 2005-06-02 22:35:17 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -56,8 +56,9 @@
 #           Better handling of errors with wrong permissions for the directory containing the files. (Jason Trent)
 #           Avoid some race conditions (Ludwig Nussel)
 #           Unset the $CDPATH variable to avoid problems if it is set. (Debian)
+#           Better handling of dot files in the archive directory.
 #
-# (C) 1998-2004 by Stéphane Peter <megastep@megastep.org>
+# (C) 1998-2005 by Stéphane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
