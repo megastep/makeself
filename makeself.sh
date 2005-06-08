@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.55 2005-06-02 22:35:17 megastep Exp $
+# $Id: makeself.sh,v 1.56 2005-06-08 19:11:57 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -57,6 +57,7 @@
 #           Avoid some race conditions (Ludwig Nussel)
 #           Unset the $CDPATH variable to avoid problems if it is set. (Debian)
 #           Better handling of dot files in the archive directory.
+# - 2.1.5 : Check for the presence of the archive directory
 #
 # (C) 1998-2005 by Stéphane Peter <megastep@megastep.org>
 #
@@ -64,7 +65,7 @@
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
 
-MS_VERSION=2.1.4
+MS_VERSION=2.1.5
 MS_COMMAND="$0"
 unset CDPATH
 
@@ -204,7 +205,16 @@ do
     esac
 done
 
-archdir="$1"
+if test $# -lt 1; then
+	MS_Usage
+else
+	if test -d "$1"; then
+		archdir="$1"
+	else
+		echo "Directory $1 does not exist."
+		exit 1
+	fi
+fi
 archname="$2"
 
 if test "$APPEND" = y; then
