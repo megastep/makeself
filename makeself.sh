@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.56 2005-06-08 19:11:57 megastep Exp $
+# $Id: makeself.sh,v 1.57 2005-08-05 19:19:13 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -57,7 +57,8 @@
 #           Avoid some race conditions (Ludwig Nussel)
 #           Unset the $CDPATH variable to avoid problems if it is set. (Debian)
 #           Better handling of dot files in the archive directory.
-# - 2.1.5 : Check for the presence of the archive directory
+# - 2.1.5 : Made the md5sum detection consistent with the header code.
+#           Check for the presence of the archive directory
 #
 # (C) 1998-2005 by Stéphane Peter <megastep@megastep.org>
 #
@@ -338,8 +339,8 @@ fi
 # Try to locate a MD5 binary
 OLD_PATH=$PATH
 PATH=${GUESS_MD5_PATH:-"$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
-MD5_PATH=`type -p md5sum`
-MD5_PATH=${MD5_PATH:-`type -p md5`}
+MD5_PATH=`exec 2>&-; which md5sum || type md5sum`
+MD5_PATH=${MD5_PATH:-`exec 2>&-; which md5 || type md5`}
 PATH=$OLD_PATH
 
 if test "$NOMD5" = y; then
