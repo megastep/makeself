@@ -33,7 +33,7 @@ MS_Progress()
 {
     while read a; do
         if test x"\$ownership" = xy; then
-            chown \$idu \$a ; chown \$idg \$a ;
+            chown \$idu "\$a" ; chgrp \$idg "\$a" ;
         fi
 	MS_Printf .
     done
