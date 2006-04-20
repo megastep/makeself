@@ -32,9 +32,6 @@ MS_Printf()
 MS_Progress()
 {
     while read a; do
-        if test x"\$ownership" = xy; then
-            chown \$idu "\$a" ; chgrp \$idg "\$a" ;
-        fi
 	MS_Printf .
     done
 }
@@ -339,15 +336,13 @@ if test "\$keep" = n; then
     trap 'echo Signal caught, cleaning up >&2; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit 15' 1 2 3 15
 fi
 
-if test x"\$ownership" = xy; then
-    PATH=/usr/xpg4/bin:\$PATH;
-    idu=\`id -u\`;
-    idg=\`id -g\`;
-fi
-
 for s in \$filesizes
 do
-    if ! MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | ( cd "\$tmpdir"; UnTAR x ) | MS_Progress; then
+    if MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | ( cd "\$tmpdir"; UnTAR x ) | MS_Progress; then
+		if test x"\$ownership" = xy; then
+			(PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
+		fi
+    else
 		echo
 		echo "Unable to decompress \$0" >&2
 		eval \$finish; exit 1

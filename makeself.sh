@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.58 2006-04-19 22:18:46 megastep Exp $
+# $Id: makeself.sh,v 1.59 2006-04-20 19:20:54 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -59,7 +59,6 @@
 #           Better handling of dot files in the archive directory.
 # - 2.1.5 : Made the md5sum detection consistent with the header code.
 #           Check for the presence of the archive directory
-#           Avoid problems when changing the ownership of extracted files.
 #
 # (C) 1998-2005 by Stéphane Peter <megastep@megastep.org>
 #
