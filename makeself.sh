@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.59 2006-04-20 19:20:54 megastep Exp $
+# $Id: makeself.sh,v 1.60 2006-06-27 18:49:03 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -59,8 +59,9 @@
 #           Better handling of dot files in the archive directory.
 # - 2.1.5 : Made the md5sum detection consistent with the header code.
 #           Check for the presence of the archive directory
+#           Added --encrypt for symmetric encryption through gpg (Eric Windisch)
 #
-# (C) 1998-2005 by Stéphane Peter <megastep@megastep.org>
+# (C) 1998-2006 by Stéphane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
@@ -143,6 +144,10 @@ do
 	;;
     --compress)
 	COMPRESS=Unix
+	shift
+	;;
+    --encrypt)
+	COMPRESS=gpg
 	shift
 	;;
     --nocomp)
@@ -268,6 +273,10 @@ gzip)
 bzip2)
     GZIP_CMD="bzip2 -9"
     GUNZIP_CMD="bzip2 -d"
+    ;;
+gpg)
+    GZIP_CMD="gpg -ac -z9"
+    GUNZIP_CMD="gpg -d"
     ;;
 Unix)
     GZIP_CMD="compress -cf"
