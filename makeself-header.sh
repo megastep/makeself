@@ -75,44 +75,50 @@ MS_Check()
 {
     OLD_PATH=\$PATH
     PATH=\${GUESS_MD5_PATH:-"\$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
+	MD5_ARG=""
     MD5_PATH=\`exec 2>&-; which md5sum || type md5sum\`
-    MD5_PATH=\${MD5_PATH:-\`exec 2>&-; which md5 || type md5\`}
+    test -x \$MD5_PATH || MD5_PATH=\`exec 2>&-; which md5 || type md5\`
+	test -x \$MD5_PATH || MD5_PATH=\`exec 2>&-; which digest || type digest\`
     PATH=\$OLD_PATH
+
     MS_Printf "Verifying archive integrity..."
     offset=\`head -n $SKIP "\$1" | wc -c | tr -d " "\`
     verb=\$2
     i=1
     for s in \$filesizes
     do
-	crc=\`echo \$CRCsum | cut -d" " -f\$i\`
-	if test -x "\$MD5_PATH"; then
-	    md5=\`echo \$MD5 | cut -d" " -f\$i\`
-	    if test \$md5 = "00000000000000000000000000000000"; then
-		test x\$verb = xy && echo " \$1 does not contain an embedded MD5 checksum." >&2
-	    else
-		md5sum=\`MS_dd "\$1" \$offset \$s | "\$MD5_PATH" | cut -b-32\`;
-		if test "\$md5sum" != "\$md5"; then
-		    echo "Error in MD5 checksums: \$md5sum is different from \$md5" >&2
-		    exit 2
-		else
-		    test x\$verb = xy && MS_Printf " MD5 checksums are OK." >&2
+		crc=\`echo \$CRCsum | cut -d" " -f\$i\`
+		if test -x "\$MD5_PATH"; then
+			if test \`basename \$MD5_PATH\` = digest; then
+				MD5_ARG="-a md5"
+			fi
+			md5=\`echo \$MD5 | cut -d" " -f\$i\`
+			if test \$md5 = "00000000000000000000000000000000"; then
+				test x\$verb = xy && echo " \$1 does not contain an embedded MD5 checksum." >&2
+			else
+				md5sum=\`MS_dd "\$1" \$offset \$s | eval "\$MD5_PATH \$MD5_ARG" | cut -b-32\`;
+				if test "\$md5sum" != "\$md5"; then
+					echo "Error in MD5 checksums: \$md5sum is different from \$md5" >&2
+					exit 2
+				else
+					test x\$verb = xy && MS_Printf " MD5 checksums are OK." >&2
+				fi
+				crc="0000000000"; verb=n
+			fi
 		fi
-		crc="0000000000"; verb=n
-	    fi
-	fi
-	if test \$crc = "0000000000"; then
-	    test x\$verb = xy && echo " \$1 does not contain a CRC checksum." >&2
-	else
-	    sum1=\`MS_dd "\$1" \$offset \$s | CMD_ENV=xpg4 cksum | awk '{print \$1}'\`
-	    if test "\$sum1" = "\$crc"; then
-		test x\$verb = xy && MS_Printf " CRC checksums are OK." >&2
-	    else
-		echo "Error in checksums: \$sum1 is different from \$crc"
-		exit 2;
-	    fi
-	fi
-	i=\`expr \$i + 1\`
-	offset=\`expr \$offset + \$s\`
+		if test \$crc = "0000000000"; then
+			test x\$verb = xy && echo " \$1 does not contain a CRC checksum." >&2
+		else
+			sum1=\`MS_dd "\$1" \$offset \$s | CMD_ENV=xpg4 cksum | awk '{print \$1}'\`
+			if test "\$sum1" = "\$crc"; then
+				test x\$verb = xy && MS_Printf " CRC checksums are OK." >&2
+			else
+				echo "Error in checksums: \$sum1 is different from \$crc"
+				exit 2;
+			fi
+		fi
+		i=\`expr \$i + 1\`
+		offset=\`expr \$offset + \$s\`
     done
     echo " All good."
 }

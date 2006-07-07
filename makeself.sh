@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.60 2006-06-27 18:49:03 megastep Exp $
+# $Id: makeself.sh,v 1.61 2006-07-07 00:03:45 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -60,6 +60,7 @@
 # - 2.1.5 : Made the md5sum detection consistent with the header code.
 #           Check for the presence of the archive directory
 #           Added --encrypt for symmetric encryption through gpg (Eric Windisch)
+#           Added support for the digest command on Solaris 10 for MD5 checksums
 #
 # (C) 1998-2006 by Stéphane Peter <megastep@megastep.org>
 #
@@ -345,21 +346,25 @@ else
 	echo "CRC: $crcsum"
 fi
 
-# Try to locate a MD5 binary
-OLD_PATH=$PATH
-PATH=${GUESS_MD5_PATH:-"$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
-MD5_PATH=`exec 2>&-; which md5sum || type md5sum`
-MD5_PATH=${MD5_PATH:-`exec 2>&-; which md5 || type md5`}
-PATH=$OLD_PATH
-
 if test "$NOMD5" = y; then
 	echo "skipping md5sum at user request"
 else
+	# Try to locate a MD5 binary
+	OLD_PATH=$PATH
+	PATH=${GUESS_MD5_PATH:-"$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
+	MD5_ARG=""
+	MD5_PATH=`exec 2>&-; which md5sum || type md5sum`
+	test -x $MD5_PATH || MD5_PATH=`exec 2>&-; which md5 || type md5`
+	test -x $MD5_PATH || MD5_PATH=`exec 2>&-; which digest || type digest`
+	PATH=$OLD_PATH
+	if test `basename $MD5_PATH` = digest; then
+		MD5_ARG="-a md5"
+	fi
 	if test -x "$MD5_PATH"; then
-		md5sum=`cat "$tmpfile" | "$MD5_PATH" | cut -b-32`;
+		md5sum=`cat "$tmpfile" | eval "$MD5_PATH $MD5_ARG" | cut -b-32`;
 		echo "MD5: $md5sum"
 	else
-		echo "MD5: none, md5sum binary not found"
+		echo "MD5: none, MD5 command not found"
 	fi
 fi
 
