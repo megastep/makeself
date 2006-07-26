@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.61 2006-07-07 00:03:45 megastep Exp $
+# $Id: makeself.sh,v 1.62 2006-07-26 00:37:02 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -61,6 +61,7 @@
 #           Check for the presence of the archive directory
 #           Added --encrypt for symmetric encryption through gpg (Eric Windisch)
 #           Added support for the digest command on Solaris 10 for MD5 checksums
+#           Check for available disk space before extracting to the target directory (Andreas Schweitzer)
 #
 # (C) 1998-2006 by Stéphane Peter <megastep@megastep.org>
 #

@@ -36,6 +36,16 @@ MS_Progress()
     done
 }
 
+MS_diskspace()
+{
+	(
+	if test -d /usr/xpg4/bin; then
+		PATH=/usr/xpg4/bin:\$PATH
+	fi
+	df -kP "\$1" | tail -1 | awk '{print \$4}'
+	)
+}
+
 MS_dd()
 {
     blocks=\`expr \$3 / 1024\`
@@ -340,6 +350,16 @@ MS_Printf "Uncompressing \$label"
 res=3
 if test "\$keep" = n; then
     trap 'echo Signal caught, cleaning up >&2; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit 15' 1 2 3 15
+fi
+
+leftspace=\`MS_diskspace \$tmpdir\`
+if test \$leftspace -lt $USIZE; then
+    echo
+    echo "Not enough space left in "\`dirname \$tmpdir\`" (\$leftspace KB) to decompress \$0 ($USIZE KB)" >&2
+    if test "\$keep" = n; then
+        echo "Consider setting TMPDIR to a directory with more free space."
+   fi
+    eval \$finish; exit 1
 fi
 
 for s in \$filesizes
