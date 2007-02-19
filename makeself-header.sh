@@ -282,7 +282,7 @@ copy)
     cp "\$0" "\$SCRIPT_COPY"
     chmod +x "\$SCRIPT_COPY"
     cd "\$TMPROOT"
-    exec "\$SCRIPT_COPY" --phase2
+    exec "\$SCRIPT_COPY" --phase2 -- \$initargs
     ;;
 phase2)
     finish="\$finish ; rm -rf \`dirname \$0\`"
