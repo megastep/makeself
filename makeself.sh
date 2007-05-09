@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.62 2006-07-26 00:37:02 megastep Exp $
+# $Id: makeself.sh,v 1.63 2007-05-09 22:11:43 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -62,8 +62,9 @@
 #           Added --encrypt for symmetric encryption through gpg (Eric Windisch)
 #           Added support for the digest command on Solaris 10 for MD5 checksums
 #           Check for available disk space before extracting to the target directory (Andreas Schweitzer)
+#           Allow extraction to run asynchronously (patch by Peter Hatch)
 #
-# (C) 1998-2006 by Stéphane Peter <megastep@megastep.org>
+# (C) 1998-2007 by Stéphane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
@@ -354,9 +355,9 @@ else
 	OLD_PATH=$PATH
 	PATH=${GUESS_MD5_PATH:-"$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
 	MD5_ARG=""
-	MD5_PATH=`exec 2>&-; which md5sum || type md5sum`
-	test -x $MD5_PATH || MD5_PATH=`exec 2>&-; which md5 || type md5`
-	test -x $MD5_PATH || MD5_PATH=`exec 2>&-; which digest || type digest`
+	MD5_PATH=`exec <&- 2>&-; which md5sum || type md5sum`
+	test -x $MD5_PATH || MD5_PATH=`exec <&- 2>&-; which md5 || type md5`
+	test -x $MD5_PATH || MD5_PATH=`exec <&- 2>&-; which digest || type digest`
 	PATH=$OLD_PATH
 	if test `basename $MD5_PATH` = digest; then
 		MD5_ARG="-a md5"
