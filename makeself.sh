@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.63 2007-05-09 22:11:43 megastep Exp $
+# $Id: makeself.sh,v 1.64 2008-01-04 23:52:14 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -63,8 +63,9 @@
 #           Added support for the digest command on Solaris 10 for MD5 checksums
 #           Check for available disk space before extracting to the target directory (Andreas Schweitzer)
 #           Allow extraction to run asynchronously (patch by Peter Hatch)
+#           Use file descriptors internally to avoid error messages (patch by Kay Tiong Khoo)
 #
-# (C) 1998-2007 by Stéphane Peter <megastep@megastep.org>
+# (C) 1998-2008 by Stéphane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
@@ -331,8 +332,9 @@ fi
 test -d "$archdir" || { echo "Error: $archdir does not exist."; rm -f "$tmpfile"; exit 1; }
 echo About to compress $USIZE KB of data...
 echo Adding files to archive named \"$archname\"...
-(cd "$archdir" && ( tar $TAR_ARGS - . | eval "$GZIP_CMD" ) >> "$tmpfile") || { echo Aborting: Archive directory not found or temporary file: "$tmpfile" could not be created.; rm -f "$tmpfile"; exit 1; }
-echo >> "$tmpfile" >&- # try to close the archive
+exec 3<> "$tmpfile"
+(cd "$archdir" && ( tar $TAR_ARGS - . | eval "$GZIP_CMD" >&3 ) ) || { echo Aborting: Archive directory not found or temporary file: "$tmpfile" could not be created.; exec 3>&-; rm -f "$tmpfile"; exit 1; }
+exec 3>&- # try to close the archive
 
 fsize=`cat "$tmpfile" | wc -c | tr -d " "`
 
