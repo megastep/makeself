@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.64 2008-01-04 23:52:14 megastep Exp $
+# $Id: makeself.sh,v 1.65 2008-06-20 20:16:32 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -126,7 +126,7 @@ NOX11=n
 APPEND=n
 COPY=none
 TAR_ARGS=cvf
-HEADER=`dirname $0`/makeself-header.sh
+HEADER=`dirname "$0"`/makeself-header.sh
 
 # LSM file stuff
 LSM_CMD="echo No LSM. >> \"\$archname\""
@@ -294,12 +294,12 @@ esac
 
 tmpfile="${TMPDIR:=/tmp}/mkself$$"
 
-if test -f $HEADER; then
+if test -f "$HEADER"; then
 	oldarchname="$archname"
 	archname="$tmpfile"
 	# Generate a fake header to count its lines
 	SKIP=0
-    . $HEADER
+    . "$HEADER"
     SKIP=`cat "$tmpfile" |wc -l`
 	# Get rid of any spaces
 	SKIP=`expr $SKIP`
@@ -381,7 +381,7 @@ if test "$APPEND" = y; then
     MD5sum="$MD5sum $md5sum"
     USIZE=`expr $USIZE + $OLDUSIZE`
     # Generate the header
-    . $HEADER
+    . "$HEADER"
     # Append the original data
     tail -n +$OLDSKIP "$archname".bak >> "$archname"
     # Append the new data
@@ -396,7 +396,7 @@ else
     MD5sum="$md5sum"
 
     # Generate the header
-    . $HEADER
+    . "$HEADER"
 
     # Append the compressed tar data after the stub
     echo
