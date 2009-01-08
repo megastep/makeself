@@ -3,7 +3,7 @@
 # Makeself version 2.1.x
 #  by Stephane Peter <megastep@megastep.org>
 #
-# $Id: makeself.sh,v 1.65 2008-06-20 20:16:32 megastep Exp $
+# $Id: makeself.sh,v 1.66 2009-01-08 02:24:53 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -320,7 +320,7 @@ if test "$APPEND" = n; then
     fi
 fi
 
-USIZE=`du -ks $archdir | cut -f1`
+USIZE=`du -ks $archdir | awk '{print $1}'`
 DATE=`LC_ALL=C date`
 
 if test "." = "$archdirname"; then
