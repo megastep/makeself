@@ -195,8 +195,8 @@ Download
 
    Get the latest official distribution [11]here (version 2.1.4).
 
-   The  latest development version can be grabbed from the Loki Setup CVS
-   module, at [12]cvs.icculus.org.
+   The  latest development version can be grabbed from the Loki Setup SVN
+   module, at [12]svn.icculus.org.
 
 Version history
 
@@ -296,7 +296,7 @@ References
    9. http://www.megastep.org/makeself/makeself.run
   10. http://www.gnu.org/copyleft/gpl.html
   11. http://www.megastep.org/makeself/makeself-2.1.4.run
-  12. http://cvs.icculus.org/
+  12. http://svn.icculus.org/loki_setup/
   13. http://www.icculus.org/loki_setup/
   14. http://www.unrealtournament2003.com/
   15. http://www.icculus.org/loki_setup/
