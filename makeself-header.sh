@@ -42,7 +42,7 @@ MS_diskspace()
 	if test -d /usr/xpg4/bin; then
 		PATH=/usr/xpg4/bin:\$PATH
 	fi
-	df -kP "\$1" | tail -1 | awk '{print \$4}'
+	df -kP "\$1" | tail -1 | awk '{ if (\$4 ~ /%/) {print \$3} else {print \$4} }'
 	)
 }
 
