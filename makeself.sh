@@ -126,6 +126,7 @@ NOX11=n
 APPEND=n
 COPY=none
 TAR_ARGS=cvf
+DU_ARGS=-ks
 HEADER=`dirname "$0"`/makeself-header.sh
 
 # LSM file stuff
@@ -177,6 +178,7 @@ do
 	;;
     --follow)
 	TAR_ARGS=cvfh
+	DU_ARGS=-ksL
 	shift
 	;;
     --nox11)
@@ -320,7 +322,7 @@ if test "$APPEND" = n; then
     fi
 fi
 
-USIZE=`du -ks $archdir | awk '{print $1}'`
+USIZE=`du $DU_ARGS $archdir | awk '{print $1}'`
 DATE=`LC_ALL=C date`
 
 if test "." = "$archdirname"; then
