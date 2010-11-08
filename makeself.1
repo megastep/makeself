@@ -41,11 +41,13 @@ uncompress in ./archive_dir.
 Upon extraction, the archive will first copy itself to a temporary directory.
 .TP
 .B --append
-Append more files to an existing makeself archive.
-The label and startup scripts will then be ignored.
+Append more files to an existing makeself archive. The label and startup scripts will then be ignored.
 .TP
 .B --current
-Files will be extracted to the current directory. Implies --notemp.
+Files will be extracted to the current directory. Both --current and --target dir imply --notemp.
+.TP
+.B --target dir
+Extract directly to a target directory. Directory path can be either absolute or relative.
 .TP
 .B --header file
 Specify location of the header script. 

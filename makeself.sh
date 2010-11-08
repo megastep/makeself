@@ -64,8 +64,9 @@
 #           Check for available disk space before extracting to the target directory (Andreas Schweitzer)
 #           Allow extraction to run asynchronously (patch by Peter Hatch)
 #           Use file descriptors internally to avoid error messages (patch by Kay Tiong Khoo)
-# - 2.1.6 : Replaced dot perl file progress with a realtime progress percentage and spining cursor (Guy Baconniere)
+# - 2.1.6 : Replaced one dot per file progress with a realtime progress percentage and a spining cursor (Guy Baconniere)
 #           Added --noprogress to prevent showing the progress during the decompression (Guy Baconniere)
+#           Added --target dir to allow extracting directly to a target directory (Guy Baconniere)
 #
 # (C) 1998-2010 by Stéphane Peter <megastep@megastep.org>
 #
@@ -101,7 +102,9 @@ MS_Usage()
     echo "    --append        : Append more files to an existing Makeself archive"
     echo "                      The label and startup scripts will then be ignored"
     echo "    --current       : Files will be extracted to the current directory."
-    echo "                      Implies --notemp."
+    echo "                      both --current and --target dir imply --notemp."
+    echo "    --target dir    : Extract directly to a target directory"
+    echo "                      directory path can be either absolute or relative"
     echo "    --nomd5         : Don't calculate an MD5 for archive"
     echo "    --nocrc         : Don't calculate a CRC for archive"
     echo "    --header file   : Specify location of the header script"
@@ -131,6 +134,7 @@ COPY=none
 TAR_ARGS=cvf
 DU_ARGS=-ks
 HEADER=`dirname "$0"`/makeself-header.sh
+TARGETDIR=""
 
 # LSM file stuff
 LSM_CMD="echo No LSM. >> \"\$archname\""
@@ -174,6 +178,11 @@ do
 	CURRENT=y
 	KEEP=y
 	shift
+	;;
+    --target)
+	TARGETDIR="$2"
+	KEEP=y
+	shift 2
 	;;
     --header)
 	HEADER="$2"
@@ -255,9 +264,11 @@ else
 	echo
 	MS_Usage
     fi
-    # We don't really want to create an absolute directory...
+    # We don't want to create an absolute directory unless a target directory is defined
     if test "$CURRENT" = y; then
 	archdirname="."
+    elif test x$TARGETDIR != x; then
+	archdirname="$TARGETDIR"
     else
 	archdirname=`basename "$1"`
     fi

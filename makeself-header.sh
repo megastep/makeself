@@ -121,7 +121,8 @@ Makeself version $MS_VERSION
   --noprogress          Do not show the progress during the decompression
   --nox11               Do not spawn an xterm
   --nochown             Do not give the extracted files to the current user
-  --target NewDirectory Extract in NewDirectory
+  --target dir          Extract directly to a target directory
+                        directory path can be either absolute or relative
   --tar arg1 [arg2 ...] Access the contents of the archive through the tar command
   --                    Following arguments will be passed to the embedded script
 EOH
@@ -377,7 +378,7 @@ else
     fi
     mkdir \$dashp \$tmpdir || {
 	echo 'Cannot create target directory' \$tmpdir >&2
-	echo 'You should try option --target OtherDirectory' >&2
+	echo 'You should try option --target dir' >&2
 	eval \$finish
 	exit 1
     }
