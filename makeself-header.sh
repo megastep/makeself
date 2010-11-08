@@ -29,13 +29,6 @@ MS_Printf()
     \$print_cmd \$print_cmd_arg "\$1"
 }
 
-MS_Progress()
-{
-    while read a; do
-	MS_Printf .
-    done
-}
-
 MS_diskspace()
 {
 	(
@@ -53,6 +46,49 @@ MS_dd()
     dd if="\$1" ibs=\$2 skip=1 obs=1024 conv=sync 2> /dev/null | \\
     { test \$blocks -gt 0 && dd ibs=1024 obs=1024 count=\$blocks ; \\
       test \$bytes  -gt 0 && dd ibs=1 obs=1024 count=\$bytes ; } 2> /dev/null
+}
+
+MS_dd_Progress()
+{
+    if test "\$noprogress" = "y"; then
+        MS_dd \$@
+        exit \$?
+    fi
+    cursor=( '-' '\' '|' '/' )
+    file="\$1"
+    offset=\$2
+    length=\$3
+    i=0
+    pos=0
+    index=0
+    bsize=`expr 2048 '*' 1024`
+    blocks=\`expr \$length / \$bsize\`
+    bytes=\`expr \$length % \$bsize\`
+    dd if="\$file" ibs=\$offset obs=\$bsize skip=1 conv=sync 2> /dev/null | \\
+    {
+        MS_Printf "   0%%  " 1>&2
+        if test \$blocks -gt 0; then
+            while test \$pos -le \$length; do
+                dd ibs=\$bsize obs=\$bsize count=1 2>/dev/null
+                pos=\`expr \$pos \+ \$bsize\`
+                i=\`expr \$i + 1\`
+                index=\`expr \$i % \${#cursor[@]}\`
+                pcent=\`expr '(' 100 '*' \$pos ')' / \$length\`
+                if test \$pcent -lt 100; then
+                    MS_Printf "\b\b\b\b\b" 1>&2
+                    if test \$pcent -gt 9; then
+                        MS_Printf "\b" 1>&2
+                    fi
+                    MS_Printf " \$pcent%% \${cursor[\$index]}" 1>&2
+                fi
+            done
+        fi
+        if test \$bytes -gt 0; then
+            dd ibs=1 obs=\$bsize count=\$bytes 2>/dev/null
+        fi
+        MS_Printf "\b\b\b\b\b\b\b" 1>&2
+        MS_Printf " 100%%  " 1>&2
+    }
 }
 
 MS_Help()
@@ -73,6 +109,7 @@ Makeself version $MS_VERSION
   --noexec              Do not run embedded script
   --keep                Do not erase target directory after running
 			the embedded script
+  --noprogress          Do not show the progress during the decompression
   --nox11               Do not spawn an xterm
   --nochown             Do not give the extracted files to the current user
   --target NewDirectory Extract in NewDirectory
@@ -140,6 +177,7 @@ UnTAR()
 
 finish=true
 xterm_loop=
+noprogress=$NOPROGRESS
 nox11=$NOX11
 copy=$COPY
 ownership=y
@@ -239,6 +277,10 @@ EOLSM
 	keep=y
 	targetdir=\${2:-.}
 	shift 2
+	;;
+    --noprogress)
+	noprogress=y
+	shift
 	;;
     --nox11)
 	nox11=y
@@ -364,7 +406,7 @@ fi
 
 for s in \$filesizes
 do
-    if MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | ( cd "\$tmpdir"; UnTAR x ) | MS_Progress; then
+    if MS_dd_Progress "\$0" \$offset \$s | eval "$GUNZIP_CMD" | ( cd "\$tmpdir"; UnTAR x ) 1>/dev/null; then
 		if test x"\$ownership" = xy; then
 			(PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
 		fi

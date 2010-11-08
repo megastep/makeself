@@ -64,14 +64,16 @@
 #           Check for available disk space before extracting to the target directory (Andreas Schweitzer)
 #           Allow extraction to run asynchronously (patch by Peter Hatch)
 #           Use file descriptors internally to avoid error messages (patch by Kay Tiong Khoo)
+# - 2.1.6 : Replaced dot perl file progress with a realtime progress percentage and spining cursor (Guy Baconniere)
+#           Added --noprogress to prevent showing the progress during the decompression (Guy Baconniere)
 #
-# (C) 1998-2008 by Stéphane Peter <megastep@megastep.org>
+# (C) 1998-2010 by Stéphane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
 
-MS_VERSION=2.1.5
+MS_VERSION=2.1.6
 MS_COMMAND="$0"
 unset CDPATH
 
@@ -104,6 +106,7 @@ MS_Usage()
     echo "    --nocrc         : Don't calculate a CRC for archive"
     echo "    --header file   : Specify location of the header script"
     echo "    --follow        : Follow the symlinks in the archive"
+    echo "    --noprogress    : Do not show the progress during the decompression"
     echo "    --nox11         : Disable automatic spawn of a xterm"
     echo "    --nowait        : Do not wait for user input after executing embedded"
     echo "                      program from an xterm"
@@ -179,6 +182,10 @@ do
     --follow)
 	TAR_ARGS=cvfh
 	DU_ARGS=-ksL
+	shift
+	;;
+    --noprogress)
+	NOPROGRESS=y
 	shift
 	;;
     --nox11)
