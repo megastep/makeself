@@ -61,7 +61,10 @@ MS_dd_Progress()
     i=0
     pos=0
     index=0
-    bsize=`expr 2048 '*' 1024`
+    bsize=4194304
+    while test \$bsize -gt \$length; do
+        bsize=\`expr \$bsize / 4\`
+    done
     blocks=\`expr \$length / \$bsize\`
     bytes=\`expr \$length % \$bsize\`
     dd if="\$file" ibs=\$offset obs=\$bsize skip=1 conv=sync 2> /dev/null | \\
