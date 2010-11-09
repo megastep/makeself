@@ -52,9 +52,12 @@ MS_dd_Progress()
 {
     if test "\$noprogress" = "y"; then
         MS_dd \$@
-        exit \$?
+        return \$?
     fi
-    cursor=( '-' '\' '|' '/' )
+    cursor[0]="\\055"
+    cursor[1]="\\134"
+    cursor[2]="\\174"
+    cursor[3]="\\057"
     file="\$1"
     offset=\$2
     length=\$3
@@ -67,12 +70,12 @@ MS_dd_Progress()
     done
     blocks=\`expr \$length / \$bsize\`
     bytes=\`expr \$length % \$bsize\`
-    dd if="\$file" ibs=\$offset obs=\$bsize skip=1 conv=sync 2> /dev/null | \\
-    {
+    (
+        dd bs=\$offset count=0 skip=1 2>/dev/null
         MS_Printf "   0%%  " 1>&2
         if test \$blocks -gt 0; then
             while test \$pos -le \$length; do
-                dd ibs=\$bsize obs=\$bsize count=1 2>/dev/null
+                dd bs=\$bsize count=1 2>/dev/null
                 pos=\`expr \$pos \+ \$bsize\`
                 i=\`expr \$i + 1\`
                 index=\`expr \$i % \${#cursor[@]}\`
@@ -87,11 +90,11 @@ MS_dd_Progress()
             done
         fi
         if test \$bytes -gt 0; then
-            dd ibs=1 obs=\$bsize count=\$bytes 2>/dev/null
+            dd bs=\$bytes count=1 2>/dev/null
         fi
         MS_Printf "\b\b\b\b\b\b\b" 1>&2
         MS_Printf " 100%%  " 1>&2
-    }
+    ) < "\$file"
 }
 
 MS_Help()
