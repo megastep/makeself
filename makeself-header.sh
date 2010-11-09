@@ -72,21 +72,24 @@ MS_dd_Progress()
     bytes=\`expr \$length % \$bsize\`
     (
         dd bs=\$offset count=0 skip=1 2>/dev/null
+        pos=\`expr \$pos \+ \$offset\`
         MS_Printf "   0%%  " 1>&2
         if test \$blocks -gt 0; then
             while test \$pos -le \$length; do
                 dd bs=\$bsize count=1 2>/dev/null
-                pos=\`expr \$pos \+ \$bsize\`
                 i=\`expr \$i + 1\`
                 index=\`expr \$i % \${#cursor[@]}\`
-                pcent=\`expr '(' 100 '*' \$pos ')' / \$length\`
+                pcent=\`expr \$length / 100\`
+                pcent=\`expr \$pos / \$pcent\`
                 if test \$pcent -lt 100; then
-                    MS_Printf "\b\b\b\b\b" 1>&2
-                    if test \$pcent -gt 9; then
-                        MS_Printf "\b" 1>&2
+                    MS_Printf "\b\b\b\b\b\b\b" 1>&2
+                    if test \$pcent -lt 10; then
+                        MS_Printf "   \$pcent%% \${cursor[\$index]}" 1>&2
+                    else
+                        MS_Printf "  \$pcent%% \${cursor[\$index]}" 1>&2
                     fi
-                    MS_Printf " \$pcent%% \${cursor[\$index]}" 1>&2
                 fi
+                pos=\`expr \$pos \+ \$bsize\`
             done
         fi
         if test \$bytes -gt 0; then
