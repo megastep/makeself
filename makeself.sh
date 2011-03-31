@@ -93,6 +93,7 @@ MS_Usage()
     echo "    --help | -h     : Print out this help message"
     echo "    --gzip          : Compress using gzip (default if detected)"
     echo "    --bzip2         : Compress using bzip2 instead of gzip"
+    echo "    --xz            : Compress using xz instead of gzip"
     echo "    --compress      : Compress using the UNIX 'compress' command"
     echo "    --nocomp        : Do not compress the data"
     echo "    --notemp        : The archive will create archive_dir in the"
@@ -152,6 +153,10 @@ do
 	;;
     --gzip)
 	COMPRESS=gzip
+	shift
+	;;
+    --xz)
+	COMPRESS=xz
 	shift
 	;;
     --compress)
@@ -297,6 +302,10 @@ gzip)
 bzip2)
     GZIP_CMD="bzip2 -9"
     GUNZIP_CMD="bzip2 -d"
+    ;;
+xz)
+    GZIP_CMD="xz -c9"
+    GUNZIP_CMD="xz -d"
     ;;
 gpg)
     GZIP_CMD="gpg -ac -z9"
