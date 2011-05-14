@@ -405,7 +405,7 @@ if test "\$keep" = n; then
 fi
 
 leftspace=\`MS_diskspace \$tmpdir\`
-if test \$leftspace -lt $USIZE; then
+if test "\$leftspace" -lt $USIZE; then
     echo
     echo "Not enough space left in "\`dirname \$tmpdir\`" (\$leftspace KB) to decompress \$0 ($USIZE KB)" >&2
     if test "\$keep" = n; then
