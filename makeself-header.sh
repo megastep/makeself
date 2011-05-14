@@ -405,13 +405,15 @@ if test "\$keep" = n; then
 fi
 
 leftspace=\`MS_diskspace \$tmpdir\`
-if test \$leftspace -lt $USIZE; then
-    echo
-    echo "Not enough space left in "\`dirname \$tmpdir\`" (\$leftspace KB) to decompress \$0 ($USIZE KB)" >&2
-    if test "\$keep" = n; then
-        echo "Consider setting TMPDIR to a directory with more free space."
-   fi
-    eval \$finish; exit 1
+if test -n "\$leftspace"; then
+    if test "\$leftspace" -lt $USIZE; then
+        echo
+        echo "Not enough space left in "\`dirname \$tmpdir\`" (\$leftspace KB) to decompress \$0 ($USIZE KB)" >&2
+        if test "\$keep" = n; then
+            echo "Consider setting TMPDIR to a directory with more free space."
+        fi
+        eval \$finish; exit 1
+    fi
 fi
 
 for s in \$filesizes
