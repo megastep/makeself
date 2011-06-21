@@ -56,16 +56,10 @@ MS_dd_Progress()
         MS_dd \$@
         return \$?
     fi
-    cursor[0]="\\055"
-    cursor[1]="\\134"
-    cursor[2]="\\174"
-    cursor[3]="\\057"
     file="\$1"
     offset=\$2
     length=\$3
-    i=0
     pos=0
-    index=0
     bsize=4194304
     while test \$bsize -gt \$length; do
         bsize=\`expr \$bsize / 4\`
@@ -79,16 +73,14 @@ MS_dd_Progress()
         if test \$blocks -gt 0; then
             while test \$pos -le \$length; do
                 dd bs=\$bsize count=1 2>/dev/null
-                i=\`expr \$i + 1\`
-                index=\`expr \$i % \${#cursor[@]}\`
                 pcent=\`expr \$length / 100\`
                 pcent=\`expr \$pos / \$pcent\`
                 if test \$pcent -lt 100; then
                     MS_Printf "\b\b\b\b\b\b\b" 1>&2
                     if test \$pcent -lt 10; then
-                        MS_Printf "   \$pcent%% \${cursor[\$index]}" 1>&2
+                        MS_Printf "   \$pcent%% " 1>&2
                     else
-                        MS_Printf "  \$pcent%% \${cursor[\$index]}" 1>&2
+                        MS_Printf "  \$pcent%% " 1>&2
                     fi
                 fi
                 pos=\`expr \$pos \+ \$bsize\`
