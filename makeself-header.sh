@@ -13,7 +13,8 @@ script="$SCRIPT"
 scriptargs="$SCRIPTARGS"
 targetdir="$archdirname"
 filesizes="$filesizes"
-keep=$KEEP
+keep="$KEEP"
+quiet="n"
 
 print_cmd_arg=""
 if type printf > /dev/null; then
@@ -109,6 +110,7 @@ Makeself version $MS_VERSION
   \$0 [options] [--] [additional arguments to embedded script]
   with following options (in that order)
   --confirm             Ask before running embedded script
+  --quiet		Do not print anything except error messages
   --noexec              Do not run embedded script
   --keep                Do not erase target directory after running
 			the embedded script
@@ -132,7 +134,9 @@ MS_Check()
 	test -x "\$MD5_PATH" || MD5_PATH=\`exec <&- 2>&-; which digest || type digest\`
     PATH="\$OLD_PATH"
 
-    MS_Printf "Verifying archive integrity..."
+    if test "\$quiet" = "n";then
+    	MS_Printf "Verifying archive integrity..."
+    fi
     offset=\`head -n $SKIP "\$1" | wc -c | tr -d " "\`
     verb=\$2
     i=1
@@ -164,19 +168,26 @@ MS_Check()
 			if test "\$sum1" = "\$crc"; then
 				test x\$verb = xy && MS_Printf " CRC checksums are OK." >&2
 			else
-				echo "Error in checksums: \$sum1 is different from \$crc"
+				echo "Error in checksums: \$sum1 is different from \$crc" >&2
 				exit 2;
 			fi
 		fi
 		i=\`expr \$i + 1\`
 		offset=\`expr \$offset + \$s\`
     done
-    echo " All good."
+    if test "\$quiet" = "n";then
+    	echo " All good."
+    fi
 }
 
 UnTAR()
 {
-    tar \$1vf - 2>&1 || { echo Extraction failed. > /dev/tty; kill -15 \$$; }
+    if test "\$quiet" = "n"; then
+    	tar \$1vf - 2>&1 || { echo Extraction failed. > /dev/tty; kill -15 \$$; }
+    else
+
+    	tar \$1f - 2>&1 || { echo Extraction failed. > /dev/tty; kill -15 \$$; }
+    fi
 }
 
 finish=true
@@ -195,6 +206,11 @@ do
     -h | --help)
 	MS_Help
 	exit 0
+	;;
+    -q | --quiet)
+	quiet=y
+	noprogress=y
+	shift
 	;;
     --info)
 	echo Identification: "\$label"
@@ -316,6 +332,11 @@ EOLSM
     esac
 done
 
+if test "\$quiet" = "y" -a "\$verbose" = "y";then
+	echo Cannot be verbose and quiet at the same time. >&2
+	exit 1
+fi
+
 case "\$copy" in
 copy)
     tmpdir=\$TMPROOT/makeself.\$RANDOM.\`date +"%y%m%d%H%M%S"\`.\$\$
@@ -363,7 +384,9 @@ if test "\$targetdir" = "."; then
     tmpdir="."
 else
     if test "\$keep" = y; then
-	echo "Creating directory \$targetdir" >&2
+	if test "\$quiet" = "n";then
+	    echo "Creating directory \$targetdir" >&2
+	fi
 	tmpdir="\$targetdir"
 	dashp="-p"
     else
@@ -392,7 +415,9 @@ if test x"\$verbose" = xy; then
 	fi
 fi
 
-MS_Printf "Uncompressing \$label"
+if test "\$quiet" = "n";then
+	MS_Printf "Uncompressing \$label"
+fi
 res=3
 if test "\$keep" = n; then
     trap 'echo Signal caught, cleaning up >&2; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit 15' 1 2 3 15
@@ -417,13 +442,15 @@ do
 			(PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
 		fi
     else
-		echo
+		echo >&2
 		echo "Unable to decompress \$0" >&2
 		eval \$finish; exit 1
     fi
     offset=\`expr \$offset + \$s\`
 done
-echo
+if test "\$quiet" = "n";then
+	echo
+fi
 
 cd "\$tmpdir"
 res=0

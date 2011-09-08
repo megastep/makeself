@@ -91,6 +91,7 @@ MS_Usage()
     echo "params can be one or more of the following :"
     echo "    --version | -v  : Print out Makeself version number and exit"
     echo "    --help | -h     : Print out this help message"
+    echo "    --quiet | -q    : Do not print any messages other than errors."
     echo "    --gzip          : Compress using gzip (default if detected)"
     echo "    --bzip2         : Compress using bzip2 instead of gzip"
     echo "    --xz            : Compress using xz instead of gzip"
@@ -131,6 +132,8 @@ KEEP=n
 CURRENT=n
 NOX11=n
 APPEND=n
+QUIET=n
+NOPROGRESS=n
 COPY=none
 TAR_ARGS=cvf
 DU_ARGS=-ks
@@ -225,6 +228,10 @@ do
 	LSM_CMD="cat \"$2\" >> \"\$archname\""
 	shift 2
 	;;
+    -q | --quiet)
+	QUIET=y
+	shift
+	;;
     -h | --help)
 	MS_Usage
 	;;
@@ -244,11 +251,19 @@ else
 	if test -d "$1"; then
 		archdir="$1"
 	else
-		echo "Directory $1 does not exist."
+		echo "Directory $1 does not exist." >&2
 		exit 1
 	fi
 fi
 archname="$2"
+
+if test "$QUIET" = "y"; then
+    if test "$TAR_ARGS" = "cvf"; then
+	TAR_ARGS="cf"
+    elif test "$TAR_ARGS" = "cvfh";then
+	TAR_ARGS="cfh"
+    fi
+fi
 
 if test "$APPEND" = y; then
     if test $# -lt 2; then
@@ -266,7 +281,7 @@ if test "$APPEND" = y; then
 else
     if test "$KEEP" = n -a $# = 3; then
 	echo "ERROR: Making a temporary archive with no embedded command does not make sense!" >&2
-	echo
+	echo >&2
 	MS_Usage
     fi
     # We don't want to create an absolute directory unless a target directory is defined
@@ -333,7 +348,9 @@ if test -f "$HEADER"; then
 	# Get rid of any spaces
 	SKIP=`expr $SKIP`
 	rm -f "$tmpfile"
-    echo Header is $SKIP lines long >&2
+    if test "$QUIET" = "n";then
+    	echo Header is $SKIP lines long >&2
+    fi
 
 	archname="$oldarchname"
 else
@@ -341,7 +358,9 @@ else
     exit 1
 fi
 
-echo
+if test "$QUIET" = "n";then 
+    echo
+fi
 
 if test "$APPEND" = n; then
     if test -f "$archname"; then
@@ -359,8 +378,10 @@ if test "." = "$archdirname"; then
 fi
 
 test -d "$archdir" || { echo "Error: $archdir does not exist."; rm -f "$tmpfile"; exit 1; }
-echo About to compress $USIZE KB of data...
-echo Adding files to archive named \"$archname\"...
+if test "$QUIET" = "n";then
+   echo About to compress $USIZE KB of data...
+   echo Adding files to archive named \"$archname\"...
+fi
 exec 3<> "$tmpfile"
 (cd "$archdir" && ( tar $TAR_ARGS - . | eval "$GZIP_CMD" >&3 ) ) || { echo Aborting: Archive directory not found or temporary file: "$tmpfile" could not be created.; exec 3>&-; rm -f "$tmpfile"; exit 1; }
 exec 3>&- # try to close the archive
@@ -373,14 +394,20 @@ md5sum=00000000000000000000000000000000
 crcsum=0000000000
 
 if test "$NOCRC" = y; then
-	echo "skipping crc at user request"
+	if test "$QUIET" = "n";then
+		echo "skipping crc at user request"
+	fi
 else
 	crcsum=`cat "$tmpfile" | CMD_ENV=xpg4 cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
-	echo "CRC: $crcsum"
+	if test "$QUIET" = "n";then
+		echo "CRC: $crcsum"
+	fi
 fi
 
 if test "$NOMD5" = y; then
-	echo "skipping md5sum at user request"
+	if test "$QUIET" = "n";then
+		echo "skipping md5sum at user request"
+	fi
 else
 	# Try to locate a MD5 binary
 	OLD_PATH=$PATH
@@ -395,9 +422,13 @@ else
 	fi
 	if test -x "$MD5_PATH"; then
 		md5sum=`cat "$tmpfile" | eval "$MD5_PATH $MD5_ARG" | cut -b-32`;
-		echo "MD5: $md5sum"
+		if test "$QUIET" = "n";then
+			echo "MD5: $md5sum"
+		fi
 	else
-		echo "MD5: none, MD5 command not found"
+		if test "$QUIET" = "n";then
+			echo "MD5: none, MD5 command not found"
+		fi
 	fi
 fi
 
@@ -418,7 +449,9 @@ if test "$APPEND" = y; then
 
     chmod +x "$archname"
     rm -f "$archname".bak
-    echo Self-extractible archive \"$archname\" successfully updated.
+    if test "$QUIET" = "n";then
+    	echo Self-extractible archive \"$archname\" successfully updated.
+    fi
 else
     filesizes="$fsize"
     CRCsum="$crcsum"
@@ -428,9 +461,13 @@ else
     . "$HEADER"
 
     # Append the compressed tar data after the stub
-    echo
+    if test "$QUIET" = "n";then
+    	echo
+    fi
     cat "$tmpfile" >> "$archname"
     chmod +x "$archname"
-    echo Self-extractible archive \"$archname\" successfully created.
+    if test "$QUIET" = "n";then
+    	echo Self-extractible archive \"$archname\" successfully created.
+    fi
 fi
 rm -f "$tmpfile"
