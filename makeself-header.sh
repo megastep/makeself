@@ -11,6 +11,7 @@ TMPROOT=\${TMPDIR:=/tmp}
 label="$LABEL"
 script="$SCRIPT"
 scriptargs="$SCRIPTARGS"
+licensetxt="$LICENSE"
 targetdir="$archdirname"
 filesizes="$filesizes"
 keep="$KEEP"
@@ -30,6 +31,25 @@ unset CDPATH
 MS_Printf()
 {
     \$print_cmd \$print_cmd_arg "\$1"
+}
+
+MS_PrintLicense()
+{
+  if test x"\$licensetxt" != x; then
+    echo \$licensetxt
+    while true
+    do
+      MS_Printf "Please type y to accept, n otherwise: "
+      read yn
+      if test x"\$yn" = xn; then
+        keep=n
+ 	eval \$finish; exit 1        
+        break;    
+      elif test x"\$yn" = xy; then
+        break;
+      fi
+    done
+  fi
 }
 
 MS_diskspace()
@@ -336,6 +356,8 @@ if test "\$quiet" = "y" -a "\$verbose" = "y";then
 	echo Cannot be verbose and quiet at the same time. >&2
 	exit 1
 fi
+
+MS_PrintLicense
 
 case "\$copy" in
 copy)

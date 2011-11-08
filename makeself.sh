@@ -116,6 +116,7 @@ MS_Usage()
     echo "    --nowait        : Do not wait for user input after executing embedded"
     echo "                      program from an xterm"
     echo "    --lsm file      : LSM file describing the package"
+    echo "    --license file  : Append a license file"
     echo
     echo "Do not forget to give a fully qualified startup script name"
     echo "(i.e. with a ./ prefix if inside the archive)."
@@ -196,6 +197,10 @@ do
 	HEADER="$2"
 	shift 2
 	;;
+    --license)
+        LICENSE=`cat $2`
+        shift 2
+        ;;
     --follow)
 	TAR_ARGS=cvfh
 	DU_ARGS=-ksL
