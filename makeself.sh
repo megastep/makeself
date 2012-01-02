@@ -455,7 +455,7 @@ if test "$APPEND" = y; then
     chmod +x "$archname"
     rm -f "$archname".bak
     if test "$QUIET" = "n";then
-    	echo Self-extractible archive \"$archname\" successfully updated.
+    	echo Self-extractable archive \"$archname\" successfully updated.
     fi
 else
     filesizes="$fsize"
@@ -472,7 +472,7 @@ else
     cat "$tmpfile" >> "$archname"
     chmod +x "$archname"
     if test "$QUIET" = "n";then
-    	echo Self-extractible archive \"$archname\" successfully created.
+    	echo Self-extractable archive \"$archname\" successfully created.
     fi
 fi
 rm -f "$tmpfile"
