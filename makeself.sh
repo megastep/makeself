@@ -96,6 +96,7 @@ MS_Usage()
     echo "    --bzip2         : Compress using bzip2 instead of gzip"
     echo "    --xz            : Compress using xz instead of gzip"
     echo "    --compress      : Compress using the UNIX 'compress' command"
+    echo "    --base64        : Instead of compressing, encode the data using base64"
     echo "    --nocomp        : Do not compress the data"
     echo "    --notemp        : The archive will create archive_dir in the"
     echo "                      current directory and uncompress in ./archive_dir"
@@ -165,6 +166,10 @@ do
 	;;
     --compress)
 	COMPRESS=Unix
+	shift
+	;;
+    --base64)
+	COMPRESS=base64
 	shift
 	;;
     --encrypt)
@@ -326,6 +331,10 @@ bzip2)
 xz)
     GZIP_CMD="xz -c9"
     GUNZIP_CMD="xz -d"
+    ;;
+base64)
+    GZIP_CMD="base64"
+    GUNZIP_CMD="base64 -d -i"
     ;;
 gpg)
     GZIP_CMD="gpg -ac -z9"
