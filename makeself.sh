@@ -68,7 +68,7 @@
 #           Added --noprogress to prevent showing the progress during the decompression (Guy Baconniere)
 #           Added --target dir to allow extracting directly to a target directory (Guy Baconniere)
 #
-# (C) 1998-2010 by Stéphane Peter <megastep@megastep.org>
+# (C) 1998-2010 by StÃ©phane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
