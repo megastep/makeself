@@ -431,10 +431,10 @@ else
 	test -x "$MD5_PATH" || MD5_PATH=`exec <&- 2>&-; which md5 || type md5`
 	test -x "$MD5_PATH" || MD5_PATH=`exec <&- 2>&-; which digest || type digest`
 	PATH=$OLD_PATH
-	if test `basename ${MD5_PATH}x` = digestx; then
-		MD5_ARG="-a md5"
-	fi
 	if test -x "$MD5_PATH"; then
+		if test `basename ${MD5_PATH}`x = digestx; then
+			MD5_ARG="-a md5"
+		fi
 		md5sum=`cat "$tmpfile" | eval "$MD5_PATH $MD5_ARG" | cut -b-32`;
 		if test "$QUIET" = "n";then
 			echo "MD5: $md5sum"
