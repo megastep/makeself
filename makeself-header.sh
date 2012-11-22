@@ -89,8 +89,8 @@ MS_dd_Progress()
     bytes=\`expr \$length % \$bsize\`
     (
         dd bs=\$offset count=0 skip=1 2>/dev/null
-        pos=\`expr \$pos \+ \$offset\`
-        MS_Printf "   0%%  " 1>&2
+        pos=\`expr \$pos \+ \$bsize\`
+        MS_Printf "     0%% " 1>&2
         if test \$blocks -gt 0; then
             while test \$pos -le \$length; do
                 dd bs=\$bsize count=1 2>/dev/null
@@ -99,9 +99,9 @@ MS_dd_Progress()
                 if test \$pcent -lt 100; then
                     MS_Printf "\b\b\b\b\b\b\b" 1>&2
                     if test \$pcent -lt 10; then
-                        MS_Printf "   \$pcent%% " 1>&2
+                        MS_Printf "    \$pcent%% " 1>&2
                     else
-                        MS_Printf "  \$pcent%% " 1>&2
+                        MS_Printf "   \$pcent%% " 1>&2
                     fi
                 fi
                 pos=\`expr \$pos \+ \$bsize\`

@@ -73,6 +73,7 @@ The syntax of makeself is the following:
     * **--version** : Prints the version number on stdout, then exits immediately
     * **--gzip** : Use gzip for compression (is the default on platforms on which gzip is commonly available, like Linux)
     * **--bzip2** : Use bzip2 instead of gzip for better compression. The bzip2 command must be available in the command path. I recommend that you set the prefix to something like '.bz2.run' for the archive, so that potential users know that they'll need bzip2 to extract it.
+    * **--pbzip2** : Use pbzip2 instead of gzip for better and faster compression on machines having multiple CPUs. The pbzip2 command must be available in the command path. I recommend that you set the prefix to something like '.bz2.run' for the archive, so that potential users know that they'll need bzip2 to extract it.
     * **--compress** : Use the UNIX "compress" command to compress the data. This should be the default on all platforms that don't have gzip available.
     * **--nocomp** : Do not use any compression for the archive, which will then be an uncompressed TAR.
     * **--notemp** : The generated archive will not extract the files to a temporary directory, but in a new directory created in the current directory. This is better to distribute software packages that may extract and compile by themselves (i.e. launch the compilation through the embedded script).
