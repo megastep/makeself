@@ -94,6 +94,7 @@ MS_Usage()
     echo "    --quiet | -q    : Do not print any messages other than errors."
     echo "    --gzip          : Compress using gzip (default if detected)"
     echo "    --bzip2         : Compress using bzip2 instead of gzip"
+    echo "    --pbzip2        : Compress using pbzip2 instead of gzip"
     echo "    --xz            : Compress using xz instead of gzip"
     echo "    --compress      : Compress using the UNIX 'compress' command"
     echo "    --base64        : Instead of compressing, encode the data using base64"
@@ -151,6 +152,10 @@ do
     --version | -v)
 	echo Makeself version $MS_VERSION
 	exit 0
+	;;
+    --pbzip2)
+	COMPRESS=pbzip2
+	shift
 	;;
     --bzip2)
 	COMPRESS=bzip2
@@ -323,6 +328,10 @@ case $COMPRESS in
 gzip)
     GZIP_CMD="gzip -c9"
     GUNZIP_CMD="gzip -cd"
+    ;;
+pbzip2)
+    GZIP_CMD="pbzip2 -c9"
+    GUNZIP_CMD="bzip2 -d"
     ;;
 bzip2)
     GZIP_CMD="bzip2 -9"
