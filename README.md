@@ -171,9 +171,7 @@ Contributions were included from John C. Quillan, Bjarni R. Einarsson,
 Francois Petitjean, and Ryan C. Gordon, thanks to them! If you think I forgot
 your name, don't hesitate to contact me.
 
-icculus.org also has a [Bugzilla server][16] available that allows bug reports
-to be submitted for Loki setup, and since Makeself is a part of Loki setup,
-you can submit bug reports from there!
+This project is now hosted on GitHub. Feel free to submit patches and bug reportss on the [project page][10].
 
 * * *
 
