@@ -289,7 +289,7 @@ EOLSM
 	--tar)
 	offset=\`head -n $SKIP "\$0" | wc -c | tr -d " "\`
 	arg1="\$2"
-	shift 2
+    if ! shift 2; then MS_Help; exit 1; fi
 	for s in \$filesizes
 	do
 	    MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | tar "\$arg1" - \$*
@@ -316,7 +316,7 @@ EOLSM
     --target)
 	keep=y
 	targetdir=\${2:-.}
-	shift 2
+    if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --noprogress)
 	noprogress=y
