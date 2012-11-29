@@ -201,16 +201,16 @@ do
     --target)
 	TARGETDIR="$2"
 	KEEP=y
-	shift 2
+    if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --header)
 	HEADER="$2"
-	shift 2
+    if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --license)
-        LICENSE=`cat $2`
-        shift 2
-        ;;
+    LICENSE=`cat $2`
+    if ! shift 2; then MS_Help; exit 1; fi
+    ;;
     --follow)
 	TAR_ARGS=cvfh
 	DU_ARGS=-ksL
@@ -241,7 +241,7 @@ do
 	;;
     --lsm)
 	LSM_CMD="cat \"$2\" >> \"\$archname\""
-	shift 2
+    if ! shift 2; then MS_Help; exit 1; fi
 	;;
     -q | --quiet)
 	QUIET=y
