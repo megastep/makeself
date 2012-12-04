@@ -58,7 +58,7 @@ Examples of publicly available archives made using makeself are :
 
 `AddType application/x-makeself .run`
 
-**Important note for recent GNU/Linux distributions:** Archives created with Makeself prior to v2.1.2 were using an old syntax for the _head_ and _tail_ Unix commands that is being progressively obsoleted in their GNU forms. Therefore you may have problems uncompressing some of these archives. A workaround for this is to set the environment variable $_POSIX2_VERSION to enable the old syntax, i.e. :
+**Important note for certain GNU/Linux distributions:** Archives created with Makeself prior to v2.1.2 were using an old syntax for the _head_ and _tail_ Unix commands that is being progressively obsoleted in their GNU forms. Therefore you may have problems uncompressing some of these archives. A workaround for this is to set the environment variable $_POSIX2_VERSION to enable the old syntax, i.e. :
 
 `export _POSIX2_VERSION=199209`
 
@@ -138,7 +138,7 @@ for Makeself.
 Get the latest official distribution [here][9] (version 2.1.5).
 
 The latest development version can be grabbed from [GitHub][10]. Feel free to
-submit any patches there through the fork process.
+submit any patches there through the fork and pull request process.
 
 ## Version history
 
@@ -164,32 +164,32 @@ submit any patches there through the fork process.
 
 ## Contact
 
-This script was written by [Stéphane Peter][15] (megastep at megastep.org) I
+This script was written by [Stéphane Peter][15] (megastep at megastep.org) and I
 welcome any enhancements and suggestions.
 
 Contributions were included from John C. Quillan, Bjarni R. Einarsson,
 Francois Petitjean, and Ryan C. Gordon, thanks to them! If you think I forgot
 your name, don't hesitate to contact me.
 
-This project is now hosted on GitHub. Feel free to submit patches and bug reportss on the [project page][10].
+This project is now hosted on GitHub. Feel free to submit patches and bug reports on the [project page][10].
 
 * * *
 
-[Stephane Peter][15] Last modified: Fri Jan 4 15:51:05 PST 2008
+[Stephane Peter][15]
 
    [1]: makeself.run
-   [2]: mailto:megastep@REMOVEME.megastep.org
+   [2]: mailto:megastep@megastep.org
    [3]: http://www.idsoftware.com/
    [4]: http://www.lokigames.com/products/myth2/updates.php3
    [5]: http://www.nvidia.com/
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: makeself-2.1.5.run
+   [9]: http://www.megastep.org/makeself/makeself-2.1.5.run
    [10]: http://github.com/megastep/makeself
    [11]: http://www.icculus.org/loki_setup/
    [12]: http://www.unrealtournament2003.com/
    [13]: http://www.icculus.org/
    [14]: http://bre.klaki.net/programs/setup.sh/
-   [15]: mailto:megastep@@megastep.org
+   [15]: mailto:megastep@megastep.org
    [16]: https://bugzilla.icculus.org/
