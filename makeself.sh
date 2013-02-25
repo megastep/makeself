@@ -97,6 +97,7 @@ MS_Usage()
     echo "    --pbzip2        : Compress using pbzip2 instead of gzip"
     echo "    --xz            : Compress using xz instead of gzip"
     echo "    --compress      : Compress using the UNIX 'compress' command"
+    echo "    --complevel lvl : Compression level for gzip xz bzip2 and pbzip2 (default 9)"
     echo "    --base64        : Instead of compressing, encode the data using base64"
     echo "    --nocomp        : Do not compress the data"
     echo "    --notemp        : The archive will create archive_dir in the"
@@ -131,6 +132,7 @@ if type gzip 2>&1 > /dev/null; then
 else
     COMPRESS=Unix
 fi
+COMPRESS_LEVEL=9
 KEEP=n
 CURRENT=n
 NOX11=n
@@ -184,6 +186,10 @@ do
     --nocomp)
 	COMPRESS=none
 	shift
+	;;
+    --complevel)
+	COMPRESS_LEVEL="$2"
+	if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --notemp)
 	KEEP=y
@@ -326,19 +332,19 @@ fi
 
 case $COMPRESS in
 gzip)
-    GZIP_CMD="gzip -c9"
+    GZIP_CMD="gzip -c$COMPRESS_LEVEL"
     GUNZIP_CMD="gzip -cd"
     ;;
 pbzip2)
-    GZIP_CMD="pbzip2 -c9"
+    GZIP_CMD="pbzip2 -c$COMPRESS_LEVEL"
     GUNZIP_CMD="bzip2 -d"
     ;;
 bzip2)
-    GZIP_CMD="bzip2 -9"
+    GZIP_CMD="bzip2 -$COMPRESS_LEVEL"
     GUNZIP_CMD="bzip2 -d"
     ;;
 xz)
-    GZIP_CMD="xz -c9"
+    GZIP_CMD="xz -c$COMPRESS_LEVEL"
     GUNZIP_CMD="xz -d"
     ;;
 base64)
@@ -346,7 +352,7 @@ base64)
     GUNZIP_CMD="base64 -d -i"
     ;;
 gpg)
-    GZIP_CMD="gpg -ac -z9"
+    GZIP_CMD="gpg -ac -z$COMPRESS_LEVEL"
     GUNZIP_CMD="gpg -d"
     ;;
 Unix)
