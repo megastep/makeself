@@ -74,6 +74,7 @@ The syntax of makeself is the following:
     * **--gzip** : Use gzip for compression (is the default on platforms on which gzip is commonly available, like Linux)
     * **--bzip2** : Use bzip2 instead of gzip for better compression. The bzip2 command must be available in the command path. I recommend that you set the prefix to something like '.bz2.run' for the archive, so that potential users know that they'll need bzip2 to extract it.
     * **--pbzip2** : Use pbzip2 instead of gzip for better and faster compression on machines having multiple CPUs. The pbzip2 command must be available in the command path. I recommend that you set the prefix to something like '.bz2.run' for the archive, so that potential users know that they'll need bzip2 to extract it.
+    * **--xz** : Use xz instead of gzip for better compression. The xz command must be available in the command path. I recommend that you set the prefix to something like '.xz.run' for the archive, so that potential users know that they'll need xz to extract it.
     * **--compress** : Use the UNIX "compress" command to compress the data. This should be the default on all platforms that don't have gzip available.
     * **--nocomp** : Do not use any compression for the archive, which will then be an uncompressed TAR.
     * **--complevel** : Specify the compression level for gzip,bzip2,pbzip2 and xz. (default to 9)
