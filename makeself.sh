@@ -1,9 +1,7 @@
 #!/bin/sh
 #
-# Makeself version 2.1.x
+# Makeself version 2.2.x
 #  by Stephane Peter <megastep@megastep.org>
-#
-# $Id: makeself.sh,v 1.66 2009-01-08 02:24:53 megastep Exp $
 #
 # Utility to create self-extracting tar.gz archives.
 # The resulting archive is a file holding the tar.gz archive with
@@ -67,14 +65,15 @@
 # - 2.1.6 : Replaced one dot per file progress with a realtime progress percentage and a spining cursor (Guy Baconniere)
 #           Added --noprogress to prevent showing the progress during the decompression (Guy Baconniere)
 #           Added --target dir to allow extracting directly to a target directory (Guy Baconniere)
+# - 2.2.0 : Many bugfixes, updates and contributions from users. Check out the project page on Github for the details.
 #
-# (C) 1998-2010 by Stéphane Peter <megastep@megastep.org>
+# (C) 1998-2013 by Stephane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
 
-MS_VERSION=2.1.6
+MS_VERSION=2.2.0
 MS_COMMAND="$0"
 unset CDPATH
 
@@ -97,6 +96,7 @@ MS_Usage()
     echo "    --pbzip2        : Compress using pbzip2 instead of gzip"
     echo "    --xz            : Compress using xz instead of gzip"
     echo "    --compress      : Compress using the UNIX 'compress' command"
+    echo "    --tar-extra opt : Append more options to the tar command line"
     echo "    --base64        : Instead of compressing, encode the data using base64"
     echo "    --nocomp        : Do not compress the data"
     echo "    --notemp        : The archive will create archive_dir in the"
@@ -139,6 +139,7 @@ QUIET=n
 NOPROGRESS=n
 COPY=none
 TAR_ARGS=cvf
+TAR_EXTRA=""
 DU_ARGS=-ks
 HEADER=`dirname "$0"`/makeself-header.sh
 TARGETDIR=""
@@ -198,6 +199,10 @@ do
 	KEEP=y
 	shift
 	;;
+    --tar-extra)
+	TAR_EXTRA="$2"
+	if ! shift 2; then MS_Help; exit 1; fi
+        ;;
     --target)
 	TARGETDIR="$2"
 	KEEP=y
@@ -406,7 +411,7 @@ if test "$QUIET" = "n";then
    echo Adding files to archive named \"$archname\"...
 fi
 exec 3<> "$tmpfile"
-(cd "$archdir" && ( tar $TAR_ARGS - . | eval "$GZIP_CMD" >&3 ) ) || { echo Aborting: Archive directory not found or temporary file: "$tmpfile" could not be created.; exec 3>&-; rm -f "$tmpfile"; exit 1; }
+(cd "$archdir" && ( tar $TAR_ARGS $TAR_EXTRA - . | eval "$GZIP_CMD" >&3 ) ) || { echo Aborting: Archive directory not found or temporary file: "$tmpfile" could not be created.; exec 3>&-; rm -f "$tmpfile"; exit 1; }
 exec 3>&- # try to close the archive
 
 fsize=`cat "$tmpfile" | wc -c | tr -d " "`
