@@ -1,7 +1,7 @@
 # makeself - Make self-extractable archives on Unix
 
 [makeself.sh][1] is a small shell script that generates a self-extractable
-tar.gz archive from a directory. The resulting file appears as a shell script
+compressed tar archive from a directory. The resulting file appears as a shell script
 (many of those have a **.run** suffix), and can be launched as is. The archive
 will then uncompress itself to a temporary directory and an optional arbitrary
 command will be executed (for example an installation script). This is pretty
@@ -13,15 +13,15 @@ The makeself.sh script itself is used only to create the archives from a
 directory of files. The resultant archive is actually a compressed (using
 gzip, bzip2, or compress) TAR archive, with a small shell script stub at the
 beginning. This small stub performs all the steps of extracting the files,
-running the embedded command, and removing the temporary files when it's all
-over. All what the user has to do to install the software contained in such an
+running the embedded command, and removing the temporary files when done.
+All the user has to do to install the software contained in such an
 archive is to "run" the archive, i.e **sh nice-software.run**. I recommend
-using the "run" (which was introduced by some Makeself archives released by
-Loki Software) or "sh" suffix for such archives not to confuse the users,
-since they know it's actually shell scripts (with quite a lot of binary data
-attached to it though!).
+using the ".run" (which was introduced by some Makeself archives released by
+Loki Software) or ".sh" suffix for such archives not to confuse the users,
+so that they will know they are actually shell scripts (with quite a lot of binary data
+attached to them though!).
 
-I am trying to keep the code of this script as portable as possible, i.e it's
+I am trying to keep the code of this script as portable as possible, i.e it is
 not relying on any bash-specific features and only calls commands that are
 installed on any functioning UNIX-compatible system. This script as well as
 the archives it generates should run on any Unix flavor, with any compatible
@@ -42,7 +42,7 @@ platforms :
   * Cygwin (Windows)
 
 If you successfully run Makeself and/or archives created with it on another
-system, then [let me know][2]!
+system, then please [let me know][2]!
 
 Examples of publicly available archives made using makeself are :
 
@@ -71,9 +71,11 @@ The syntax of makeself is the following:
   * _args_ are optional options for Makeself. The available ones are :
 
     * **--version** : Prints the version number on stdout, then exits immediately
-    * **--gzip** : Use gzip for compression (is the default on platforms on which gzip is commonly available, like Linux)
-    * **--bzip2** : Use bzip2 instead of gzip for better compression. The bzip2 command must be available in the command path. I recommend that you set the prefix to something like '.bz2.run' for the archive, so that potential users know that they'll need bzip2 to extract it.
-    * **--pbzip2** : Use pbzip2 instead of gzip for better and faster compression on machines having multiple CPUs. The pbzip2 command must be available in the command path. I recommend that you set the prefix to something like '.bz2.run' for the archive, so that potential users know that they'll need bzip2 to extract it.
+    * **--gzip** : Use gzip for compression (the default on platforms on which gzip is commonly available, like Linux)
+    * **--bzip2** : Use bzip2 instead of gzip for better compression. The bzip2 command must be available in the command path. It is recommended that the archive prefix be set to something like '.bz2.run', so that potential users know that they'll need bzip2 to extract it.
+    * **--pbzip2** : Use pbzip2 instead of gzip for better and faster compression on machines having multiple CPUs. The pbzip2 command must be available in the command path. It is recommended that the archive prefix be set to something like '.bz2.run', so that potential users know that they'll need bzip2 to extract it.
+    * **--xz** : Compress using xz instead of gzip.
+    * **--base64** : Encode the archive to ASCII in Base64 format (base64 command required).
     * **--compress** : Use the UNIX "compress" command to compress the data. This should be the default on all platforms that don't have gzip available.
     * **--nocomp** : Do not use any compression for the archive, which will then be an uncompressed TAR.
     * **--notemp** : The generated archive will not extract the files to a temporary directory, but in a new directory created in the current directory. This is better to distribute software packages that may extract and compile by themselves (i.e. launch the compilation through the embedded script).
@@ -86,6 +88,7 @@ The syntax of makeself is the following:
     * **--nowait** : When executed from a new X11 terminal, disable the user prompt at the end of the script execution.
     * **--nomd5** and **--nocrc** : Disable the creation of a MD5 / CRC checksum for the archive. This speeds up the extraction process if integrity checking is not necessary.
     * **--lsm _file_** : Provide and LSM file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the '-lsm' argument to the archive. An exemple of a LSM file is provided with Makeself.
+    * **--tar-extra opt** : Append more options to the tar command line.
 
   * _archive_dir_ is the name of the directory that contains the files to be archived
   * _file_name_ is the name of the archive to be created
@@ -135,7 +138,7 @@ for Makeself.
 
 ## Download
 
-Get the latest official distribution [here][9] (version 2.1.5).
+Get the latest official distribution [here][9] (version 2.2.0).
 
 The latest development version can be grabbed from [GitHub][10]. Feel free to
 submit any patches there through the fork and pull request process.
@@ -156,26 +159,27 @@ submit any patches there through the fork and pull request process.
   * **v2.1.3:** Bug fixes with the command line when spawning terminals. Added --tar, --noexec for archives. Added --nomd5 and --nocrc to avoid creating checksums in archives. The embedded script is now run through "eval". The --info output now includes the command used to create the archive. A man page was contributed by Bartosz Fenski.
   * **v2.1.4:** Fixed --info output. Generate random directory name when extracting files to . to avoid problems. Better handling of errors with wrong permissions for the directory containing the files. Avoid some race conditions, Unset the $CDPATH variable to avoid problems if it is set. Better handling of dot files in the archive directory.
   * **v2.1.5:** Made the md5sum detection consistent with the header code. Check for the presence of the archive directory. Added --encrypt for symmetric encryption through gpg (Eric Windisch). Added support for the digest command on Solaris 10 for MD5 checksums. Check for available disk space before extracting to the target directory (Andreas Schweitzer). Allow extraction to run asynchronously (patch by Peter Hatch). Use file descriptors internally to avoid error messages (patch by Kay Tiong Khoo).
+ * **v2.1.6:** Replaced one dot per file progress with a realtime progress percentage and a spining cursor. Added --noprogress to prevent showing the progress during the decompression. Added --target dir to allow extracting directly to a target directory. (Guy Baconniere)
+ * **v2.2.0:** First major new release in years! Includes many bugfixes and user contributions. Please look at the [project page on Github][10] for all the details.
 
 ## Links
 
-  * Check out the ["Loki setup"][11] installer, used to install many Linux games and other applications, and of which I am the co-author. Since the demise of Loki, I am now the official maintainer of the project, and it is now being hosted on [icculus.org][13], as well as a bunch of other ex-Loki projects (and a lot of other good stuff!).
+  * Check out the ["Loki Setup"][11] installer, used to install many Linux games and other applications, and of which I am the co-author. Since the demise of Loki, I am now the official maintainer of the project, and it is now being hosted on [icculus.org][13], as well as a bunch of other ex-Loki projects (and a lot of other good stuff!).
   * Bjarni R. Einarsson also wrote the **setup.sh** installer script, inspired by Makeself. [Check it out !][14]
 
 ## Contact
 
-This script was written by [Stéphane Peter][15] (megastep at megastep.org) and I
-welcome any enhancements and suggestions.
+This script was written by [Stéphane Peter][2] (megastep at megastep.org). Any enhancements and suggestions are welcome.
 
 Contributions were included from John C. Quillan, Bjarni R. Einarsson,
-Francois Petitjean, and Ryan C. Gordon, thanks to them! If you think I forgot
+Francois Petitjean, Ryan C. Gordon, and many contributors on GitHub. If you think I forgot
 your name, don't hesitate to contact me.
 
 This project is now hosted on GitHub. Feel free to submit patches and bug reports on the [project page][10].
 
 * * *
 
-[Stephane Peter][15]
+[Stephane Peter][2]
 
    [1]: makeself.run
    [2]: mailto:megastep@megastep.org
@@ -185,11 +189,9 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: http://www.megastep.org/makeself/makeself-2.1.5.run
+   [9]: http://cdn.megastep.org/makeself/makeself-2.2.0.run
    [10]: http://github.com/megastep/makeself
    [11]: http://www.icculus.org/loki_setup/
    [12]: http://www.unrealtournament2003.com/
    [13]: http://www.icculus.org/
    [14]: http://bre.klaki.net/programs/setup.sh/
-   [15]: mailto:megastep@megastep.org
-   [16]: https://bugzilla.icculus.org/
