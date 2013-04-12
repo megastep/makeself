@@ -96,7 +96,7 @@ MS_Usage()
     echo "    --pbzip2        : Compress using pbzip2 instead of gzip"
     echo "    --xz            : Compress using xz instead of gzip"
     echo "    --compress      : Compress using the UNIX 'compress' command"
-    echo "    --tar-extra opt : Append more options to the tar command line"
+    echo "    --complevel lvl : Compression level for gzip xz bzip2 and pbzip2 (default 9)"
     echo "    --base64        : Instead of compressing, encode the data using base64"
     echo "    --nocomp        : Do not compress the data"
     echo "    --notemp        : The archive will create archive_dir in the"
@@ -105,10 +105,11 @@ MS_Usage()
     echo "                      a temporary directory"
     echo "    --append        : Append more files to an existing Makeself archive"
     echo "                      The label and startup scripts will then be ignored"
-    echo "    --current       : Files will be extracted to the current directory."
-    echo "                      both --current and --target dir imply --notemp."
     echo "    --target dir    : Extract directly to a target directory"
     echo "                      directory path can be either absolute or relative"
+    echo "    --current       : Files will be extracted to the current directory"
+    echo "                      Both --current and --target imply --notemp"
+    echo "    --tar-extra opt : Append more options to the tar command line"
     echo "    --nomd5         : Don't calculate an MD5 for archive"
     echo "    --nocrc         : Don't calculate a CRC for archive"
     echo "    --header file   : Specify location of the header script"
@@ -131,6 +132,7 @@ if type gzip 2>&1 > /dev/null; then
 else
     COMPRESS=Unix
 fi
+COMPRESS_LEVEL=9
 KEEP=n
 CURRENT=n
 NOX11=n
@@ -185,6 +187,10 @@ do
     --nocomp)
 	COMPRESS=none
 	shift
+	;;
+    --complevel)
+	COMPRESS_LEVEL="$2"
+	if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --notemp)
 	KEEP=y
@@ -331,19 +337,19 @@ fi
 
 case $COMPRESS in
 gzip)
-    GZIP_CMD="gzip -c9"
+    GZIP_CMD="gzip -c$COMPRESS_LEVEL"
     GUNZIP_CMD="gzip -cd"
     ;;
 pbzip2)
-    GZIP_CMD="pbzip2 -c9"
+    GZIP_CMD="pbzip2 -c$COMPRESS_LEVEL"
     GUNZIP_CMD="bzip2 -d"
     ;;
 bzip2)
-    GZIP_CMD="bzip2 -9"
+    GZIP_CMD="bzip2 -$COMPRESS_LEVEL"
     GUNZIP_CMD="bzip2 -d"
     ;;
 xz)
-    GZIP_CMD="xz -c9"
+    GZIP_CMD="xz -c$COMPRESS_LEVEL"
     GUNZIP_CMD="xz -d"
     ;;
 base64)
@@ -351,7 +357,7 @@ base64)
     GUNZIP_CMD="base64 -d -i"
     ;;
 gpg)
-    GZIP_CMD="gpg -ac -z9"
+    GZIP_CMD="gpg -ac -z$COMPRESS_LEVEL"
     GUNZIP_CMD="gpg -d"
     ;;
 Unix)

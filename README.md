@@ -74,10 +74,11 @@ The syntax of makeself is the following:
     * **--gzip** : Use gzip for compression (the default on platforms on which gzip is commonly available, like Linux)
     * **--bzip2** : Use bzip2 instead of gzip for better compression. The bzip2 command must be available in the command path. It is recommended that the archive prefix be set to something like '.bz2.run', so that potential users know that they'll need bzip2 to extract it.
     * **--pbzip2** : Use pbzip2 instead of gzip for better and faster compression on machines having multiple CPUs. The pbzip2 command must be available in the command path. It is recommended that the archive prefix be set to something like '.bz2.run', so that potential users know that they'll need bzip2 to extract it.
-    * **--xz** : Compress using xz instead of gzip.
+    * **--xz** : Use xz instead of gzip for better compression. The xz command must be available in the command path. It is recommended that the archive prefix be set to something like '.xz.run' for the archive, so that potential users know that they'll need xz to extract it.
     * **--base64** : Encode the archive to ASCII in Base64 format (base64 command required).
     * **--compress** : Use the UNIX "compress" command to compress the data. This should be the default on all platforms that don't have gzip available.
     * **--nocomp** : Do not use any compression for the archive, which will then be an uncompressed TAR.
+    * **--complevel** : Specify the compression level for gzip,bzip2,pbzip2 and xz. (default to 9)
     * **--notemp** : The generated archive will not extract the files to a temporary directory, but in a new directory created in the current directory. This is better to distribute software packages that may extract and compile by themselves (i.e. launch the compilation through the embedded script).
     * **--current** : Files will be extracted to the current directory, instead of in a subdirectory. This option implies **--notemp** above.
     * **--follow** : Follow the symbolic links inside of the archive directory, i.e. store the files that are being pointed to instead of the links themselves.
