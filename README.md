@@ -160,8 +160,8 @@ submit any patches there through the fork and pull request process.
   * **v2.1.3:** Bug fixes with the command line when spawning terminals. Added --tar, --noexec for archives. Added --nomd5 and --nocrc to avoid creating checksums in archives. The embedded script is now run through "eval". The --info output now includes the command used to create the archive. A man page was contributed by Bartosz Fenski.
   * **v2.1.4:** Fixed --info output. Generate random directory name when extracting files to . to avoid problems. Better handling of errors with wrong permissions for the directory containing the files. Avoid some race conditions, Unset the $CDPATH variable to avoid problems if it is set. Better handling of dot files in the archive directory.
   * **v2.1.5:** Made the md5sum detection consistent with the header code. Check for the presence of the archive directory. Added --encrypt for symmetric encryption through gpg (Eric Windisch). Added support for the digest command on Solaris 10 for MD5 checksums. Check for available disk space before extracting to the target directory (Andreas Schweitzer). Allow extraction to run asynchronously (patch by Peter Hatch). Use file descriptors internally to avoid error messages (patch by Kay Tiong Khoo).
- * **v2.1.6:** Replaced one dot per file progress with a realtime progress percentage and a spining cursor. Added --noprogress to prevent showing the progress during the decompression. Added --target dir to allow extracting directly to a target directory. (Guy Baconniere)
- * **v2.2.0:** First major new release in years! Includes many bugfixes and user contributions. Please look at the [project page on Github][10] for all the details.
+  * **v2.1.6:** Replaced one dot per file progress with a realtime progress percentage and a spining cursor. Added --noprogress to prevent showing the progress during the decompression. Added --target dir to allow extracting directly to a target directory. (Guy Baconniere)
+  * **v2.2.0:** First major new release in years! Includes many bugfixes and user contributions. Please look at the [project page on Github][10] for all the details.
 
 ## Links
 
