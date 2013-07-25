@@ -120,6 +120,7 @@ MS_Usage()
     echo "                      program from an xterm"
     echo "    --lsm file      : LSM file describing the package"
     echo "    --license file  : Append a license file"
+    echo "    --exclude-vcs   : Exclude version control system directories"
     echo
     echo "Do not forget to give a fully qualified startup script name"
     echo "(i.e. with a ./ prefix if inside the archive)."
@@ -142,6 +143,7 @@ NOPROGRESS=n
 COPY=none
 TAR_ARGS=cvf
 TAR_EXTRA=""
+EXCLUDE_VCS=""
 DU_ARGS=-ks
 HEADER=`dirname "$0"`/makeself-header.sh
 TARGETDIR=""
@@ -237,6 +239,10 @@ do
 	;;
     --nowait)
 	shift
+    ;;
+    --exclude-vcs)
+    EXCLUDE_VCS="--exclude-vcs"
+    shift
 	;;
     --nomd5)
 	NOMD5=y
@@ -417,7 +423,7 @@ if test "$QUIET" = "n";then
    echo Adding files to archive named \"$archname\"...
 fi
 exec 3<> "$tmpfile"
-(cd "$archdir" && ( tar $TAR_ARGS $TAR_EXTRA - . | eval "$GZIP_CMD" >&3 ) ) || { echo Aborting: Archive directory not found or temporary file: "$tmpfile" could not be created.; exec 3>&-; rm -f "$tmpfile"; exit 1; }
+(cd "$archdir" && ( tar $TAR_ARGS $TAR_EXTRA - . $EXCLUDE_VCS | eval "$GZIP_CMD" >&3 ) ) || { echo Aborting: Archive directory not found or temporary file: "$tmpfile" could not be created.; exec 3>&-; rm -f "$tmpfile"; exit 1; }
 exec 3>&- # try to close the archive
 
 fsize=`cat "$tmpfile" | wc -c | tr -d " "`
