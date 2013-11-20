@@ -117,6 +117,7 @@ MS_Usage()
     echo "    --current          : Files will be extracted to the current directory"
     echo "                         Both --current and --target imply --notemp"
     echo "    --tar-extra opt    : Append more options to the tar command line"
+    echo "    --exclude pat      : Exclude files matching with pattern"
     echo "    --nomd5            : Don't calculate an MD5 for archive"
     echo "    --nocrc            : Don't calculate a CRC for archive"
     echo "    --header file      : Specify location of the header script"
@@ -159,6 +160,8 @@ NOOVERWRITE=n
 
 # LSM file stuff
 LSM_CMD="echo No LSM. >> \"\$archname\""
+
+excludefile="${TMPDIR:=/tmp}/mkself$$.exclude"
 
 while true
 do
@@ -236,6 +239,10 @@ do
 	TAR_EXTRA="$2"
         if ! shift 2; then MS_Help; exit 1; fi
         ;;
+    --exclude)
+	echo "$2" >> $excludefile
+	if ! shift 2; then MS_Help; exit 1; fi
+	;;
     --target)
 	TARGETDIR="$2"
 	KEEP=y
@@ -460,6 +467,11 @@ if test "$APPEND" = n; then
     fi
 fi
 
+if test -e $excludefile; then
+    DU_ARGS="$DU_ARGS -X $excludefile"
+    TAR_EXTRA="$TAR_EXTRA -X $excludefile"
+fi
+
 USIZE=`du $DU_ARGS "$archdir" | awk '{print $1}'`
 DATE=`LC_ALL=C date`
 
@@ -562,4 +574,4 @@ else
     	echo Self-extractable archive \"$archname\" successfully created.
     fi
 fi
-rm -f "$tmpfile"
+rm -f "$tmpfile" "$excludefile"
