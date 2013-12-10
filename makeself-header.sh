@@ -7,6 +7,7 @@ umask 077
 CRCsum="$CRCsum"
 MD5="$MD5sum"
 TMPROOT=\${TMPDIR:=/tmp}
+USER_PWD="\$PWD"; export USER_PWD
 
 label="$LABEL"
 script="$SCRIPT"
