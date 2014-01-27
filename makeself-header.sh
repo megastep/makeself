@@ -13,6 +13,7 @@ label="$LABEL"
 script="$SCRIPT"
 scriptargs="$SCRIPTARGS"
 licensetxt="$LICENSE"
+helpheader='$HELPHEADER'
 targetdir="$archdirname"
 filesizes="$filesizes"
 keep="$KEEP"
@@ -119,7 +120,7 @@ MS_dd_Progress()
 MS_Help()
 {
     cat << EOH >&2
-Makeself version $MS_VERSION
+\${helpheader}Makeself version $MS_VERSION
  1) Getting help or info about \$0 :
   \$0 --help   Print this message
   \$0 --info   Print embedded info : title, default target directory, embedded script ...
