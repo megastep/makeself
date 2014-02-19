@@ -38,7 +38,7 @@ MS_Printf()
 MS_PrintLicense()
 {
   if test x"\$licensetxt" != x; then
-    echo \$licensetxt
+    echo "\$licensetxt"
     while true
     do
       MS_Printf "Please type y to accept, n otherwise: "
