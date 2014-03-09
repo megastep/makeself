@@ -386,7 +386,7 @@ if test "\$nox11" = "n"; then
     else
         if test x"\$DISPLAY" != x -a x"\$xterm_loop" = x; then  # No, but do we have X?
             if xset q > /dev/null 2>&1; then # Check for valid DISPLAY variable
-                GUESS_XTERMS="xterm rxvt dtterm eterm Eterm kvt konsole aterm"
+                GUESS_XTERMS="xterm gnome-terminal rxvt dtterm eterm Eterm xfce4-terminal lxterminal kvt konsole aterm terminology"
                 for a in \$GUESS_XTERMS; do
                     if type \$a >/dev/null 2>&1; then
                         XTERM=\$a
