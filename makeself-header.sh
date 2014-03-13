@@ -170,7 +170,7 @@ MS_Check()
 				MD5_ARG="-a md5"
 			fi
 			md5=\`echo \$MD5 | cut -d" " -f\$i\`
-			if test \$md5 = "00000000000000000000000000000000"; then
+			if test "\$md5" = "00000000000000000000000000000000"; then
 				test x\$verb = xy && echo " \$1 does not contain an embedded MD5 checksum." >&2
 			else
 				md5sum=\`MS_dd "\$1" \$offset \$s | eval "\$MD5_PATH \$MD5_ARG" | cut -b-32\`;
