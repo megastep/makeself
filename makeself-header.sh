@@ -45,8 +45,8 @@ MS_PrintLicense()
       read yn
       if test x"\$yn" = xn; then
         keep=n
- 	eval \$finish; exit 1        
-        break;    
+	eval \$finish; exit 1
+        break;
       elif test x"\$yn" = xy; then
         break;
       fi
@@ -75,7 +75,7 @@ MS_dd()
 
 MS_dd_Progress()
 {
-    if test "\$noprogress" = "y"; then
+    if test x"\$noprogress" = xy; then
         MS_dd \$@
         return \$?
     fi
@@ -127,7 +127,7 @@ MS_Help()
   \$0 --lsm    Print embedded lsm entry (or no LSM)
   \$0 --list   Print the list of files in the archive
   \$0 --check  Checks integrity of the archive
- 
+
  2) Running \$0 :
   \$0 [options] [--] [additional arguments to embedded script]
   with following options (in that order)
@@ -156,8 +156,8 @@ MS_Check()
 	test -x "\$MD5_PATH" || MD5_PATH=\`exec <&- 2>&-; which digest || type digest\`
     PATH="\$OLD_PATH"
 
-    if test "\$quiet" = "n";then
-    	MS_Printf "Verifying archive integrity..."
+    if test x"\$quiet" = xn; then
+		MS_Printf "Verifying archive integrity..."
     fi
     offset=\`head -n $SKIP "\$1" | wc -c | tr -d " "\`
     verb=\$2
@@ -166,29 +166,29 @@ MS_Check()
     do
 		crc=\`echo \$CRCsum | cut -d" " -f\$i\`
 		if test -x "\$MD5_PATH"; then
-			if test \`basename \$MD5_PATH\` = digest; then
+			if test x"\`basename \$MD5_PATH\`" = xdigest; then
 				MD5_ARG="-a md5"
 			fi
 			md5=\`echo \$MD5 | cut -d" " -f\$i\`
-			if test \$md5 = "00000000000000000000000000000000"; then
-				test x\$verb = xy && echo " \$1 does not contain an embedded MD5 checksum." >&2
+			if test x"\$md5" = x00000000000000000000000000000000; then
+				test x"\$verb" = xy && echo " \$1 does not contain an embedded MD5 checksum." >&2
 			else
 				md5sum=\`MS_dd "\$1" \$offset \$s | eval "\$MD5_PATH \$MD5_ARG" | cut -b-32\`;
-				if test "\$md5sum" != "\$md5"; then
+				if test x"\$md5sum" != x"\$md5"; then
 					echo "Error in MD5 checksums: \$md5sum is different from \$md5" >&2
 					exit 2
 				else
-					test x\$verb = xy && MS_Printf " MD5 checksums are OK." >&2
+					test x"\$verb" = xy && MS_Printf " MD5 checksums are OK." >&2
 				fi
 				crc="0000000000"; verb=n
 			fi
 		fi
-		if test \$crc = "0000000000"; then
-			test x\$verb = xy && echo " \$1 does not contain a CRC checksum." >&2
+		if test x"\$crc" = x0000000000; then
+			test x"\$verb" = xy && echo " \$1 does not contain a CRC checksum." >&2
 		else
 			sum1=\`MS_dd "\$1" \$offset \$s | CMD_ENV=xpg4 cksum | awk '{print \$1}'\`
-			if test "\$sum1" = "\$crc"; then
-				test x\$verb = xy && MS_Printf " CRC checksums are OK." >&2
+			if test x"\$sum1" = x"\$crc"; then
+				test x"\$verb" = xy && MS_Printf " CRC checksums are OK." >&2
 			else
 				echo "Error in checksums: \$sum1 is different from \$crc" >&2
 				exit 2;
@@ -197,18 +197,18 @@ MS_Check()
 		i=\`expr \$i + 1\`
 		offset=\`expr \$offset + \$s\`
     done
-    if test "\$quiet" = "n";then
-    	echo " All good."
+    if test x"\$quiet" = xn; then
+		echo " All good."
     fi
 }
 
 UnTAR()
 {
-    if test "\$quiet" = "n"; then
-    	tar \$1vf - 2>&1 || { echo Extraction failed. > /dev/tty; kill -15 \$$; }
+    if test x"\$quiet" = xn; then
+		tar \$1vf - 2>&1 || { echo Extraction failed. > /dev/tty; kill -15 \$$; }
     else
 
-    	tar \$1f - 2>&1 || { echo Extraction failed. > /dev/tty; kill -15 \$$; }
+		tar \$1f - 2>&1 || { echo Extraction failed. > /dev/tty; kill -15 \$$; }
     fi
 }
 
@@ -242,7 +242,7 @@ do
 	echo Date of packaging: $DATE
 	echo Built with Makeself version $MS_VERSION on $OSTYPE
 	echo Build command was: "$MS_COMMAND"
-	if test x\$script != x; then
+	if test x"\$script" != x; then
 	    echo Script run after extraction:
 	    echo "    " \$script \$scriptargs
 	fi
@@ -354,7 +354,7 @@ EOLSM
     esac
 done
 
-if test "\$quiet" = "y" -a "\$verbose" = "y";then
+if test x"\$quiet" = xy -a x"\$verbose" = xy; then
 	echo Cannot be verbose and quiet at the same time. >&2
 	exit 1
 fi
@@ -380,7 +380,7 @@ phase2)
     ;;
 esac
 
-if test "\$nox11" = "n"; then
+if test x"\$nox11" = xn; then
     if tty -s; then                 # Do we have a terminal?
 	:
     else
@@ -404,11 +404,11 @@ if test "\$nox11" = "n"; then
     fi
 fi
 
-if test "\$targetdir" = "."; then
+if test x"\$targetdir" = x.; then
     tmpdir="."
 else
-    if test "\$keep" = y; then
-	if test "\$quiet" = "n";then
+    if test x"\$keep" = xy; then
+	if test x"\$quiet" = xn; then
 	    echo "Creating directory \$targetdir" >&2
 	fi
 	tmpdir="\$targetdir"
@@ -426,7 +426,7 @@ else
 fi
 
 location="\`pwd\`"
-if test x\$SETUP_NOCHECK != x1; then
+if test x"\$SETUP_NOCHECK" != x1; then
     MS_Check "\$0"
 fi
 offset=\`head -n $SKIP "\$0" | wc -c | tr -d " "\`
@@ -439,11 +439,11 @@ if test x"\$verbose" = xy; then
 	fi
 fi
 
-if test "\$quiet" = "n";then
+if test x"\$quiet" = xn; then
 	MS_Printf "Uncompressing \$label"
 fi
 res=3
-if test "\$keep" = n; then
+if test x"\$keep" = xn; then
     trap 'echo Signal caught, cleaning up >&2; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit 15' 1 2 3 15
 fi
 
@@ -452,7 +452,7 @@ if test -n "\$leftspace"; then
     if test "\$leftspace" -lt $USIZE; then
         echo
         echo "Not enough space left in "\`dirname \$tmpdir\`" (\$leftspace KB) to decompress \$0 ($USIZE KB)" >&2
-        if test "\$keep" = n; then
+        if test x"\$keep" = xn; then
             echo "Consider setting TMPDIR to a directory with more free space."
         fi
         eval \$finish; exit 1
@@ -472,14 +472,14 @@ do
     fi
     offset=\`expr \$offset + \$s\`
 done
-if test "\$quiet" = "n";then
+if test x"\$quiet" = xn; then
 	echo
 fi
 
 cd "\$tmpdir"
 res=0
 if test x"\$script" != x; then
-    if test x"\$verbose" = xy; then
+    if test x"\$verbose" = x"y"; then
 		MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
 		read yn
 		if test x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY; then
@@ -488,11 +488,11 @@ if test x"\$script" != x; then
     else
 		eval \$script \$scriptargs \$*; res=\$?
     fi
-    if test \$res -ne 0; then
+    if test "\$res" -ne 0; then
 		test x"\$verbose" = xy && echo "The program '\$script' returned an error code (\$res)" >&2
     fi
 fi
-if test "\$keep" = n; then
+if test x"\$keep" = xn; then
     cd \$TMPROOT
     /bin/rm -rf \$tmpdir
 fi
