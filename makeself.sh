@@ -428,6 +428,7 @@ exec 3<> "$tmpfile"
 exec 3>&- # try to close the archive
 
 fsize=`cat "$tmpfile" | wc -c | tr -d " "`
+contents=`ls -Am "$archdir" | sed s/,//g`
 
 # Compute the checksums
 
