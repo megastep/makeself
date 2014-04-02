@@ -16,6 +16,7 @@ licensetxt="$LICENSE"
 helpheader='$HELPHEADER'
 targetdir="$archdirname"
 filesizes="$filesizes"
+contents="$contents"
 keep="$KEEP"
 quiet="n"
 
@@ -463,7 +464,7 @@ for s in \$filesizes
 do
     if MS_dd_Progress "\$0" \$offset \$s | eval "$GUNZIP_CMD" | ( cd "\$tmpdir"; UnTAR x ) 1>/dev/null; then
 		if test x"\$ownership" = xy; then
-			(PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
+			(PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; chown -R \`id -u\` \$contents;  chgrp -R \`id -g\` \$contents)
 		fi
     else
 		echo >&2
