@@ -16,6 +16,7 @@ licensetxt="$LICENSE"
 helpheader='$HELPHEADER'
 targetdir="$archdirname"
 filesizes="$filesizes"
+contents_tr_base64="$contents_tr_base64"
 keep="$KEEP"
 quiet="n"
 
@@ -463,7 +464,8 @@ for s in \$filesizes
 do
     if MS_dd_Progress "\$0" \$offset \$s | eval "$GUNZIP_CMD" | ( cd "\$tmpdir"; UnTAR x ) 1>/dev/null; then
 		if test x"\$ownership" = xy; then
-			(PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
+			(PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; echo "\$contents_tr_base64" | tr ":" "\\n" | base64 --decode | xargs -0 chown \`id -u\`)
+			(PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; echo "\$contents_tr_base64" | tr ":" "\\n" | base64 --decode | xargs -0 chgrp \`id -g\`)
 		fi
     else
 		echo >&2
