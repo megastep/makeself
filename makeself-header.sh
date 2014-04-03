@@ -359,7 +359,9 @@ if test x"\$quiet" = xy -a x"\$verbose" = xy; then
 	exit 1
 fi
 
-MS_PrintLicense
+if test x"\$copy" \!= xphase2; then
+    MS_PrintLicense
+fi
 
 case "\$copy" in
 copy)
