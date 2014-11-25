@@ -333,7 +333,9 @@ EOLSM
 	shift
 	;;
     --xwin)
-	finish="echo Press Return to close this window...; read junk"
+	if test "$NOWAIT" = n; then
+		finish="echo Press Return to close this window...; read junk"
+	fi
 	xterm_loop=1
 	shift
 	;;

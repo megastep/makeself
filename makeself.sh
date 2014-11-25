@@ -137,6 +137,7 @@ COMPRESS_LEVEL=9
 KEEP=n
 CURRENT=n
 NOX11=n
+NOWAIT=n
 APPEND=n
 QUIET=n
 NOPROGRESS=n
@@ -237,6 +238,7 @@ do
 	shift
 	;;
     --nowait)
+	NOWAIT=y
 	shift
 	;;
     --nomd5)
