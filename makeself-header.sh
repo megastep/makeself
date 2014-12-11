@@ -294,7 +294,7 @@ EOLSM
     if ! shift 2; then MS_Help; exit 1; fi
 	for s in \$filesizes
 	do
-	    MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | tar "\$arg1" - \$*
+	    MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | tar "\$arg1" - "\$@"
 	    offset=\`expr \$offset + \$s\`
 	done
 	exit 0
@@ -487,10 +487,10 @@ if test x"\$script" != x; then
 		MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
 		read yn
 		if test x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY; then
-			eval \$script \$scriptargs \$*; res=\$?;
+			eval "\"\$script\" \$scriptargs \"\\\$@\""; res=\$?;
 		fi
     else
-		eval \$script \$scriptargs \$*; res=\$?
+		eval "\"\$script\" \$scriptargs \"\\\$@\""; res=\$?
     fi
     if test "\$res" -ne 0; then
 		test x"\$verbose" = xy && echo "The program '\$script' returned an error code (\$res)" >&2
