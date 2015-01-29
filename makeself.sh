@@ -98,6 +98,8 @@ MS_Usage()
     echo "    --compress         : Compress using the UNIX 'compress' command"
     echo "    --complevel lvl    : Compression level for gzip xz bzip2 and pbzip2 (default 9)"
     echo "    --base64           : Instead of compressing, encode the data using base64"
+    echo "    --gpg-encrypt      : Instead of compressing, encrypt the data using GPG"
+    echo "    --ssl-encrypt      : Instead of compressing, encrypt the data using OpenSSL"
     echo "    --nocomp           : Do not compress the data"
     echo "    --notemp           : The archive will create archive_dir in the"
     echo "                         current directory and uncompress in ./archive_dir"
