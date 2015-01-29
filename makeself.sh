@@ -182,10 +182,14 @@ do
 	COMPRESS=base64
 	shift
 	;;
-    --encrypt)
+    --gpg-encrypt)
 	COMPRESS=gpg
 	shift
 	;;
+    --ssl-encrypt)
+        COMPRESS=openssl
+        shift
+        ;;
     --nocomp)
 	COMPRESS=none
 	shift
@@ -368,6 +372,10 @@ base64)
 gpg)
     GZIP_CMD="gpg -ac -z$COMPRESS_LEVEL"
     GUNZIP_CMD="gpg -d"
+    ;;
+openssl)
+    GZIP_CMD="openssl aes-256-cbc -a -salt"
+    GUNZIP_CMD="openssl aes-256-cbc -d -a"
     ;;
 Unix)
     GZIP_CMD="compress -cf"
