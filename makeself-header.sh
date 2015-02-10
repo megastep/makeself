@@ -484,6 +484,15 @@ fi
 cd "\$tmpdir"
 res=0
 if test x"\$script" != x; then
+    if test -f "\$script"; then
+		chmod +x "\$script"
+		if test ! -x "\$script"; then
+			echo >&2
+			echo "Cannot make \$script file executable" >&2
+			eval \$finish; exit 1
+		fi
+    fi
+
     if test x"\$verbose" = x"y"; then
 		MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
 		read yn
