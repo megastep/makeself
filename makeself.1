@@ -33,6 +33,12 @@ Compress using pbzip2.
 .B --xz
 Compress using xz.
 .TP
+.B --lzo
+Compress using lzop.
+.TP
+.B --lz4
+Compress using lz4.
+.TP
 .B --compress
 Compress using the UNIX 'compress' command.
 .TP
@@ -40,7 +46,7 @@ Compress using the UNIX 'compress' command.
 Do not compress the data.
 .TP
 .B --complevel lvl
-Specify the compression level for gzip,bzip2,pbzui2 or xz
+Specify the compression level for gzip,bzip2,pbzui2,xz,lzo or lz4
 .TP
 .B --notemp
 The archive will create archive_dir in the current directory and 

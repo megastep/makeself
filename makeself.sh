@@ -95,8 +95,10 @@ MS_Usage()
     echo "    --bzip2            : Compress using bzip2 instead of gzip"
     echo "    --pbzip2           : Compress using pbzip2 instead of gzip"
     echo "    --xz               : Compress using xz instead of gzip"
+    echo "    --lzo              : Compress using lzop instead of gzip"
+    echo "    --lz4              : Compress using lz4 instead of gzip"
     echo "    --compress         : Compress using the UNIX 'compress' command"
-    echo "    --complevel lvl    : Compression level for gzip xz bzip2 and pbzip2 (default 9)"
+    echo "    --complevel lvl    : Compression level for gzip xz lzo lz4 bzip2 and pbzip2 (default 9)"
     echo "    --base64           : Instead of compressing, encode the data using base64"
     echo "    --gpg-encrypt      : Instead of compressing, encrypt the data using GPG"
     echo "    --ssl-encrypt      : Instead of compressing, encrypt the data using OpenSSL"
@@ -174,6 +176,14 @@ do
 	;;
     --xz)
 	COMPRESS=xz
+	shift
+	;;
+    --lzo)
+	COMPRESS=lzo
+	shift
+	;;
+    --lz4)
+	COMPRESS=lz4
 	shift
 	;;
     --compress)
@@ -366,6 +376,14 @@ bzip2)
 xz)
     GZIP_CMD="xz -c$COMPRESS_LEVEL"
     GUNZIP_CMD="xz -d"
+    ;;
+lzo)
+    GZIP_CMD="lzop -c$COMPRESS_LEVEL"
+    GUNZIP_CMD="lzop -d"
+    ;;
+lz4)
+    GZIP_CMD="lz4 -c$COMPRESS_LEVEL"
+    GUNZIP_CMD="lz4 -d"
     ;;
 base64)
     GZIP_CMD="base64"
