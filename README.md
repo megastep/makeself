@@ -75,12 +75,14 @@ The syntax of makeself is the following:
     * **--bzip2** : Use bzip2 instead of gzip for better compression. The bzip2 command must be available in the command path. It is recommended that the archive prefix be set to something like '.bz2.run', so that potential users know that they'll need bzip2 to extract it.
     * **--pbzip2** : Use pbzip2 instead of gzip for better and faster compression on machines having multiple CPUs. The pbzip2 command must be available in the command path. It is recommended that the archive prefix be set to something like '.bz2.run', so that potential users know that they'll need bzip2 to extract it.
     * **--xz** : Use xz instead of gzip for better compression. The xz command must be available in the command path. It is recommended that the archive prefix be set to something like '.xz.run' for the archive, so that potential users know that they'll need xz to extract it.
+    * **--lzo** : Use lzop instead of gzip for better compression. The lzop command must be available in the command path. It is recommended that the archive prefix be set to something like '.lzo.run' for the archive, so that potential users know that they'll need lzop to extract it.
+    * **--lz4** : Use lz4 instead of gzip for better compression. The lz4 command must be available in the command path. It is recommended that the archive prefix be set to something like '.lz4.run' for the archive, so that potential users know that they'll need lz4 to extract it.
     * **--base64** : Encode the archive to ASCII in Base64 format (base64 command required).
     * **--gpg-encrypt** : Encrypt the archive using "gpg -ac -z $COMPRESS_LEVEL". This will prompt for a password to encrypt with. Assumes that potential users have gpg installed.
     * **--ssl-encrypt** : Encrypt the archive using "openssl aes-256-cbc -a -salt". This will prompt for a password to encrypt with. Assumes that the potential users have openssl installed. 
     * **--compress** : Use the UNIX "compress" command to compress the data. This should be the default on all platforms that don't have gzip available.
     * **--nocomp** : Do not use any compression for the archive, which will then be an uncompressed TAR.
-    * **--complevel** : Specify the compression level for gzip,bzip2,pbzip2 and xz. (default to 9)
+    * **--complevel** : Specify the compression level for gzip,bzip2,pbzip2,xz,lzo or lz4. (default to 9)
     * **--notemp** : The generated archive will not extract the files to a temporary directory, but in a new directory created in the current directory. This is better to distribute software packages that may extract and compile by themselves (i.e. launch the compilation through the embedded script).
     * **--current** : Files will be extracted to the current directory, instead of in a subdirectory. This option implies **--notemp** above.
     * **--follow** : Follow the symbolic links inside of the archive directory, i.e. store the files that are being pointed to instead of the links themselves.
