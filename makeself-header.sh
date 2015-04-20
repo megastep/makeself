@@ -173,7 +173,7 @@ MS_Check()
 			if test x"\$md5" = x00000000000000000000000000000000; then
 				test x"\$verb" = xy && echo " \$1 does not contain an embedded MD5 checksum." >&2
 			else
-				md5sum=\`MS_dd "\$1" \$offset \$s | eval "\$MD5_PATH \$MD5_ARG" | cut -b-32\`;
+				md5sum=\`MS_dd_Progress "\$1" \$offset \$s | eval "\$MD5_PATH \$MD5_ARG" | cut -b-32\`;
 				if test x"\$md5sum" != x"\$md5"; then
 					echo "Error in MD5 checksums: \$md5sum is different from \$md5" >&2
 					exit 2
@@ -186,7 +186,7 @@ MS_Check()
 		if test x"\$crc" = x0000000000; then
 			test x"\$verb" = xy && echo " \$1 does not contain a CRC checksum." >&2
 		else
-			sum1=\`MS_dd "\$1" \$offset \$s | CMD_ENV=xpg4 cksum | awk '{print \$1}'\`
+			sum1=\`MS_dd_Progress "\$1" \$offset \$s | CMD_ENV=xpg4 cksum | awk '{print \$1}'\`
 			if test x"\$sum1" = x"\$crc"; then
 				test x"\$verb" = xy && MS_Printf " CRC checksums are OK." >&2
 			else
