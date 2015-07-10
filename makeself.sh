@@ -241,7 +241,7 @@ do
     if ! shift 2; then MS_Help; exit 1; fi
     ;;
     --follow)
-	TAR_ARGS=cvfh
+	TAR_ARGS=cvhf
 	DU_ARGS=-ksL
 	shift
 	;;
@@ -311,8 +311,8 @@ archname="$2"
 if test "$QUIET" = "y"; then
     if test "$TAR_ARGS" = "cvf"; then
 	TAR_ARGS="cf"
-    elif test "$TAR_ARGS" = "cvfh";then
-	TAR_ARGS="cfh"
+    elif test "$TAR_ARGS" = "cvhf";then
+	TAR_ARGS="chf"
     fi
 fi
 
