@@ -2,6 +2,7 @@ cat << EOF  > "$archname"
 #!/bin/sh
 # This script was generated using Makeself $MS_VERSION
 
+ORIG_UMASK=\`umask\`
 umask 077
 
 CRCsum="$CRCsum"
@@ -465,7 +466,7 @@ fi
 
 for s in \$filesizes
 do
-    if MS_dd_Progress "\$0" \$offset \$s | eval "$GUNZIP_CMD" | ( cd "\$tmpdir"; UnTAR xp ) 1>/dev/null; then
+    if MS_dd_Progress "\$0" \$offset \$s | eval "$GUNZIP_CMD" | ( cd "\$tmpdir"; umask \$ORIG_UMASK ; UnTAR xp ) 1>/dev/null; then
 		if test x"\$ownership" = xy; then
 			(PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
 		fi
