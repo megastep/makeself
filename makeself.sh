@@ -149,7 +149,7 @@ COPY=none
 TAR_ARGS=cvf
 TAR_EXTRA=""
 DU_ARGS=-ks
-HEADER=`dirname "$0"`/makeself-header.sh
+HEADER=`dirname "$0"`/headers/makeself-header.sh
 TARGETDIR=""
 
 # LSM file stuff
@@ -279,6 +279,10 @@ do
 	[ -n "$HELPHEADER" ] && HELPHEADER="$HELPHEADER
 "
     ;;
+    --keep-umask)
+        HEADER=`dirname "$0"`/headers/makeself-header-keep-umask.sh
+        shift
+        ;;
     -q | --quiet)
 	QUIET=y
 	shift
