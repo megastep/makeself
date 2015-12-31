@@ -1,9 +1,11 @@
 cat << EOF  > "$archname"
 #!/bin/sh
 # This script was generated using Makeself $MS_VERSION
-
+echo KEEPUNAME
 ORIG_UMASK=\`umask\`
-umask 077
+
+#Do not override umask!
+#umask 077
 
 CRCsum="$CRCsum"
 MD5="$MD5sum"

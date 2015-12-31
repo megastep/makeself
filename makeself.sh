@@ -126,6 +126,8 @@ MS_Usage()
     echo "    --license file     : Append a license file"
     echo "    --help-header file : Add a header to the archive's --help output"
     echo
+    echo "    --keep-umask       : Keep the umask set to shell default, rather than overriding when executing self-extracting archive."
+    echo
     echo "Do not forget to give a fully qualified startup script name"
     echo "(i.e. with a ./ prefix if inside the archive)."
     exit 1
@@ -149,7 +151,7 @@ COPY=none
 TAR_ARGS=cvf
 TAR_EXTRA=""
 DU_ARGS=-ks
-HEADER=`dirname "$0"`/makeself-header.sh
+HEADER=`dirname "$0"`/headers/makeself-header.sh
 TARGETDIR=""
 
 # LSM file stuff
@@ -279,6 +281,10 @@ do
 	[ -n "$HELPHEADER" ] && HELPHEADER="$HELPHEADER
 "
     ;;
+    --keep-umask)
+        HEADER=`dirname "$0"`/headers/makeself-header-keep-umask.sh
+        shift
+        ;;
     -q | --quiet)
 	QUIET=y
 	shift
