@@ -126,6 +126,8 @@ MS_Usage()
     echo "    --license file     : Append a license file"
     echo "    --help-header file : Add a header to the archive's --help output"
     echo
+    echo "    --keep-umask       : Keep the umask set to shell default, rather than overriding when executing self-extracting archive."
+    echo
     echo "Do not forget to give a fully qualified startup script name"
     echo "(i.e. with a ./ prefix if inside the archive)."
     exit 1
