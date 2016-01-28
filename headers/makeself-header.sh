@@ -1,7 +1,6 @@
 cat << EOF  > "$archname"
 #!/bin/sh
 # This script was generated using Makeself $MS_VERSION
-
 ORIG_UMASK=\`umask\`
 umask 077
 
