@@ -1,0 +1,131 @@
+#!/bin/bash 
+
+SUT=$(realpath $(dirname $0)/../makeself.sh)
+
+# Default behaviour is to insert the current date in the
+# generated file.
+testCurrentDate() {
+  # Setup
+  temp=`mktemp -d -t XXXXX`
+  cd ${temp}
+  mkdir src
+  touch src/startup.sh
+
+  # Exercise
+  expected=`LC_ALL=C date +"%b"`
+
+  ${SUT} src src.sh alabel startup.sh
+
+  # Validate
+  actual=`strings src.sh | grep packaging`
+  expected=`date +"%b"`
+  if [[ ${actual} == *${expected}* ]]
+  then
+    found=0
+  else
+    echo "Substring not found: ${expected} in ${actual}"
+    found=1
+  fi
+  assertEqual 0 ${found} 
+  
+  # Cleanup
+  cd -
+  rm -rf ${temp}
+}
+
+
+# A fixed packaging date can be inserted
+# into the generated package.  This way
+# the package may be recreated from
+# source and remain byte-for-bye 
+# identical.
+testDateSet() {
+  # Setup
+  temp=`mktemp -d -t XXXXX`
+  echo temp=${temp}
+  cd ${temp}
+  mkdir src
+  touch src/startup.sh
+
+  expected='Sat Mar  5 19:35:21 EST 2016'
+
+  # Exercise
+  ${SUT} --packaging-date "${expected}" \
+    src src.sh alabel startup.sh
+
+  # Validate
+  actual=`strings src.sh | grep "Date of packaging"`
+  echo "actual="${actual}
+  expected=`date +"%b"`
+  if [[ ${actual} == *${expected}* ]]
+  then
+    echo date set found
+    found=0
+  else
+    echo "Substring not found: ${expected} in ${actual}"
+    found=1
+  fi
+  assertEqual 0 ${found} 
+  
+  # Cleanup
+  cd -
+  rm -rf ${temp}
+}
+
+
+# Error if --packaging-date is passed as
+# an argument but the date is missing
+testPackagingDateNeedsParameter() {
+  # Setup
+  temp=`mktemp -d -t XXXXX`
+  echo temp=${temp}
+  cd ${temp}
+  mkdir src
+  touch src/startup.sh
+
+  # Exercise
+  ${SUT} --packaging-date  \
+    src src.sh alabel startup.sh || true
+  actual=`test -f src.sh`
+
+  # Validate
+  echo "actual="${actual}
+  assertNotEqual 0 ${actual}
+  
+  # Cleanup
+  cd -
+  rm -rf ${temp}
+}
+
+# With the dates set we can get a byte for
+# byte identical package.
+testByteforbyte()
+{
+  # Setup
+  temp=`mktemp -d -t XXXXX`
+  echo temp=${temp}
+  cd ${temp}
+  mkdir src
+  echo "COMMANDS GO HERE" > src/startup.sh
+
+  date='Sat Mar  3 19:35:21 EST 2016'
+
+  # Exercise
+  ${SUT} --packaging-date "${date}" --tar-extra "--mtime 20160303" \
+    src src.sh alabel startup.sh
+  mv src.sh first
+  ${SUT} --packaging-date "${date}" --tar-extra "--mtime 20160303" \
+    src src.sh alabel startup.sh
+  mv src.sh second
+
+  # Validate
+  cmp first second
+  rc=$?
+  assert $rc
+  
+  # Cleanup
+  cd -
+  rm -rf ${temp}
+}
+
+source bashunit/bashunit.bash
