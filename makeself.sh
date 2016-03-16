@@ -90,6 +90,7 @@ MS_Usage()
     echo "params can be one or more of the following :"
     echo "    --version | -v     : Print out Makeself version number and exit"
     echo "    --help | -h        : Print out this help message"
+    echo "    --tar-quietly      : Suppress verbose output from the tar command"
     echo "    --quiet | -q       : Do not print any messages other than errors."
     echo "    --gzip             : Compress using gzip (default if detected)"
     echo "    --bzip2            : Compress using bzip2 instead of gzip"
@@ -143,6 +144,7 @@ CURRENT=n
 NOX11=n
 NOWAIT=n
 APPEND=n
+TAR_QUIETLY=n
 QUIET=n
 NOPROGRESS=n
 COPY=none
@@ -279,6 +281,10 @@ do
 	[ -n "$HELPHEADER" ] && HELPHEADER="$HELPHEADER
 "
     ;;
+    --tar-quietly)
+	TAR_QUIETLY=y
+	shift
+	;;
     -q | --quiet)
 	QUIET=y
 	shift
@@ -308,7 +314,7 @@ else
 fi
 archname="$2"
 
-if test "$QUIET" = "y"; then
+if test "$QUIET" = "y" || test "$TAR_QUIETLY" = "y"; then
     if test "$TAR_ARGS" = "cvf"; then
 	TAR_ARGS="cf"
     elif test "$TAR_ARGS" = "cvhf";then
