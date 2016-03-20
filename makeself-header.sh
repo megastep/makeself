@@ -152,9 +152,9 @@ MS_Check()
     OLD_PATH="\$PATH"
     PATH=\${GUESS_MD5_PATH:-"\$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
 	MD5_ARG=""
-    MD5_PATH=\`exec <&- 2>&-; which md5sum || type md5sum\`
-    test -x "\$MD5_PATH" || MD5_PATH=\`exec <&- 2>&-; which md5 || type md5\`
-	test -x "\$MD5_PATH" || MD5_PATH=\`exec <&- 2>&-; which digest || type digest\`
+    MD5_PATH=\`exec <&- 2>&-; which md5sum || command -v md5sum || type md5sum\`
+    test -x "\$MD5_PATH" || MD5_PATH=\`exec <&- 2>&-; which md5 || command -v md5 || type md5\`
+	test -x "\$MD5_PATH" || MD5_PATH=\`exec <&- 2>&-; which digest || command -v digest || type digest\`
     PATH="\$OLD_PATH"
 
     if test x"\$quiet" = xn; then
