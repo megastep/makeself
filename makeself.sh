@@ -373,7 +373,7 @@ fi
 
 case $COMPRESS in
 gzip)
-    GZIP_CMD="gzip -$COMPRESS_LEVEL"
+    GZIP_CMD="gzip -c$COMPRESS_LEVEL"
     GUNZIP_CMD="gzip -cd"
     ;;
 pigz) 
