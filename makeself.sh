@@ -93,13 +93,14 @@ MS_Usage()
     echo "    --tar-quietly      : Suppress verbose output from the tar command"
     echo "    --quiet | -q       : Do not print any messages other than errors."
     echo "    --gzip             : Compress using gzip (default if detected)"
+    echo "    --pigz		 : Compress with pigz"
     echo "    --bzip2            : Compress using bzip2 instead of gzip"
     echo "    --pbzip2           : Compress using pbzip2 instead of gzip"
     echo "    --xz               : Compress using xz instead of gzip"
     echo "    --lzo              : Compress using lzop instead of gzip"
     echo "    --lz4              : Compress using lz4 instead of gzip"
     echo "    --compress         : Compress using the UNIX 'compress' command"
-    echo "    --complevel lvl    : Compression level for gzip xz lzo lz4 bzip2 and pbzip2 (default 9)"
+    echo "    --complevel lvl    : Compression level for gzip pigz xz lzo lz4 bzip2 and pbzip2 (default 9)"
     echo "    --base64           : Instead of compressing, encode the data using base64"
     echo "    --gpg-encrypt      : Instead of compressing, encrypt the data using GPG"
     echo "    --ssl-encrypt      : Instead of compressing, encrypt the data using OpenSSL"
@@ -176,6 +177,10 @@ do
 	COMPRESS=gzip
 	shift
 	;;
+    --pigz)
+    	COMPRESS=pigz
+    	shift
+    	;;
     --xz)
 	COMPRESS=xz
 	shift
@@ -369,6 +374,10 @@ fi
 case $COMPRESS in
 gzip)
     GZIP_CMD="gzip -c$COMPRESS_LEVEL"
+    GUNZIP_CMD="gzip -cd"
+    ;;
+pigz) 
+    GZIP_CMD="pigz -$COMPRESS_LEVEL"
     GUNZIP_CMD="gzip -cd"
     ;;
 pbzip2)
