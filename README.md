@@ -46,7 +46,7 @@ system, then please [let me know][2]!
 
 Examples of publicly available archives made using makeself are :
 
-  * Game patches and installers for [Id Software][3] games like Quake 3 for Linux or Return To Castle Wolfenstien ;
+  * Game patches and installers for [Id Software][3] games like Quake 3 for Linux or Return To Castle Wolfenstein ;
   * All game patches released by [Loki Software][4] for the Linux version of popular games ;
   * The [nVidia drivers][5] for Linux
   * The installer for the Linux version of [Google Earth][6]
