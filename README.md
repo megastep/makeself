@@ -130,7 +130,7 @@ Archives generated with Makeself 2.1 can be passed the following arguments:
   * _--noexec_ : Do not run the embedded script after extraction.
 
 Any subsequent arguments to the archive will be passed as additional arguments
-to the embedded command. You should explicitly use the _--_ special command-
+to the embedded command. You must explicitly use the _--_ special command-
 line construct before any such options to make sure that Makeself will not try
 to interpret them.
 
