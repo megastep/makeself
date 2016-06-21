@@ -113,6 +113,7 @@ MS_Usage()
     echo "                         The label and startup scripts will then be ignored"
     echo "    --target dir       : Extract directly to a target directory"
     echo "                         directory path can be either absolute or relative"
+    echo "    --nooverwrite      : Do not extract the archive if the specified target directory exists"
     echo "    --current          : Files will be extracted to the current directory"
     echo "                         Both --current and --target imply --notemp"
     echo "    --tar-extra opt    : Append more options to the tar command line"
@@ -154,6 +155,7 @@ TAR_EXTRA=""
 DU_ARGS=-ks
 HEADER=`dirname "$0"`/makeself-header.sh
 TARGETDIR=""
+NOOVERWRITE=n
 
 # LSM file stuff
 LSM_CMD="echo No LSM. >> \"\$archname\""
@@ -232,20 +234,24 @@ do
 	;;
     --tar-extra)
 	TAR_EXTRA="$2"
-	if ! shift 2; then MS_Help; exit 1; fi
+        if ! shift 2; then MS_Help; exit 1; fi
         ;;
     --target)
 	TARGETDIR="$2"
 	KEEP=y
-    if ! shift 2; then MS_Help; exit 1; fi
+        if ! shift 2; then MS_Help; exit 1; fi
 	;;
+    --nooverwrite)
+        NOOVERWRITE=y
+	shift
+        ;;
     --header)
 	HEADER="$2"
-    if ! shift 2; then MS_Help; exit 1; fi
+        if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --license)
-    LICENSE=`cat $2`
-    if ! shift 2; then MS_Help; exit 1; fi
+        LICENSE=`cat $2`
+        if ! shift 2; then MS_Help; exit 1; fi
     ;;
     --follow)
 	TAR_ARGS=cvhf

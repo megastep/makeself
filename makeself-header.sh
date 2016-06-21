@@ -18,6 +18,7 @@ helpheader='$HELPHEADER'
 targetdir="$archdirname"
 filesizes="$filesizes"
 keep="$KEEP"
+nooverwrite="$NOOVERWRITE"
 quiet="n"
 
 print_cmd_arg=""
@@ -263,6 +264,7 @@ do
 	echo SCRIPTARGS=\"\$scriptargs\"
 	echo archdirname=\"$archdirname\"
 	echo KEEP=$KEEP
+	echo NOOVERWRITE=$NOOVERWRITE
 	echo COMPRESS=$COMPRESS
 	echo filesizes=\"\$filesizes\"
 	echo CRCsum=\"\$CRCsum\"
@@ -413,6 +415,10 @@ if test x"\$targetdir" = x.; then
     tmpdir="."
 else
     if test x"\$keep" = xy; then
+	if test x"\$nooverwrite" = xy && test -d "\$targetdir"; then
+            echo "Target directory \$targetdir already exists, aborting." >&2
+            exit 1
+	fi
 	if test x"\$quiet" = xn; then
 	    echo "Creating directory \$targetdir" >&2
 	fi
