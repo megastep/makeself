@@ -183,9 +183,9 @@ do
 	shift
 	;;
     --pigz)
-    	COMPRESS=pigz
-    	shift
-    	;;
+	COMPRESS=pigz
+	shift
+	;;
     --xz)
 	COMPRESS=xz
 	shift
@@ -237,8 +237,8 @@ do
 	;;
     --tar-extra)
 	TAR_EXTRA="$2"
-        if ! shift 2; then MS_Help; exit 1; fi
-        ;;
+	if ! shift 2; then MS_Help; exit 1; fi
+	;;
     --exclude)
 	echo "$2" >> $excludefile
 	if ! shift 2; then MS_Help; exit 1; fi
@@ -246,7 +246,7 @@ do
     --target)
 	TARGETDIR="$2"
 	KEEP=y
-        if ! shift 2; then MS_Help; exit 1; fi
+	if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --nooverwrite)
         NOOVERWRITE=y
@@ -254,12 +254,12 @@ do
         ;;
     --header)
 	HEADER="$2"
-        if ! shift 2; then MS_Help; exit 1; fi
+	if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --license)
         LICENSE=`cat $2`
         if ! shift 2; then MS_Help; exit 1; fi
-    ;;
+        ;;
     --follow)
 	TAR_ARGS=cvhf
 	DU_ARGS=-ksL
@@ -291,14 +291,14 @@ do
 	;;
     --lsm)
 	LSM_CMD="cat \"$2\" >> \"\$archname\""
-    if ! shift 2; then MS_Help; exit 1; fi
+	if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --help-header)
 	HELPHEADER=`sed -e "s/'/'\\\\\''/g" $2`
-    if ! shift 2; then MS_Help; exit 1; fi
+	if ! shift 2; then MS_Help; exit 1; fi
 	[ -n "$HELPHEADER" ] && HELPHEADER="$HELPHEADER
 "
-    ;;
+	;;
     --tar-quietly)
 	TAR_QUIETLY=y
 	shift
@@ -438,20 +438,20 @@ esac
 tmpfile="${TMPDIR:=/tmp}/mkself$$"
 
 if test -f "$HEADER"; then
-	oldarchname="$archname"
-	archname="$tmpfile"
-	# Generate a fake header to count its lines
-	SKIP=0
+    oldarchname="$archname"
+    archname="$tmpfile"
+    # Generate a fake header to count its lines
+    SKIP=0
     . "$HEADER"
     SKIP=`cat "$tmpfile" |wc -l`
-	# Get rid of any spaces
-	SKIP=`expr $SKIP`
-	rm -f "$tmpfile"
+    # Get rid of any spaces
+    SKIP=`expr $SKIP`
+    rm -f "$tmpfile"
     if test "$QUIET" = "n";then
-    	echo Header is $SKIP lines long >&2
+        echo Header is $SKIP lines long >&2
     fi
 
-	archname="$oldarchname"
+    archname="$oldarchname"
 else
     echo "Unable to open header file: $HEADER" >&2
     exit 1
@@ -463,7 +463,7 @@ fi
 
 if test "$APPEND" = n; then
     if test -f "$archname"; then
-		echo "WARNING: Overwriting existing file: $archname" >&2
+        echo "WARNING: Overwriting existing file: $archname" >&2
     fi
 fi
 
@@ -554,7 +554,7 @@ if test "$APPEND" = y; then
     chmod +x "$archname"
     rm -f "$archname".bak
     if test "$QUIET" = "n";then
-    	echo Self-extractable archive \"$archname\" successfully updated.
+        echo Self-extractable archive \"$archname\" successfully updated.
     fi
 else
     filesizes="$fsize"
@@ -566,12 +566,12 @@ else
 
     # Append the compressed tar data after the stub
     if test "$QUIET" = "n";then
-    	echo
+        echo
     fi
     cat "$tmpfile" >> "$archname"
     chmod +x "$archname"
     if test "$QUIET" = "n";then
-    	echo Self-extractable archive \"$archname\" successfully created.
+        echo Self-extractable archive \"$archname\" successfully created.
     fi
 fi
 rm -f "$tmpfile" "$excludefile"
