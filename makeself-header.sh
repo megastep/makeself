@@ -94,7 +94,7 @@ MS_dd_Progress()
     blocks=\`expr \$length / \$bsize\`
     bytes=\`expr \$length % \$bsize\`
     (
-        dd ibs=\$offset skip=1 2>/dev/null
+        dd ibs=\$offset skip=1 count=0 2>/dev/null
         pos=\`expr \$pos \+ \$bsize\`
         MS_Printf "     0%% " 1>&2
         if test \$blocks -gt 0; then
