@@ -253,6 +253,9 @@ do
 	if test x"$copy" = xcopy; then
 		echo "Archive will copy itself to a temporary location"
 	fi
+	if test x"$NEED_ROOT" = xy; then
+		echo "Root permissions required for extraction"
+	fi
 	if test x"$KEEP" = xy; then
 	    echo "directory \$targetdir is permanent"
 	else
@@ -364,6 +367,11 @@ done
 if test x"\$quiet" = xy -a x"\$verbose" = xy; then
 	echo Cannot be verbose and quiet at the same time. >&2
 	exit 1
+fi
+
+if test x"$NEED_ROOT" = xy -a \`id -u\` -ne 0; then
+	echo "Administrative privileges required for this archive (use su or sudo)" >&2
+	exit 1	
 fi
 
 if test x"\$copy" \!= xphase2; then

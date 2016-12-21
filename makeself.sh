@@ -67,13 +67,13 @@
 #           Added --target dir to allow extracting directly to a target directory (Guy Baconniere)
 # - 2.2.0 : Many bugfixes, updates and contributions from users. Check out the project page on Github for the details.
 #
-# (C) 1998-2013 by Stephane Peter <megastep@megastep.org>
+# (C) 1998-2016 by Stephane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
 
-MS_VERSION=2.2.0
+MS_VERSION=2.3.0
 MS_COMMAND="$0"
 unset CDPATH
 
@@ -107,6 +107,7 @@ MS_Usage()
     echo "    --nocomp           : Do not compress the data"
     echo "    --notemp           : The archive will create archive_dir in the"
     echo "                         current directory and uncompress in ./archive_dir"
+    echo "    --needroot         : Check that the root user is extracting the archive before proceeding"
     echo "    --copy             : Upon extraction, the archive will first copy itself to"
     echo "                         a temporary directory"
     echo "    --append           : Append more files to an existing Makeself archive"
@@ -153,6 +154,7 @@ KEEP_UMASK=n
 QUIET=n
 NOPROGRESS=n
 COPY=none
+NEED_ROOT=n
 TAR_ARGS=cvf
 TAR_EXTRA=""
 DU_ARGS=-ks
@@ -248,6 +250,10 @@ do
         NOOVERWRITE=y
 	shift
         ;;
+    --needroot)
+	NEED_ROOT=y
+	shift
+	;;
     --header)
 	HEADER="$2"
         if ! shift 2; then MS_Help; exit 1; fi
@@ -255,7 +261,7 @@ do
     --license)
         LICENSE=`cat $2`
         if ! shift 2; then MS_Help; exit 1; fi
-    ;;
+	;;
     --follow)
 	TAR_ARGS=cvhf
 	DU_ARGS=-ksL
