@@ -66,6 +66,7 @@
 #           Added --noprogress to prevent showing the progress during the decompression (Guy Baconniere)
 #           Added --target dir to allow extracting directly to a target directory (Guy Baconniere)
 # - 2.2.0 : Many bugfixes, updates and contributions from users. Check out the project page on Github for the details.
+# - 2.3.0 : Option to specify packaging date to enable byte-for-byte reproducibility. (Marc Pawlowsky)
 #
 # (C) 1998-2016 by Stephane Peter <megastep@megastep.org>
 #
@@ -129,6 +130,9 @@ MS_Usage()
     echo "    --lsm file         : LSM file describing the package"
     echo "    --license file     : Append a license file"
     echo "    --help-header file : Add a header to the archive's --help output"
+    echo "    --packaging-date date"
+    echo "                       : Use provided string as the packaging date"
+    echo "                         instead of the current date."
     echo
     echo "    --keep-umask       : Keep the umask set to shell default, rather than overriding when executing self-extracting archive."
     echo
@@ -161,6 +165,7 @@ DU_ARGS=-ks
 HEADER=`dirname "$0"`/makeself-header.sh
 TARGETDIR=""
 NOOVERWRITE=n
+DATE=`LC_ALL=C date`
 
 # LSM file stuff
 LSM_CMD="echo No LSM. >> \"\$archname\""
@@ -295,6 +300,10 @@ do
 	LSM_CMD="cat \"$2\" >> \"\$archname\""
     if ! shift 2; then MS_Help; exit 1; fi
 	;;
+    --packaging-date)
+	DATE="$2"
+	if ! shift 2; then MS_Help; exit 1; fi
+        ;;
     --help-header)
 	HELPHEADER=`sed -e "s/'/'\\\\\''/g" $2`
     if ! shift 2; then MS_Help; exit 1; fi
@@ -474,7 +483,6 @@ if test "$APPEND" = n; then
 fi
 
 USIZE=`du $DU_ARGS "$archdir" | awk '{print $1}'`
-DATE=`LC_ALL=C date`
 
 if test "." = "$archdirname"; then
 	if test "$KEEP" = n; then
