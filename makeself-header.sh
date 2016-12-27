@@ -22,6 +22,7 @@ filesizes="$filesizes"
 keep="$KEEP"
 nooverwrite="$NOOVERWRITE"
 quiet="n"
+nodiskspace="n"
 
 print_cmd_arg=""
 if type printf > /dev/null; then
@@ -143,6 +144,7 @@ MS_Help()
   --noprogress          Do not show the progress during the decompression
   --nox11               Do not spawn an xterm
   --nochown             Do not give the extracted files to the current user
+  --nodiskspace         Do not check for available disk space
   --target dir          Extract directly to a target directory
                         directory path can be either absolute or relative
   --tar arg1 [arg2 ...] Access the contents of the archive through the tar command
@@ -340,6 +342,10 @@ EOLSM
 	ownership=n
 	shift
 	;;
+    --nodiskspace)
+	nodiskspace=y
+	shift
+	;;
     --xwin)
 	if test "$NOWAIT" = n; then
 		finish="echo Press Return to close this window...; read junk"
@@ -468,15 +474,18 @@ if test x"\$keep" = xn; then
     trap 'echo Signal caught, cleaning up >&2; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit 15' 1 2 3 15
 fi
 
-leftspace=\`MS_diskspace \$tmpdir\`
-if test -n "\$leftspace"; then
-    if test "\$leftspace" -lt $USIZE; then
-        echo
-        echo "Not enough space left in "\`dirname \$tmpdir\`" (\$leftspace KB) to decompress \$0 ($USIZE KB)" >&2
-        if test x"\$keep" = xn; then
-            echo "Consider setting TMPDIR to a directory with more free space."
+if test x"\$nodiskspace" = xn; then
+    leftspace=\`MS_diskspace \$tmpdir\`
+    if test -n "\$leftspace"; then
+        if test "\$leftspace" -lt $USIZE; then
+            echo
+            echo "Not enough space left in "\`dirname \$tmpdir\`" (\$leftspace KB) to decompress \$0 ($USIZE KB)" >&2
+            echo "Use --nodiskspace option to skip this check and proceed anyway" >&2
+            if test x"\$keep" = xn; then
+                echo "Consider setting TMPDIR to a directory with more free space."
+            fi
+            eval \$finish; exit 1
         fi
-        eval \$finish; exit 1
     fi
 fi
 
