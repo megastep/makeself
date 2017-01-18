@@ -6,3 +6,4 @@ theme: jekyll-theme-tactile
 
 gems:
   - jekyll-mentions
+  - jekyll-seo-tag
