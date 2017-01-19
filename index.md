@@ -1,3 +1,5 @@
+---
+---
 # makeself - Make self-extractable archives on Unix
 
 [makeself.sh][1] is a small shell script that generates a self-extractable
