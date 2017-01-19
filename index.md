@@ -97,7 +97,7 @@ The syntax of makeself is the following:
     * **--lsm _file_** : Provide and LSM file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the '-lsm' argument to the archive. An exemple of a LSM file is provided with Makeself.
     * **--tar-extra opt** : Append more options to the tar command line.
     * **--keep-umask** : Keep the umask set to shell default, rather than overriding when executing self-extracting archive.
-    * **--packaging-date date : Use provided string as the packaging date instead of the current date.
+    * **--packaging-date date** : Use provided string as the packaging date instead of the current date.
   * _archive_dir_ is the name of the directory that contains the files to be archived
   * _file_name_ is the name of the archive to be created
   * _label_ is an arbitrary text string describing the package. It will be displayed while extracting the files.
