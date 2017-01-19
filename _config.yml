@@ -5,5 +5,5 @@ show_downloads: true
 theme: jekyll-theme-tactile
 
 gems:
-  - jekyll-mentions
+#  - jekyll-mentions
   - jekyll-seo-tag
