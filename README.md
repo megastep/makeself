@@ -66,7 +66,9 @@ Examples of publicly available archives made using makeself are :
 
 The syntax of makeself is the following:
 
-`makeself.sh [args] archive_dir file_name label startup_script [script_args]`
+```
+makeself.sh [args] archive_dir file_name label startup_script [script_args]
+```
 
   * _args_ are optional options for Makeself. The available ones are :
 
@@ -77,45 +79,47 @@ The syntax of makeself is the following:
     * **--xz** : Use xz instead of gzip for better compression. The xz command must be available in the command path. It is recommended that the archive prefix be set to something like '.xz.run' for the archive, so that potential users know that they'll need xz to extract it.
     * **--lzo** : Use lzop instead of gzip for better compression. The lzop command must be available in the command path. It is recommended that the archive prefix be set to something like '.lzo.run' for the archive, so that potential users know that they'll need lzop to extract it.
     * **--lz4** : Use lz4 instead of gzip for better compression. The lz4 command must be available in the command path. It is recommended that the archive prefix be set to something like '.lz4.run' for the archive, so that potential users know that they'll need lz4 to extract it.
+    * **--pigz** : Use pigz for compression.
     * **--base64** : Encode the archive to ASCII in Base64 format (base64 command required).
-    * **--gpg-encrypt** : Encrypt the archive using "gpg -ac -z $COMPRESS_LEVEL". This will prompt for a password to encrypt with. Assumes that potential users have gpg installed.
-    * **--ssl-encrypt** : Encrypt the archive using "openssl aes-256-cbc -a -salt". This will prompt for a password to encrypt with. Assumes that the potential users have openssl installed. 
-    * **--compress** : Use the UNIX "compress" command to compress the data. This should be the default on all platforms that don't have gzip available.
+    * **--gpg-encrypt** : Encrypt the archive using `gpg -ac -z $COMPRESS_LEVEL`. This will prompt for a password to encrypt with. Assumes that potential users have `gpg` installed.
+    * **--ssl-encrypt** : Encrypt the archive using `openssl aes-256-cbc -a -salt`. This will prompt for a password to encrypt with. Assumes that the potential users have the OpenSSL tools installed. 
+    * **--compress** : Use the UNIX `compress` command to compress the data. This should be the default on all platforms that don't have gzip available.
     * **--nocomp** : Do not use any compression for the archive, which will then be an uncompressed TAR.
-    * **--complevel** : Specify the compression level for gzip,bzip2,pbzip2,xz,lzo or lz4. (default to 9)
+    * **--complevel** : Specify the compression level for gzip, bzip2, pbzip2, xz, lzo or lz4. (defaults to 9)
+    * **--base64** : Instead of compressing, encode the archive data using Base64.
     * **--notemp** : The generated archive will not extract the files to a temporary directory, but in a new directory created in the current directory. This is better to distribute software packages that may extract and compile by themselves (i.e. launch the compilation through the embedded script).
-    * **--current** : Files will be extracted to the current directory, instead of in a subdirectory. This option implies **--notemp** above.
+    * **--current** : Files will be extracted to the current directory, instead of in a subdirectory. This option implies `--notemp` above.
     * **--follow** : Follow the symbolic links inside of the archive directory, i.e. store the files that are being pointed to instead of the links themselves.
     * **--append** _(new in 2.1.x)_: Append data to an existing archive, instead of creating a new one. In this mode, the settings from the original archive are reused (compression type, label, embedded script), and thus don't need to be specified again on the command line.
-    * **--header** : Makeself 2.0 uses a separate file to store the header stub, called "makeself-header.sh". By default, it is assumed that it is stored in the same location as makeself.sh. This option can be used to specify its actual location if it is stored someplace else.
+    * **--header** : Makeself 2.0 uses a separate file to store the header stub, called `makeself-header.sh`. By default, it is assumed that it is stored in the same location as makeself.sh. This option can be used to specify its actual location if it is stored someplace else.
     * **--copy** : Upon extraction, the archive will first extract itself to a temporary directory. The main application of this is to allow self-contained installers stored in a Makeself archive on a CD, when the installer program will later need to unmount the CD and allow a new one to be inserted. This prevents "Filesystem busy" errors for installers that span multiple CDs.
     * **--nox11** : Disable the automatic spawning of a new terminal in X11.
     * **--nowait** : When executed from a new X11 terminal, disable the user prompt at the end of the script execution.
     * **--nomd5** and **--nocrc** : Disable the creation of a MD5 / CRC checksum for the archive. This speeds up the extraction process if integrity checking is not necessary.
-    * **--lsm _file_** : Provide and LSM file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the '-lsm' argument to the archive. An exemple of a LSM file is provided with Makeself.
+    * **--lsm _file_** : Provide and LSM file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the `--lsm` argument to the archive. An exemple of a LSM file is provided with Makeself.
     * **--tar-extra opt** : Append more options to the tar command line.
     * **--keep-umask** : Keep the umask set to shell default, rather than overriding when executing self-extracting archive.
-    * **--packaging-date date : Use provided string as the packaging date instead of the current date.
+    * **--packaging-date date** : Use provided string as the packaging date instead of the current date.
+    * **--license** : Append a license file.
+    * **--nooverwrite** : Do not extract the archive if the specified target directory already exists.
+    * **--header file** : Specify the location of the header script file (default `makeself-header.sh`)
+    * **--help-header file** : Add a header to the archive's `--help` output. 
   * _archive_dir_ is the name of the directory that contains the files to be archived
   * _file_name_ is the name of the archive to be created
   * _label_ is an arbitrary text string describing the package. It will be displayed while extracting the files.
-  * _startup_script_ is the command to be executed _from within_ the directory of extracted files. Thus, if you wish to execute a program contain in this directory, you must prefix your command with "./". For example, ./program will be fine. The _script_args_ are additionnal arguments for this command.
+  * _startup_script_ is the command to be executed _from within_ the directory of extracted files. Thus, if you wish to execute a program contain in this directory, you must prefix your command with `./`. For example, `./program` will be fine. The _script_args_ are additionnal arguments for this command.
 
-Here is an example, assuming the user has a package image stored in a
-**/home/joe/mysoft**, and he wants to generate a self-extracting package named
-**mysoft.sh**, which will launch the "setup" script initially stored in
-/home/joe/mysoft :
+Here is an example, assuming the user has a package image stored in a **/home/joe/mysoft**, and he wants to generate a self-extracting package named
+**mysoft.sh**, which will launch the "setup" script initially stored in /home/joe/mysoft :
 
 `makeself.sh /home/joe/mysoft mysoft.sh "Joe's Nice Software Package" ./setup
 `
 
-Here is also how I created the [makeself.run][1] archive which contains the
-Makeself distribution :
+Here is also how I created the [makeself.run][1] archive which contains the Makeself distribution :
 
-`makeself.sh --notemp makeself makeself.run "Makeself by Stephane Peter" echo
-"Makeself has extracted itself" `
+`makeself.sh --notemp makeself makeself.run "Makeself by Stephane Peter" echo "Makeself has extracted itself" `
 
-Archives generated with Makeself 2.1 can be passed the following arguments:
+Archives generated with Makeself can be passed the following arguments:
 
   * _--keep_ : Prevent the files to be extracted in a temporary directory that will be removed after the embedded script's execution. The files will then be extracted in the current working directory and will stay here until you remove them.
   * _--verbose_ : Will prompt the user before executing the embedded command
@@ -126,21 +130,16 @@ Archives generated with Makeself 2.1 can be passed the following arguments:
   * _--lsm_ : Print out the LSM entry, if it is present.
   * _--list_ : List the files in the archive.
   * _--check_ : Check the archive for integrity using the embedded checksums. Does not extract the archive.
-  * _--nochown_ : By default, a "chown -R" command is run on the target directory after extraction, so that all files belong to the current user. This is mostly needed if you are running as root, as tar will then try to recreate the initial user ownerships. You may disable this behavior with this flag.
+  * _--nochown_ : By default, a `chown -R` command is run on the target directory after extraction, so that all files belong to the current user. This is mostly needed if you are running as root, as tar will then try to recreate the initial user ownerships. You may disable this behavior with this flag.
   * _--tar_ : Run the tar command on the contents of the archive, using the following arguments as parameter for the command.
   * _--noexec_ : Do not run the embedded script after extraction.
+  * _--nodiskspace_ : Do not check for available disk space before attempting to extract.
 
-Any subsequent arguments to the archive will be passed as additional arguments
-to the embedded command. You must explicitly use the _--_ special command-
-line construct before any such options to make sure that Makeself will not try
-to interpret them.
+Any subsequent arguments to the archive will be passed as additional arguments to the embedded command. You must explicitly use the _--_ special command-line construct before any such options to make sure that Makeself will not try to interpret them.
 
 ## License
 
-Makeself is covered by the [GNU General Public License][8] (GPL) version 2 and
-above. Archives generated by Makeself don't have to be placed under this
-license (although I encourage it ;-)), since the archive itself is merely data
-for Makeself.
+Makeself is covered by the [GNU General Public License][8] (GPL) version 2 and above. Archives generated by Makeself don't have to be placed under this license (although I encourage it ;-)), since the archive itself is merely data for Makeself.
 
 ## Contributing
 
@@ -151,10 +150,9 @@ I will gladly consider merging your pull requests on the [GitHub][10] repository
 
 ## Download
 
-Get the latest official distribution [here][9] (version 2.2.0).
+Get the latest official distribution [here][9] (version 2.3.0).
 
-The latest development version can be grabbed from [GitHub][10]. Feel free to
-submit any patches there through the fork and pull request process.
+The latest development version can be grabbed from [GitHub][10]. Feel free to submit any patches there through the fork and pull request process.
 
 ## Version history
 
@@ -174,6 +172,7 @@ submit any patches there through the fork and pull request process.
   * **v2.1.5:** Made the md5sum detection consistent with the header code. Check for the presence of the archive directory. Added --encrypt for symmetric encryption through gpg (Eric Windisch). Added support for the digest command on Solaris 10 for MD5 checksums. Check for available disk space before extracting to the target directory (Andreas Schweitzer). Allow extraction to run asynchronously (patch by Peter Hatch). Use file descriptors internally to avoid error messages (patch by Kay Tiong Khoo).
   * **v2.1.6:** Replaced one dot per file progress with a realtime progress percentage and a spining cursor. Added --noprogress to prevent showing the progress during the decompression. Added --target dir to allow extracting directly to a target directory. (Guy Baconniere)
   * **v2.2.0:** First major new release in years! Includes many bugfixes and user contributions. Please look at the [project page on Github][10] for all the details.
+  * **v2.3.0:** Support for archive encryption via GPG or OpenSSL. Added LZO and LZ4 compression support. Options to set the packaging date and stop the umask from being overriden. Optionally ignore check for available disk space when extracting. New option to check for root permissions before extracting.
 
 ## Links
 
@@ -202,7 +201,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: https://github.com/megastep/makeself/releases/download/release-2.2.0/makeself-2.2.0.run
+   [9]: https://github.com/megastep/makeself/releases/download/release-2.3.0/makeself-2.3.0.run
    [10]: https://github.com/megastep/makeself
    [11]: http://www.icculus.org/loki_setup/
    [12]: http://www.unrealtournament2003.com/
