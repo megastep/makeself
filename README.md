@@ -181,7 +181,7 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
 
 ## Contact
 
-This script was written by [Stéphane Peter][2] (megastep at megastep.org). Any enhancements and suggestions are welcome.
+This script was written by [Stéphane Peter][15] (megastep at megastep.org). Any enhancements and suggestions are welcome.
 
 Contributions were included from John C. Quillan, Bjarni R. Einarsson,
 Francois Petitjean, Ryan C. Gordon, and many contributors on GitHub. If you think I forgot
@@ -207,3 +207,4 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [12]: http://www.unrealtournament2003.com/
    [13]: http://www.icculus.org/
    [14]: http://bre.klaki.net/programs/setup.sh/
+   [15]: http://stephanepeter.com/
