@@ -1,7 +1,7 @@
 title: Makeself
 description: A self-extracting archiving tool for Unix systems, in 100% shell script.
 google_analytics: UA-1803317-14
-show_downloads: true
+show_downloads: false
 theme: jekyll-theme-cayman
 
 gems:
