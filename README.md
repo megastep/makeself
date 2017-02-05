@@ -115,7 +115,7 @@ Here is an example, assuming the user has a package image stored in a **/home/jo
 `makeself.sh /home/joe/mysoft mysoft.sh "Joe's Nice Software Package" ./setup
 `
 
-Here is also how I created the [makeself.run][1] archive which contains the Makeself distribution :
+Here is also how I created the [makeself.run][9] archive which contains the Makeself distribution :
 
 `makeself.sh --notemp makeself makeself.run "Makeself by Stephane Peter" echo "Makeself has extracted itself" `
 
@@ -193,7 +193,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
 
 [Stephane Peter][2]
 
-   [1]: makeself.run
+   [1]: http://stephanepeter.com/makeself/
    [2]: mailto:megastep@megastep.org
    [3]: http://www.idsoftware.com/
    [4]: http://www.lokigames.com/products/myth2/updates.php3
