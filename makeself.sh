@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Makeself version 2.2.x
+# Makeself version 2.3.x
 #  by Stephane Peter <megastep@megastep.org>
 #
 # Utility to create self-extracting tar.gz archives.
@@ -8,7 +8,7 @@
 # a small Shell script stub that uncompresses the archive to a temporary
 # directory and then executes a given script from withing that directory.
 #
-# Makeself home page: http://www.megastep.org/makeself/
+# Makeself home page: http://makeself.io/
 #
 # Version 2.0 is a rewrite of version 1.0 to make the code easier to read and maintain.
 #

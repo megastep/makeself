@@ -10,7 +10,7 @@ Description:    makeself.sh is a shell script that generates a self-extractable
 Keywords:       Installation archive tar winzip
 Author:         Stephane Peter (megastep@megastep.org)
 Maintained-by:  Stephane Peter (megastep@megastep.org)
-Original-site:  http://stephanepeter.com/makeself/
+Original-site:  http://makeself.io/
 Platform:       Unix
 Copying-policy: GPL
 End

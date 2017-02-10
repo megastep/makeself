@@ -193,7 +193,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
 
 [Stephane Peter][2]
 
-   [1]: http://stephanepeter.com/makeself/
+   [1]: http://makeself.io/
    [2]: mailto:megastep@megastep.org
    [3]: http://www.idsoftware.com/
    [4]: http://www.lokigames.com/products/myth2/updates.php3
