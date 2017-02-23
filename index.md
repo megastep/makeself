@@ -96,7 +96,7 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **--nox11** : Disable the automatic spawning of a new terminal in X11.
     * **--nowait** : When executed from a new X11 terminal, disable the user prompt at the end of the script execution.
     * **--nomd5** and **--nocrc** : Disable the creation of a MD5 / CRC checksum for the archive. This speeds up the extraction process if integrity checking is not necessary.
-    * **--lsm _file_** : Provide and LSM file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the `--lsm` argument to the archive. An exemple of a LSM file is provided with Makeself.
+    * **--lsm _file_** : Provide and LSM file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the `--lsm` argument to the archive. An example of a LSM file is provided with Makeself.
     * **--tar-extra opt** : Append more options to the tar command line.
     * **--keep-umask** : Keep the umask set to shell default, rather than overriding when executing self-extracting archive.
     * **--packaging-date date** : Use provided string as the packaging date instead of the current date.
