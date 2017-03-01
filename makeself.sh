@@ -500,6 +500,10 @@ exec 3<> "$tmpfile"
 exec 3>&- # try to close the archive
 
 fsize=`cat "$tmpfile" | wc -c | tr -d " "`
+# base64 encode list of contents separated by NULLs to preserve full
+# file-names and make sure no newlines in result so can be dumped
+# directly into header
+contents_tr_base64=`find "$archdir" -print0 | base64 | tr "\\n" ":"`
 
 # Compute the checksums
 
