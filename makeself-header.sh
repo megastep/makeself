@@ -32,6 +32,10 @@ elif test -x /usr/ucb/echo; then
 else
     print_cmd="echo"
 fi
+	
+if test -d /usr/xpg4/bin; then
+    export PATH=/usr/xpg4/bin:\$PATH
+fi
 
 unset CDPATH
 
@@ -62,9 +66,6 @@ MS_PrintLicense()
 MS_diskspace()
 {
 	(
-	if test -d /usr/xpg4/bin; then
-		PATH=/usr/xpg4/bin:\$PATH
-	fi
 	df -kP "\$1" | tail -1 | awk '{ if (\$4 ~ /%/) {print \$3} else {print \$4} }'
 	)
 }
@@ -493,7 +494,7 @@ for s in \$filesizes
 do
     if MS_dd_Progress "\$0" \$offset \$s | eval "$GUNZIP_CMD" | ( cd "\$tmpdir"; umask \$ORIG_UMASK ; UnTAR xp ) 1>/dev/null; then
 		if test x"\$ownership" = xy; then
-			(PATH=/usr/xpg4/bin:\$PATH; cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
+			(cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
 		fi
     else
 		echo >&2
