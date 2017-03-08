@@ -85,7 +85,8 @@ done
 
 # For Solaris systems
 if test -d /usr/xpg4/bin; then
-    export PATH=/usr/xpg4/bin:$PATH
+    PATH=/usr/xpg4/bin:$PATH
+    export PATH
 fi
 
 # Procedures
