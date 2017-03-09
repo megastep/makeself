@@ -74,7 +74,7 @@
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 #
 
-MS_VERSION=2.3.0
+MS_VERSION=2.3.1
 MS_COMMAND="$0"
 unset CDPATH
 
