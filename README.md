@@ -82,7 +82,7 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **--pigz** : Use pigz for compression.
     * **--base64** : Encode the archive to ASCII in Base64 format (base64 command required).
     * **--gpg-encrypt** : Encrypt the archive using `gpg -ac -z $COMPRESS_LEVEL`. This will prompt for a password to encrypt with. Assumes that potential users have `gpg` installed.
-    * **--ssl-encrypt** : Encrypt the archive using `openssl aes-256-cbc -a -salt`. This will prompt for a password to encrypt with. Assumes that the potential users have the OpenSSL tools installed. 
+    * **--ssl-encrypt** : Encrypt the archive using `openssl aes-256-cbc -a -salt`. This will prompt for a password to encrypt with. Assumes that the potential users have the OpenSSL tools installed.
     * **--compress** : Use the UNIX `compress` command to compress the data. This should be the default on all platforms that don't have gzip available.
     * **--nocomp** : Do not use any compression for the archive, which will then be an uncompressed TAR.
     * **--complevel** : Specify the compression level for gzip, bzip2, pbzip2, xz, lzo or lz4. (defaults to 9)
@@ -98,12 +98,15 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **--nomd5** and **--nocrc** : Disable the creation of a MD5 / CRC checksum for the archive. This speeds up the extraction process if integrity checking is not necessary.
     * **--lsm _file_** : Provide and LSM file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the `--lsm` argument to the archive. An example of a LSM file is provided with Makeself.
     * **--tar-extra opt** : Append more options to the tar command line.
+
+        For instance, in order to exclude the `.git` directory from the packaged archive directory using the GNU `tar`, one can use `makeself.sh --tar-extra "--exclude=.git" ...`
+
     * **--keep-umask** : Keep the umask set to shell default, rather than overriding when executing self-extracting archive.
     * **--packaging-date date** : Use provided string as the packaging date instead of the current date.
     * **--license** : Append a license file.
     * **--nooverwrite** : Do not extract the archive if the specified target directory already exists.
     * **--header file** : Specify the location of the header script file (default `makeself-header.sh`)
-    * **--help-header file** : Add a header to the archive's `--help` output. 
+    * **--help-header file** : Add a header to the archive's `--help` output.
   * _archive_dir_ is the name of the directory that contains the files to be archived
   * _file_name_ is the name of the archive to be created
   * _label_ is an arbitrary text string describing the package. It will be displayed while extracting the files.
