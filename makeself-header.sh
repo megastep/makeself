@@ -23,6 +23,7 @@ keep="$KEEP"
 nooverwrite="$NOOVERWRITE"
 quiet="n"
 nodiskspace="n"
+export_conf="$EXPORT_CONF"
 
 print_cmd_arg=""
 if type printf > /dev/null; then
@@ -511,6 +512,15 @@ fi
 cd "\$tmpdir"
 res=0
 if test x"\$script" != x; then
+    if test x"\$export_conf" = x"y"; then
+        BUNDLE="\$0"
+        LABEL="\$label"
+        SCRIPT="\$script"
+        SCRIPTARGS="\$scriptargs"
+        ARCHDIRNAME="\$archdirname"
+        export BUNDLE LABEL SCRIPT SCRIPTARGS ARCHDIRNAME KEEP NOOVERWRITE COMPRESS
+    fi
+
     if test x"\$verbose" = x"y"; then
 		MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
 		read yn

@@ -141,6 +141,7 @@ MS_Usage()
     echo "                         instead of the current date."
     echo
     echo "    --keep-umask       : Keep the umask set to shell default, rather than overriding when executing self-extracting archive."
+    echo "    --export-conf      : Export configuration variables to startup_script"
     echo
     echo "Do not forget to give a fully qualified startup script name"
     echo "(i.e. with a ./ prefix if inside the archive)."
@@ -172,6 +173,7 @@ HEADER=`dirname "$0"`/makeself-header.sh
 TARGETDIR=""
 NOOVERWRITE=n
 DATE=`LC_ALL=C date`
+EXPORT_CONF=n
 
 # LSM file stuff
 LSM_CMD="echo No LSM. >> \"\$archname\""
@@ -324,6 +326,10 @@ do
 	KEEP_UMASK=y
 	shift
 	;;
+    --export-conf)
+    EXPORT_CONF=y
+    shift
+    ;;
     -q | --quiet)
 	QUIET=y
 	shift
