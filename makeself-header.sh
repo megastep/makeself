@@ -521,8 +521,8 @@ if test x"\$script" != x; then
         MS_KEEP="\$KEEP"
         MS_NOOVERWRITE="\$NOOVERWRITE"
         MS_COMPRESS="\$COMPRESS"
-        export MS_BUNDLE MS_LABEL MS_SCRIPT MS_SCRIPTARGS\
-             MS_ARCHDIRNAME MS_KEEP MS_NOOVERWRITE MS_COMPRESS
+        export MS_BUNDLE MS_LABEL MS_SCRIPT MS_SCRIPTARGS
+        export MS_ARCHDIRNAME MS_KEEP MS_NOOVERWRITE MS_COMPRESS
     fi
 
     if test x"\$verbose" = x"y"; then
