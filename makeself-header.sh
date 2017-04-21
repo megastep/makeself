@@ -513,12 +513,16 @@ cd "\$tmpdir"
 res=0
 if test x"\$script" != x; then
     if test x"\$export_conf" = x"y"; then
-        BUNDLE="\$0"
-        LABEL="\$label"
-        SCRIPT="\$script"
-        SCRIPTARGS="\$scriptargs"
-        ARCHDIRNAME="\$archdirname"
-        export BUNDLE LABEL SCRIPT SCRIPTARGS ARCHDIRNAME KEEP NOOVERWRITE COMPRESS
+        MS_BUNDLE="\$0"
+        MS_LABEL="\$label"
+        MS_SCRIPT="\$script"
+        MS_SCRIPTARGS="\$scriptargs"
+        MS_ARCHDIRNAME="\$archdirname"
+        MS_KEEP="\$KEEP"
+        MS_NOOVERWRITE="\$NOOVERWRITE"
+        MS_COMPRESS="\$COMPRESS"
+        export MS_BUNDLE MS_LABEL MS_SCRIPT MS_SCRIPTARGS\
+             MS_ARCHDIRNAME MS_KEEP MS_NOOVERWRITE MS_COMPRESS
     fi
 
     if test x"\$verbose" = x"y"; then
