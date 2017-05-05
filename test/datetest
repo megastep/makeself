@@ -56,7 +56,6 @@ testDateSet() {
   # Validate
   actual=`strings src.sh | grep "Date of packaging"`
   echo "actual="${actual}
-  expected=`date +"%b"`
   if [[ ${actual} == *${expected}* ]]
   then
     echo date set found
