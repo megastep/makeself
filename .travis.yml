@@ -1,7 +1,7 @@
 language: c
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y realpath
+  - sudo apt-get install -y realpath pbzip2
 script:
   - cd test
   - ./datetest

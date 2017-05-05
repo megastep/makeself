@@ -36,7 +36,7 @@ testBzip2()
   assert $?
 }
 
-testBzip2()
+testPBzip2()
 {
   setupTests --pbzip2
 
