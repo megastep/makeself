@@ -2,14 +2,17 @@
 
 SUT=$(realpath $(dirname $0)/../makeself.sh)
 
-# Default behaviour is to insert the current date in the
-# generated file.
-testCurrentDate() {
-  # Setup
+setupTests() {
   temp=`mktemp -d -t XXXXX`
   cd ${temp}
   mkdir src
-  touch src/startup.sh
+  echo "echo This is a test" > src/startup.sh
+}
+
+# Default behaviour is to insert the current date in the
+# generated file.
+testCurrentDate() {
+  setupTests
 
   # Exercise
   expected=`LC_ALL=C date +"%b"`
@@ -40,12 +43,7 @@ testCurrentDate() {
 # source and remain byte-for-bye 
 # identical.
 testDateSet() {
-  # Setup
-  temp=`mktemp -d -t XXXXX`
-  echo temp=${temp}
-  cd ${temp}
-  mkdir src
-  touch src/startup.sh
+  setupTests
 
   expected='Sat Mar  5 19:35:21 EST 2016'
 
@@ -75,12 +73,7 @@ testDateSet() {
 # Error if --packaging-date is passed as
 # an argument but the date is missing
 testPackagingDateNeedsParameter() {
-  # Setup
-  temp=`mktemp -d -t XXXXX`
-  echo temp=${temp}
-  cd ${temp}
-  mkdir src
-  touch src/startup.sh
+  setupTests
 
   # Exercise
   ${SUT} --packaging-date  \
@@ -100,12 +93,7 @@ testPackagingDateNeedsParameter() {
 # byte identical package.
 testByteforbyte()
 {
-  # Setup
-  temp=`mktemp -d -t XXXXX`
-  echo temp=${temp}
-  cd ${temp}
-  mkdir src
-  echo "COMMANDS GO HERE" > src/startup.sh
+  setupTests
 
   date='Sat Mar  3 19:35:21 EST 2016'
 
