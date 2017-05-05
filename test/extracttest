@@ -1,0 +1,49 @@
+#!/bin/bash
+
+SUT=$(realpath $(dirname $0)/../makeself.sh)
+SOURCE=$(realpath ..)
+
+setupTests() {
+  temp=`mktemp -d -t XXXXX`
+  cd "$temp"
+  mkdir archive
+  cp -a $SOURCE archive/ 
+  $SUT $* archive makeself-test.run "Test $*" echo Testing
+}
+
+
+testQuiet()
+{
+  setupTests
+
+  ./makeself-test.run --quiet
+  assert $?
+}
+
+testGzip()
+{
+  setupTests --gzip
+  
+  ./makeself-test.run --check
+  assert $?
+}
+
+testBzip2()
+{
+  setupTests --bzip2
+  
+  ./makeself-test.run --check
+  assert $?
+}
+
+testBzip2()
+{
+  setupTests --pbzip2
+
+  ./makeself-test.run --check
+  assert $?
+}
+
+
+source bashunit/bashunit.bash
+

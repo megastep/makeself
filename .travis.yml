@@ -5,3 +5,4 @@ before_install:
 script:
   - cd test
   - ./datetest
+  - ./extracttest
