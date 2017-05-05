@@ -1,0 +1,4 @@
+language: c
+script:
+  - cd test
+  - ./datetest
