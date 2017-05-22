@@ -110,8 +110,8 @@ MS_Usage()
     echo "    --complevel lvl    : Compression level for gzip pigz xz lzo lz4 bzip2 and pbzip2 (default 9)"
     echo "    --base64           : Instead of compressing, encode the data using base64"
     echo "    --gpg-encrypt      : Instead of compressing, encrypt the data using GPG"
-    echo "    --gpg-asymetric-encrypt-sign"
-    echo "                       : Instead of compressing, asymetrically encrypt and sign the data using GPG"
+    echo "    --gpg-asymmetric-encrypt-sign"
+    echo "                       : Instead of compressing, asymmetrically encrypt and sign the data using GPG"
     echo "    --gpg-extra opt    : Append more options to the gpg command line"
     echo "    --ssl-encrypt      : Instead of compressing, encrypt the data using OpenSSL"
     echo "    --nocomp           : Do not compress the data"
@@ -229,8 +229,8 @@ do
 	COMPRESS=gpg
 	shift
 	;;
-    --gpg-asymetric-encrypt-sign)
-  COMPRESS=gpg-asymetric
+    --gpg-asymmetric-encrypt-sign)
+  COMPRESS=gpg-asymmetric
   shift
   ;;
     --gpg-extra)
@@ -460,7 +460,7 @@ gpg)
     GZIP_CMD="gpg $GPG_EXTRA -ac -z$COMPRESS_LEVEL"
     GUNZIP_CMD="gpg -d"
     ;;
-gpg-asymetric)
+gpg-asymmetric)
     GZIP_CMD="gpg $GPG_EXTRA -z$COMPRESS_LEVEL -es"
     GUNZIP_CMD="gpg --yes -d"
     ;;
