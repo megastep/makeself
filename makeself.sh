@@ -110,6 +110,9 @@ MS_Usage()
     echo "    --complevel lvl    : Compression level for gzip pigz xz lzo lz4 bzip2 and pbzip2 (default 9)"
     echo "    --base64           : Instead of compressing, encode the data using base64"
     echo "    --gpg-encrypt      : Instead of compressing, encrypt the data using GPG"
+    echo "    --gpg-asymmetric-encrypt-sign"
+    echo "                       : Instead of compressing, asymmetrically encrypt and sign the data using GPG"
+    echo "    --gpg-extra opt    : Append more options to the gpg command line"
     echo "    --ssl-encrypt      : Instead of compressing, encrypt the data using OpenSSL"
     echo "    --nocomp           : Do not compress the data"
     echo "    --notemp           : The archive will create archive_dir in the"
@@ -168,6 +171,7 @@ COPY=none
 NEED_ROOT=n
 TAR_ARGS=cvf
 TAR_EXTRA=""
+GPG_EXTRA=""
 DU_ARGS=-ks
 HEADER=`dirname "$0"`/makeself-header.sh
 TARGETDIR=""
@@ -225,10 +229,18 @@ do
 	COMPRESS=gpg
 	shift
 	;;
+    --gpg-asymmetric-encrypt-sign)
+  COMPRESS=gpg-asymmetric
+  shift
+  ;;
+    --gpg-extra)
+  GPG_EXTRA="$2"
+  if ! shift 2; then MS_Help; exit 1; fi
+  ;;
     --ssl-encrypt)
-        COMPRESS=openssl
-        shift
-        ;;
+  COMPRESS=openssl
+  shift
+  ;;
     --nocomp)
 	COMPRESS=none
 	shift
@@ -445,8 +457,12 @@ base64)
     GUNZIP_CMD="base64 -d -i"
     ;;
 gpg)
-    GZIP_CMD="gpg -ac -z$COMPRESS_LEVEL"
+    GZIP_CMD="gpg $GPG_EXTRA -ac -z$COMPRESS_LEVEL"
     GUNZIP_CMD="gpg -d"
+    ;;
+gpg-asymmetric)
+    GZIP_CMD="gpg $GPG_EXTRA -z$COMPRESS_LEVEL -es"
+    GUNZIP_CMD="gpg --yes -d"
     ;;
 openssl)
     GZIP_CMD="openssl aes-256-cbc -a -salt"
@@ -508,7 +524,7 @@ if test "$QUIET" = "n";then
    echo Adding files to archive named \"$archname\"...
 fi
 exec 3<> "$tmpfile"
-(cd "$archdir" && ( tar $TAR_EXTRA -$TAR_ARGS - . | eval "$GZIP_CMD" >&3 ) ) || { echo Aborting: Archive directory not found or temporary file: "$tmpfile" could not be created.; exec 3>&-; rm -f "$tmpfile"; exit 1; }
+(cd "$archdir" && ( tar "$TAR_EXTRA" -$TAR_ARGS - . | eval "$GZIP_CMD" >&3 ) ) || { echo Aborting: Archive directory not found or temporary file: "$tmpfile" could not be created.; exec 3>&-; rm -f "$tmpfile"; exit 1; }
 exec 3>&- # try to close the archive
 
 fsize=`cat "$tmpfile" | wc -c | tr -d " "`
@@ -596,3 +612,4 @@ else
     fi
 fi
 rm -f "$tmpfile"
+
