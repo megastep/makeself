@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 cat << EOF  > "$archname"
 #!/bin/sh
 # This script was generated using Makeself $MS_VERSION
@@ -363,11 +364,6 @@ EOLSM
     --)
 	shift
 	break ;;
-    -*)
-	echo Unrecognized flag : "\$1" >&2
-	MS_Help
-	exit 1
-	;;
     *)
 	break ;;
     esac
