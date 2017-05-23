@@ -182,7 +182,7 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
 
 ## Links
 
-  * Check out the ["Loki Setup"][11] installer, used to install many Linux games and other applications, and of which I am the co-author. Since the demise of Loki, I am now the official maintainer of the project, and it is now being hosted on [icculus.org][13], as well as a bunch of other ex-Loki projects (and a lot of other good stuff!).
+  * Check out the ["Loki Setup"][11] installer, used to install many Linux games and other applications, and of which I am the co-author. Since the demise of Loki, I am now the official maintainer of the project, and it is now being hosted here on GitHub.
   * Bjarni R. Einarsson also wrote the **setup.sh** installer script, inspired by Makeself. [Check it out !][14]
 
 ## Contact
@@ -209,7 +209,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [8]: http://www.gnu.org/copyleft/gpl.html
    [9]: https://github.com/megastep/makeself/releases/download/release-2.3.0/makeself-2.3.0.run
    [10]: https://github.com/megastep/makeself
-   [11]: http://www.icculus.org/loki_setup/
+   [11]: https://github.com/megastep/loki_setup/
    [12]: http://www.unrealtournament2003.com/
    [13]: http://www.icculus.org/
    [14]: http://bre.klaki.net/programs/setup.sh/
