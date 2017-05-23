@@ -284,7 +284,7 @@ do
         if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --license)
-        LICENSE=`cat $2`
+        LICENSE=`cat $2 | gzip | base64`
         if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --follow)
