@@ -22,6 +22,7 @@ filesizes="$filesizes"
 keep="$KEEP"
 nooverwrite="$NOOVERWRITE"
 quiet="n"
+accept="n"
 nodiskspace="n"
 export_conf="$EXPORT_CONF"
 
@@ -50,18 +51,20 @@ MS_PrintLicense()
 {
   if test x"\$licensetxt" != x; then
     echo "\$licensetxt"
-    while true
-    do
-      MS_Printf "Please type y to accept, n otherwise: "
-      read yn
-      if test x"\$yn" = xn; then
-        keep=n
-	eval \$finish; exit 1
-        break;
-      elif test x"\$yn" = xy; then
-        break;
-      fi
-    done
+    if test x"\$accept" != xy; then
+      while true
+      do
+        MS_Printf "Please type y to accept, n otherwise: "
+        read yn
+        if test x"\$yn" = xn; then
+          keep=n
+          eval \$finish; exit 1
+          break;
+        elif test x"\$yn" = xy; then
+          break;
+        fi
+      done
+    fi
   fi
 }
 
@@ -141,6 +144,7 @@ MS_Help()
   with following options (in that order)
   --confirm             Ask before running embedded script
   --quiet		Do not print anything except error messages
+  --accept              Accept the license
   --noexec              Do not run embedded script
   --keep                Do not erase target directory after running
 			the embedded script
@@ -241,6 +245,10 @@ do
     -q | --quiet)
 	quiet=y
 	noprogress=y
+	shift
+	;;
+	--accept)
+	accept=y
 	shift
 	;;
     --info)
