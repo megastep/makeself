@@ -24,7 +24,6 @@ nooverwrite="$NOOVERWRITE"
 quiet="n"
 nodiskspace="n"
 export_conf="$EXPORT_CONF"
-untar_extra="$UNTAR_EXTRA"
 
 print_cmd_arg=""
 if type printf > /dev/null; then
