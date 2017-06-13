@@ -213,4 +213,4 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [12]: http://www.unrealtournament2003.com/
    [13]: http://www.icculus.org/
    [14]: http://bre.klaki.net/programs/setup.sh/
-   [15]: http://stephanepeter.com/
+   [15]: https://stephanepeter.com/
