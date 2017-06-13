@@ -128,6 +128,7 @@ MS_Usage()
     echo "    --current          : Files will be extracted to the current directory"
     echo "                         Both --current and --target imply --notemp"
     echo "    --tar-extra opt    : Append more options to the tar command line"
+    echo "    --untar-extra opt  : Append more options to the during the extraction of the tar archive"
     echo "    --nomd5            : Don't calculate an MD5 for archive"
     echo "    --nocrc            : Don't calculate a CRC for archive"
     echo "    --header file      : Specify location of the header script"
@@ -264,6 +265,10 @@ do
 	;;
     --tar-extra)
 	TAR_EXTRA="$2"
+        if ! shift 2; then MS_Help; exit 1; fi
+        ;;
+    --untar-extra)
+        UNTAR_EXTRA="$2"
         if ! shift 2; then MS_Help; exit 1; fi
         ;;
     --target)
