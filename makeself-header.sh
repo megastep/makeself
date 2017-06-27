@@ -218,7 +218,7 @@ MS_Check()
 UnTAR()
 {
     if test x"\$quiet" = xn; then
-		tar \$1 "$UNTAR_EXTRA" -vf - 2>&1 || { echo Extraction failed. > /dev/tty; kill -15 \$$; }
+		tar \$1 "$UNTAR_EXTRA" -vf - 2>&1 || { echo " ... Extraction failed." > /dev/tty; kill -15 \$$; }
     else
 
 		tar \$1 "$UNTAR_EXTRA" -f - 2>&1 || { echo Extraction failed. > /dev/tty; kill -15 \$$; }
