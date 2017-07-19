@@ -6,3 +6,4 @@ script:
   - cd test
   - ./datetest
   - ./extracttest
+  - ./tarextratest
