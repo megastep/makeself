@@ -38,7 +38,7 @@ platforms :
   * HP-UX (tested on 11.0 and 11i on HPPA RISC)
   * SCO OpenUnix and OpenServer
   * IBM AIX 5.1L
-  * MacOS X (Darwin)
+  * macOS (Darwin)
   * SGI IRIX 6.5
   * FreeBSD
   * UnicOS / Cray
@@ -182,6 +182,7 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
   * **v2.1.6:** Replaced one dot per file progress with a realtime progress percentage and a spining cursor. Added --noprogress to prevent showing the progress during the decompression. Added --target dir to allow extracting directly to a target directory. (Guy Baconniere)
   * **v2.2.0:** First major new release in years! Includes many bugfixes and user contributions. Please look at the [project page on Github][10] for all the details.
   * **v2.3.0:** Support for archive encryption via GPG or OpenSSL. Added LZO and LZ4 compression support. Options to set the packaging date and stop the umask from being overriden. Optionally ignore check for available disk space when extracting. New option to check for root permissions before extracting.
+  * **v2.3.1:** Various compatibility updates. Added unit tests for Travis CI in the GitHub repo. New --tar-extra, --untar-extra, --gpg-extra, --gpg-asymmetric-encrypt-sign options.
 
 ## Links
 
@@ -210,7 +211,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: https://github.com/megastep/makeself/releases/download/release-2.3.0/makeself-2.3.0.run
+   [9]: https://github.com/megastep/makeself/releases/download/release-2.3.1/makeself-2.3.1.run
    [10]: https://github.com/megastep/makeself
    [11]: https://github.com/megastep/loki_setup/
    [12]: http://www.unrealtournament2003.com/
