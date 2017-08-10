@@ -35,7 +35,7 @@ platforms :
   * HP-UX (tested on 11.0 and 11i on HPPA RISC)
   * SCO OpenUnix and OpenServer
   * IBM AIX 5.1L
-  * MacOS X (Darwin)
+  * macOS (Darwin)
   * SGI IRIX 6.5
   * FreeBSD
   * UnicOS / Cray
@@ -80,13 +80,12 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **--lzo** : Use lzop instead of gzip for better compression. The lzop command must be available in the command path. It is recommended that the archive prefix be set to something like '.lzo.run' for the archive, so that potential users know that they'll need lzop to extract it.
     * **--lz4** : Use lz4 instead of gzip for better compression. The lz4 command must be available in the command path. It is recommended that the archive prefix be set to something like '.lz4.run' for the archive, so that potential users know that they'll need lz4 to extract it.
     * **--pigz** : Use pigz for compression.
-    * **--base64** : Encode the archive to ASCII in Base64 format (base64 command required).
+    * **--base64** : Encode the archive to ASCII in Base64 format instead of compressing (base64 command required).
     * **--gpg-encrypt** : Encrypt the archive using `gpg -ac -z $COMPRESS_LEVEL`. This will prompt for a password to encrypt with. Assumes that potential users have `gpg` installed.
-    * **--ssl-encrypt** : Encrypt the archive using `openssl aes-256-cbc -a -salt`. This will prompt for a password to encrypt with. Assumes that the potential users have the OpenSSL tools installed. 
+    * **--ssl-encrypt** : Encrypt the archive using `openssl aes-256-cbc -a -salt`. This will prompt for a password to encrypt with. Assumes that the potential users have the OpenSSL tools installed.
     * **--compress** : Use the UNIX `compress` command to compress the data. This should be the default on all platforms that don't have gzip available.
     * **--nocomp** : Do not use any compression for the archive, which will then be an uncompressed TAR.
     * **--complevel** : Specify the compression level for gzip, bzip2, pbzip2, xz, lzo or lz4. (defaults to 9)
-    * **--base64** : Instead of compressing, encode the archive data using Base64.
     * **--notemp** : The generated archive will not extract the files to a temporary directory, but in a new directory created in the current directory. This is better to distribute software packages that may extract and compile by themselves (i.e. launch the compilation through the embedded script).
     * **--current** : Files will be extracted to the current directory, instead of in a subdirectory. This option implies `--notemp` above.
     * **--follow** : Follow the symbolic links inside of the archive directory, i.e. store the files that are being pointed to instead of the links themselves.
@@ -98,12 +97,15 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **--nomd5** and **--nocrc** : Disable the creation of a MD5 / CRC checksum for the archive. This speeds up the extraction process if integrity checking is not necessary.
     * **--lsm _file_** : Provide and LSM file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the `--lsm` argument to the archive. An example of a LSM file is provided with Makeself.
     * **--tar-extra opt** : Append more options to the tar command line.
+
+        For instance, in order to exclude the `.git` directory from the packaged archive directory using the GNU `tar`, one can use `makeself.sh --tar-extra "--exclude=.git" ...`
+
     * **--keep-umask** : Keep the umask set to shell default, rather than overriding when executing self-extracting archive.
     * **--packaging-date date** : Use provided string as the packaging date instead of the current date.
     * **--license** : Append a license file.
     * **--nooverwrite** : Do not extract the archive if the specified target directory already exists.
     * **--header file** : Specify the location of the header script file (default `makeself-header.sh`)
-    * **--help-header file** : Add a header to the archive's `--help` output. 
+    * **--help-header file** : Add a header to the archive's `--help` output.
   * _archive_dir_ is the name of the directory that contains the files to be archived
   * _file_name_ is the name of the archive to be created
   * _label_ is an arbitrary text string describing the package. It will be displayed while extracting the files.
@@ -136,6 +138,10 @@ Archives generated with Makeself can be passed the following arguments:
   * _--nodiskspace_ : Do not check for available disk space before attempting to extract.
 
 Any subsequent arguments to the archive will be passed as additional arguments to the embedded command. You must explicitly use the _--_ special command-line construct before any such options to make sure that Makeself will not try to interpret them.
+
+## Maven Usage
+
+Makeself is now supported by the following maven plugin [makeself-maven-plugin](https://github.com/hazendaz/makeself-maven-plugin).  Please refer to project for usage and report any bugs in regards to maven plugin on that project.
 
 ## License
 
@@ -173,10 +179,11 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
   * **v2.1.6:** Replaced one dot per file progress with a realtime progress percentage and a spining cursor. Added --noprogress to prevent showing the progress during the decompression. Added --target dir to allow extracting directly to a target directory. (Guy Baconniere)
   * **v2.2.0:** First major new release in years! Includes many bugfixes and user contributions. Please look at the [project page on Github][10] for all the details.
   * **v2.3.0:** Support for archive encryption via GPG or OpenSSL. Added LZO and LZ4 compression support. Options to set the packaging date and stop the umask from being overriden. Optionally ignore check for available disk space when extracting. New option to check for root permissions before extracting.
+  * **v2.3.1:** Various compatibility updates. Added unit tests for Travis CI in the GitHub repo. New --tar-extra, --untar-extra, --gpg-extra, --gpg-asymmetric-encrypt-sign options.
 
 ## Links
 
-  * Check out the ["Loki Setup"][11] installer, used to install many Linux games and other applications, and of which I am the co-author. Since the demise of Loki, I am now the official maintainer of the project, and it is now being hosted on [icculus.org][13], as well as a bunch of other ex-Loki projects (and a lot of other good stuff!).
+  * Check out the ["Loki Setup"][11] installer, used to install many Linux games and other applications, and of which I am the co-author. Since the demise of Loki, I am now the official maintainer of the project, and it is now being hosted here on GitHub.
   * Bjarni R. Einarsson also wrote the **setup.sh** installer script, inspired by Makeself. [Check it out !][14]
 
 ## Contact
@@ -201,9 +208,9 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: https://github.com/megastep/makeself/releases/download/release-2.3.0/makeself-2.3.0.run
+   [9]: https://github.com/megastep/makeself/releases/download/release-2.3.1/makeself-2.3.1.run
    [10]: https://github.com/megastep/makeself
-   [11]: http://www.icculus.org/loki_setup/
+   [11]: https://github.com/megastep/loki_setup/
    [12]: http://www.unrealtournament2003.com/
    [13]: http://www.icculus.org/
    [14]: http://bre.klaki.net/programs/setup.sh/
