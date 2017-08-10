@@ -156,7 +156,7 @@ I will gladly consider merging your pull requests on the [GitHub][10] repository
 
 ## Download
 
-Get the latest official distribution [here][9] (version 2.3.0).
+Get the latest official distribution [here][9] (version 2.3.1).
 
 The latest development version can be grabbed from [GitHub][10]. Feel free to submit any patches there through the fork and pull request process.
 
