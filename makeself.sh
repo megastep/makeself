@@ -470,8 +470,8 @@ gpg-asymmetric)
     GUNZIP_CMD="gpg --yes -d"
     ;;
 openssl)
-    GZIP_CMD="openssl aes-256-cbc -a -salt"
-    GUNZIP_CMD="openssl aes-256-cbc -d -a"
+    GZIP_CMD="openssl aes-256-cbc -a -salt -md sha256"
+    GUNZIP_CMD="openssl aes-256-cbc -d -a -md sha256"
     ;;
 Unix)
     GZIP_CMD="compress -cf"
