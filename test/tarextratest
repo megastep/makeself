@@ -1,0 +1,28 @@
+#!/bin/bash
+
+SUT=$(realpath "$(dirname "$0")/../makeself.sh")
+
+setupTests() {
+  temp=$(mktemp -d -t XXXXX)
+  pushd "${temp}"
+  mkdir -p src/.git
+  echo "echo This is a test" > src/startup.sh
+}
+
+tearDown() {
+  popd
+  rm -rf "${temp}"
+}
+
+testTarExtraOpts() {
+  setupTests
+
+  tar_extra="--verbose --exclude .git"
+  ${SUT} --tar-extra "$tar_extra" src src.sh alabel startup.sh
+
+  assert $?
+
+  tearDown
+}
+
+source bashunit/bashunit.bash
