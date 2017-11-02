@@ -152,8 +152,8 @@ MS_Help()
   --nox11               Do not spawn an xterm
   --nochown             Do not give the extracted files to the current user
   --nodiskspace         Do not check for available disk space
-  --target dir          Extract directly to a target directory
-                        directory path can be either absolute or relative
+  --target dir          Extract directly to a target directory (absolute or relative)
+                        This directory may undergo recursive chown (see --nochown).
   --tar arg1 [arg2 ...] Access the contents of the archive through the tar command
   --                    Following arguments will be passed to the embedded script
 EOH
