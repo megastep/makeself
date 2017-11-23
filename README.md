@@ -142,6 +142,14 @@ Archives generated with Makeself can be passed the following arguments:
 
 Any subsequent arguments to the archive will be passed as additional arguments to the embedded command. You must explicitly use the _--_ special command-line construct before any such options to make sure that Makeself will not try to interpret them.
 
+## Startup Script
+
+The startup script must be a regular Shell script. 
+
+Within the startup script, you can use the `$USER_PWD` variable to get the path of the folder from which the self-extracting script is executed. This is especially useful to access files that are located in the same folder as the script, as shown in the example below. 
+
+`my-self-extracting-script.sh --fooBarFileParameter foo.bar`
+
 ## Maven Usage
 
 Makeself is now supported by the following maven plugin [makeself-maven-plugin](https://github.com/hazendaz/makeself-maven-plugin).  Please refer to project for usage and report any bugs in regards to maven plugin on that project.
