@@ -114,6 +114,7 @@ MS_Usage()
     echo "                       : Instead of compressing, asymmetrically encrypt and sign the data using GPG"
     echo "    --gpg-extra opt    : Append more options to the gpg command line"
     echo "    --ssl-encrypt      : Instead of compressing, encrypt the data using OpenSSL"
+    echo "    --ssl-passwd pass  : Use the given password to encrypt the data using OpenSSL"
     echo "    --nocomp           : Do not compress the data"
     echo "    --notemp           : The archive will create archive_dir in the"
     echo "                         current directory and uncompress in ./archive_dir"
@@ -158,6 +159,7 @@ if type gzip 2>&1 > /dev/null; then
 else
     COMPRESS=Unix
 fi
+PASSWD=""
 COMPRESS_LEVEL=9
 KEEP=n
 CURRENT=n
@@ -231,17 +233,21 @@ do
 	shift
 	;;
     --gpg-asymmetric-encrypt-sign)
-  COMPRESS=gpg-asymmetric
-  shift
-  ;;
+	COMPRESS=gpg-asymmetric
+	shift
+	;;
     --gpg-extra)
-  GPG_EXTRA="$2"
-  if ! shift 2; then MS_Help; exit 1; fi
-  ;;
+	GPG_EXTRA="$2"
+	if ! shift 2; then MS_Help; exit 1; fi
+	;;
     --ssl-encrypt)
-  COMPRESS=openssl
-  shift
-  ;;
+	COMPRESS=openssl
+ 	shift
+	;;
+    --ssl-passwd)
+	PASSWD=$2
+	if ! shift 2; then MS_Help; exit 1; fi
+	;;
     --nocomp)
 	COMPRESS=none
 	shift
@@ -472,6 +478,10 @@ gpg-asymmetric)
 openssl)
     GZIP_CMD="openssl aes-256-cbc -a -salt -md sha256"
     GUNZIP_CMD="openssl aes-256-cbc -d -a -md sha256"
+
+    if [ -n "$PASSWD" ]; then 
+        GZIP_CMD="$GZIP_CMD -pass pass:$PASSWD"
+    fi
     ;;
 Unix)
     GZIP_CMD="compress -cf"
