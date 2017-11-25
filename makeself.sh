@@ -104,6 +104,7 @@ MS_Usage()
     echo "    --bzip2            : Compress using bzip2 instead of gzip"
     echo "    --pbzip2           : Compress using pbzip2 instead of gzip"
     echo "    --xz               : Compress using xz instead of gzip"
+    echo "    --pxz              : Compress using pxz instead of gzip"
     echo "    --lzo              : Compress using lzop instead of gzip"
     echo "    --lz4              : Compress using lz4 instead of gzip"
     echo "    --compress         : Compress using the UNIX 'compress' command"
@@ -210,6 +211,10 @@ do
     	;;
     --xz)
 	COMPRESS=xz
+	shift
+	;;
+    --pxz)
+	COMPRESS=pxz
 	shift
 	;;
     --lzo)
@@ -453,6 +458,10 @@ bzip2)
     ;;
 xz)
     GZIP_CMD="xz -c$COMPRESS_LEVEL"
+    GUNZIP_CMD="xz -d"
+    ;;
+pxz)
+    GZIP_CMD="pxz -c$COMPRESS_LEVEL"
     GUNZIP_CMD="xz -d"
     ;;
 lzo)
