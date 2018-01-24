@@ -123,19 +123,19 @@ Here is also how I created the [makeself.run][9] archive which contains the Make
 
 Archives generated with Makeself can be passed the following arguments:
 
-  * _--keep_ : Prevent the files to be extracted in a temporary directory that will be removed after the embedded script's execution. The files will then be extracted in the current working directory and will stay here until you remove them.
-  * _--verbose_ : Will prompt the user before executing the embedded command
-  * _--target dir_ : Allows to extract the archive in an arbitrary place.
-  * _--nox11_ : Do not spawn a X11 terminal.
-  * _--confirm_ : Prompt the user for confirmation before running the embedded command.
-  * _--info_ : Print out general information about the archive (does not extract).
-  * _--lsm_ : Print out the LSM entry, if it is present.
-  * _--list_ : List the files in the archive.
-  * _--check_ : Check the archive for integrity using the embedded checksums. Does not extract the archive.
-  * _--nochown_ : By default, a `chown -R` command is run on the target directory after extraction, so that all files belong to the current user. This is mostly needed if you are running as root, as tar will then try to recreate the initial user ownerships. You may disable this behavior with this flag.
-  * _--tar_ : Run the tar command on the contents of the archive, using the following arguments as parameter for the command.
-  * _--noexec_ : Do not run the embedded script after extraction.
-  * _--nodiskspace_ : Do not check for available disk space before attempting to extract.
+  * **`--keep`** : Prevent the files to be extracted in a temporary directory that will be removed after the embedded script's execution. The files will then be extracted in the current working directory and will stay here until you remove them.
+  * **`--verbose`** : Will prompt the user before executing the embedded command
+  * **`--target dir`** : Allows to extract the archive in an arbitrary place.
+  * **`--nox11`** : Do not spawn a X11 terminal.
+  * **`--confirm`** : Prompt the user for confirmation before running the embedded command.
+  * **`--info`** : Print out general information about the archive (does not extract).
+  * **`--lsm`** : Print out the LSM entry, if it is present.
+  * **`--list`** : List the files in the archive.
+  * **`--check`** : Check the archive for integrity using the embedded checksums. Does not extract the archive.
+  * **`--nochown`** : By default, a `chown -R` command is run on the target directory after extraction, so that all files belong to the current user. This is mostly needed if you are running as root, as tar will then try to recreate the initial user ownerships. You may disable this behavior with this flag.
+  * **`--tar`** : Run the tar command on the contents of the archive, using the following arguments as parameter for the command.
+  * **`--noexec`** : Do not run the embedded script after extraction.
+  * **`--nodiskspace`** : Do not check for available disk space before attempting to extract.
 
 Any subsequent arguments to the archive will be passed as additional arguments to the embedded command. You must explicitly use the `--` special command-line construct before any such options to make sure that Makeself will not try to interpret them.
 
