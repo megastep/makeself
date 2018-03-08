@@ -295,7 +295,8 @@ do
         if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --license)
-        LICENSE=`cat $2`
+        # We need to escape all characters having a special meaning in double quotes
+        LICENSE=$(sed 's/\\/\\\\/g; s/"/\\\"/g; s/`/\\\`/g; s/\$/\\\$/g' $2)
         if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --follow)

@@ -50,7 +50,7 @@ MS_Printf()
 MS_PrintLicense()
 {
   if test x"\$licensetxt" != x; then
-    echo "\$licensetxt"
+    echo "\$licensetxt" | more
     if test x"\$accept" != xy; then
       while true
       do
