@@ -466,7 +466,7 @@ lz4)
     ;;
 base64)
     GZIP_CMD="base64"
-    GUNZIP_CMD="base64 -d -i"
+    GUNZIP_CMD="base64 --decode -i -"
     ;;
 gpg)
     GZIP_CMD="gpg $GPG_EXTRA -ac -z$COMPRESS_LEVEL"
