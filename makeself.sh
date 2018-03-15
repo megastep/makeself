@@ -68,10 +68,11 @@
 # - 2.2.0 : Many bugfixes, updates and contributions from users. Check out the project page on Github for the details.
 # - 2.3.0 : Option to specify packaging date to enable byte-for-byte reproducibility. (Marc Pawlowsky)
 #
-# (C) 1998-2017 by Stephane Peter <megastep@megastep.org>
+# (C) 1998-2018 by Stephane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
+# Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
 MS_VERSION=2.3.1
