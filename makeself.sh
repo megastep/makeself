@@ -118,6 +118,7 @@ MS_Usage()
     echo "    --ssl-passwd pass  : Use the given password to encrypt the data using OpenSSL"
     echo "    --ssl-pass-src src : Use the given src as the source of password to encrypt the data"
     echo "                         using OpenSSL. See \"PASS PHRASE ARGUMENTS\" in man openssl."
+    echo "    --ssl-no-md        : Do not use \"-md\" option not supported by older OpenSSL."
     echo "    --nocomp           : Do not compress the data"
     echo "    --notemp           : The archive will create archive_dir in the"
     echo "                         current directory and uncompress in ./archive_dir"
@@ -165,6 +166,7 @@ fi
 ENCRYPT=n
 PASSWD=""
 PASSWD_SRC=""
+OPENSSL_NO_MD=n
 COMPRESS_LEVEL=9
 KEEP=n
 CURRENT=n
@@ -257,6 +259,10 @@ do
 	--ssl-pass-src)
 	PASSWD_SRC=$2
 	if ! shift 2; then MS_Help; exit 1; fi
+	;;
+	--ssl-no-md)
+	OPENSSL_NO_MD=y
+	shift
 	;;
     --nocomp)
 	COMPRESS=none
@@ -487,12 +493,17 @@ gpg-asymmetric)
     GUNZIP_CMD="gpg --yes -d"
     ;;
 openssl)
-    GZIP_CMD="openssl aes-256-cbc -a -salt -md sha256"
-    GUNZIP_CMD="openssl aes-256-cbc -d -a -md sha256"
+    GZIP_CMD="openssl aes-256-cbc -a -salt"
+    GUNZIP_CMD="openssl aes-256-cbc -d -a"
+    
+    if test x"$OPENSSL_NO_MD" != xy; then
+        GZIP_CMD="$GZIP_CMD -md sha256"
+        GUNZIP_CMD="$GUNZIP_CMD -md sha256"
+    fi
 
-    if [ -n "$PASSWD_SRC" ]; then
+    if test -n "$PASSWD_SRC"; then
         GZIP_CMD="$GZIP_CMD -pass $PASSWD_SRC"
-    elif [ -n "$PASSWD" ]; then 
+    elif test -n "$PASSWD"; then 
         GZIP_CMD="$GZIP_CMD -pass pass:$PASSWD"
     fi
     ;;
