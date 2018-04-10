@@ -116,6 +116,9 @@ MS_Usage()
     echo "    --gpg-extra opt    : Append more options to the gpg command line"
     echo "    --ssl-encrypt      : Instead of compressing, encrypt the data using OpenSSL"
     echo "    --ssl-passwd pass  : Use the given password to encrypt the data using OpenSSL"
+    echo "    --ssl-pass-src src : Use the given src as the source of password to encrypt the data"
+    echo "                         using OpenSSL. See \"PASS PHRASE ARGUMENTS\" in man openssl."
+    echo "    --ssl-no-md        : Do not use \"-md\" option not supported by older OpenSSL."
     echo "    --nocomp           : Do not compress the data"
     echo "    --notemp           : The archive will create archive_dir in the"
     echo "                         current directory and uncompress in ./archive_dir"
@@ -160,7 +163,10 @@ if type gzip 2>&1 > /dev/null; then
 else
     COMPRESS=Unix
 fi
+ENCRYPT=n
 PASSWD=""
+PASSWD_SRC=""
+OPENSSL_NO_MD=n
 COMPRESS_LEVEL=9
 KEEP=n
 CURRENT=n
@@ -243,11 +249,20 @@ do
 	;;
     --ssl-encrypt)
 	COMPRESS=openssl
+	ENCRYPT=y
  	shift
 	;;
     --ssl-passwd)
 	PASSWD=$2
 	if ! shift 2; then MS_Help; exit 1; fi
+	;;
+	--ssl-pass-src)
+	PASSWD_SRC=$2
+	if ! shift 2; then MS_Help; exit 1; fi
+	;;
+	--ssl-no-md)
+	OPENSSL_NO_MD=y
+	shift
 	;;
     --nocomp)
 	COMPRESS=none
@@ -478,10 +493,17 @@ gpg-asymmetric)
     GUNZIP_CMD="gpg --yes -d"
     ;;
 openssl)
-    GZIP_CMD="openssl aes-256-cbc -a -salt -md sha256"
-    GUNZIP_CMD="openssl aes-256-cbc -d -a -md sha256"
+    GZIP_CMD="openssl aes-256-cbc -a -salt"
+    GUNZIP_CMD="openssl aes-256-cbc -d -a"
+    
+    if test x"$OPENSSL_NO_MD" != xy; then
+        GZIP_CMD="$GZIP_CMD -md sha256"
+        GUNZIP_CMD="$GUNZIP_CMD -md sha256"
+    fi
 
-    if [ -n "$PASSWD" ]; then 
+    if test -n "$PASSWD_SRC"; then
+        GZIP_CMD="$GZIP_CMD -pass $PASSWD_SRC"
+    elif test -n "$PASSWD"; then 
         GZIP_CMD="$GZIP_CMD -pass pass:$PASSWD"
     fi
     ;;
