@@ -41,6 +41,11 @@ if test -d /usr/xpg4/bin; then
     export PATH
 fi
 
+if test -d /usr/sfw/bin; then
+    PATH=\$PATH:/usr/sfw/bin
+    export PATH
+fi
+
 unset CDPATH
 
 MS_Printf()
@@ -479,6 +484,12 @@ fi
 
 if test x"\$quiet" = xn; then
 	MS_Printf "Uncompressing \$label"
+	
+    # Decrypting with openssl will ask for password,
+    # the prompt needs to start on new line
+	if test x"$ENCRYPT" = xy; then
+	    echo
+	fi
 fi
 res=3
 if test x"\$keep" = xn; then
