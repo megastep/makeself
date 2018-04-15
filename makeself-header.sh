@@ -343,7 +343,7 @@ EOLSM
 	;;
     --target)
 	keep=y
-	targetdir=\${2:-.}
+	targetdir="\${2:-.}"
     if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --noprogress)
