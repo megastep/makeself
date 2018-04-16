@@ -429,7 +429,7 @@ else
     # We don't want to create an absolute directory unless a target directory is defined
     if test "$CURRENT" = y; then
 	archdirname="."
-    elif test x$TARGETDIR != x; then
+    elif test x"$TARGETDIR" != x; then
 	archdirname="$TARGETDIR"
     else
 	archdirname=`basename "$1"`

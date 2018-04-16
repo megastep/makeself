@@ -402,7 +402,7 @@ fi
 
 case "\$copy" in
 copy)
-    tmpdir=\$TMPROOT/makeself.\$RANDOM.\`date +"%y%m%d%H%M%S"\`.\$\$
+    tmpdir="\$TMPROOT"/makeself.\$RANDOM.\`date +"%y%m%d%H%M%S"\`.\$\$
     mkdir "\$tmpdir" || {
 	echo "Could not create temporary directory \$tmpdir" >&2
 	exit 1
@@ -493,11 +493,11 @@ if test x"\$quiet" = xn; then
 fi
 res=3
 if test x"\$keep" = xn; then
-    trap 'echo Signal caught, cleaning up >&2; cd \$TMPROOT; /bin/rm -rf \$tmpdir; eval \$finish; exit 15' 1 2 3 15
+    trap 'echo Signal caught, cleaning up >&2; cd \$TMPROOT; /bin/rm -rf "\$tmpdir"; eval \$finish; exit 15' 1 2 3 15
 fi
 
 if test x"\$nodiskspace" = xn; then
-    leftspace=\`MS_diskspace \$tmpdir\`
+    leftspace=\`MS_diskspace "\$tmpdir"\`
     if test -n "\$leftspace"; then
         if test "\$leftspace" -lt $USIZE; then
             echo
@@ -558,8 +558,8 @@ if test x"\$script" != x; then
     fi
 fi
 if test x"\$keep" = xn; then
-    cd \$TMPROOT
-    /bin/rm -rf \$tmpdir
+    cd "\$TMPROOT"
+    /bin/rm -rf "\$tmpdir"
 fi
 eval \$finish; exit \$res
 EOF
