@@ -35,7 +35,7 @@ elif test -x /usr/ucb/echo; then
 else
     print_cmd="echo"
 fi
-	
+
 if test -d /usr/xpg4/bin; then
     PATH=/usr/xpg4/bin:\$PATH
     export PATH
