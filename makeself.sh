@@ -75,7 +75,7 @@
 # Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
-MS_VERSION=2.3.1
+MS_VERSION=2.4.0
 MS_COMMAND="$0"
 unset CDPATH
 
@@ -188,6 +188,7 @@ TARGETDIR=""
 NOOVERWRITE=n
 DATE=`LC_ALL=C date`
 EXPORT_CONF=n
+SHA256=n
 
 # LSM file stuff
 LSM_CMD="echo No LSM. >> \"\$archname\""
@@ -256,11 +257,11 @@ do
 	PASSWD=$2
 	if ! shift 2; then MS_Help; exit 1; fi
 	;;
-	--ssl-pass-src)
+    --ssl-pass-src)
 	PASSWD_SRC=$2
 	if ! shift 2; then MS_Help; exit 1; fi
 	;;
-	--ssl-no-md)
+    --ssl-no-md)
 	OPENSSL_NO_MD=y
 	shift
 	;;
@@ -336,6 +337,10 @@ do
 	NOMD5=y
 	shift
 	;;
+    --sha256)
+        SHA256=y
+        shift
+        ;;
     --nocrc)
 	NOCRC=y
 	shift
