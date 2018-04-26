@@ -1,9 +1,20 @@
 language: c
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y realpath pbzip2
+- sudo apt-get -qq update
+- sudo apt-get install -y realpath pbzip2
 script:
-  - cd test
-  - ./datetest
-  - ./extracttest
-  - ./tarextratest
+- ./make-release.sh
+- cd test
+- "./datetest"
+- "./extracttest"
+- "./tarextratest"
+deploy:
+  provider: releases
+  api_key:
+    secure: buH5+nxvAzWcQyC59bIXTNUrV8As07sk7zIz5giHYHoUpTxmoKQBMIAL2Yo7e4uShVM1dy/qFR2unh2vSw6Kt2Kwr17h1osO8/ZORIhFOm7qPJ5UsDQoF/lTbu2EOFtuq3UeJ1KSSVDhpDkFs2P2/nn/Jj0TNSOZ/+4/ZLYEHrI=
+  file_glob: true
+  file: makeself-*.run
+  skip_cleanup: true
+  on:
+    repo: megastep/makeself
+    tags: true
