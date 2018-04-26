@@ -577,6 +577,7 @@ fsize=`cat "$tmpfile" | wc -c | tr -d " "`
 
 # Compute the checksums
 
+shasum=0000000000000000000000000000000000000000000000000000000000000000
 md5sum=00000000000000000000000000000000
 crcsum=0000000000
 
@@ -598,10 +599,10 @@ if test "$NOMD5" = y; then
 elif test "$SHA256" = y; then
 	SHA_PATH=`exec <&- 2>&-; which shasum || command -v shasum || type shasum`
 	if test -x "$SHA_PATH"; then
-		md5sum=`cat "$tmpfile" | eval "$SHA_PATH -a 256" | cut -b-64`
+		shasum=`cat "$tmpfile" | eval "$SHA_PATH -a 256" | cut -b-64`
 	else
 		SHA_PATH=`exec <&- 2>&-; which sha256sum || command -v sha256sum || type sha256sum`
-		md5sum=`cat "$tmpfile" | eval "$SHA_PATH" | cut -b-64`
+		shasum=`cat "$tmpfile" | eval "$SHA_PATH" | cut -b-64`
 	fi
 else
 	# Try to locate a MD5 binary
@@ -634,6 +635,7 @@ if test "$APPEND" = y; then
     filesizes="$filesizes $fsize"
     CRCsum="$CRCsum $crcsum"
     MD5sum="$MD5sum $md5sum"
+    SHAsum="$SHAsum $shasum"
     USIZE=`expr $USIZE + $OLDUSIZE`
     # Generate the header
     . "$HEADER"
@@ -651,6 +653,7 @@ else
     filesizes="$fsize"
     CRCsum="$crcsum"
     MD5sum="$md5sum"
+    SHAsum="$shasum"
 
     # Generate the header
     . "$HEADER"

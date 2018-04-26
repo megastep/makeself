@@ -10,6 +10,7 @@ fi
 
 CRCsum="$CRCsum"
 MD5="$MD5sum"
+SHA="$SHAsum"
 TMPROOT=\${TMPDIR:=/tmp}
 USER_PWD="\$PWD"; export USER_PWD
 
