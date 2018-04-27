@@ -8,6 +8,7 @@ script:
 - "./datetest"
 - "./extracttest"
 - "./tarextratest"
+- cd ..
 deploy:
   provider: releases
   api_key:
