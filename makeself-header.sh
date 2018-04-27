@@ -203,7 +203,7 @@ MS_Check()
 				else
 					test x"\$verb" = xy && MS_Printf " SHA256 checksums are OK." >&2
 				fi
-				crc="0000000000"; verb=n
+				crc="0000000000";
 			fi
 		fi
 		if test -x "\$MD5_PATH"; then

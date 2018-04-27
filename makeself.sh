@@ -135,8 +135,8 @@ MS_Usage()
     echo "    --tar-extra opt    : Append more options to the tar command line"
     echo "    --untar-extra opt  : Append more options to the during the extraction of the tar archive"
     echo "    --nomd5            : Don't calculate an MD5 for archive"
-    echo "    --sha256           : Use SHA256 instead of MD5"
     echo "    --nocrc            : Don't calculate a CRC for archive"
+    echo "    --sha256           : Compute a SHA256 checksum for the archive"
     echo "    --header file      : Specify location of the header script"
     echo "    --follow           : Follow the symlinks in the archive"
     echo "    --noprogress       : Do not show the progress during the decompression"
@@ -592,17 +592,25 @@ else
 	fi
 fi
 
-if test "$NOMD5" = y; then
-	if test "$QUIET" = "n";then
-		echo "skipping md5sum at user request"
-	fi
-elif test "$SHA256" = y; then
+if test "$SHA256" = y; then
 	SHA_PATH=`exec <&- 2>&-; which shasum || command -v shasum || type shasum`
 	if test -x "$SHA_PATH"; then
 		shasum=`cat "$tmpfile" | eval "$SHA_PATH -a 256" | cut -b-64`
 	else
 		SHA_PATH=`exec <&- 2>&-; which sha256sum || command -v sha256sum || type sha256sum`
 		shasum=`cat "$tmpfile" | eval "$SHA_PATH" | cut -b-64`
+	fi
+	if test "$QUIET" = "n"; then
+		if test -x "$SHA_PATH"; then
+			echo "SHA256: $shasum"
+		else
+			echo "SHA256: none, SHA command not found"
+		fi
+	fi
+fi
+if test "$NOMD5" = y; then
+	if test "$QUIET" = "n";then
+		echo "Skipping md5sum at user request"
 	fi
 else
 	# Try to locate a MD5 binary
