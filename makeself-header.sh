@@ -173,8 +173,11 @@ MS_Check()
 	MD5_ARG=""
     MD5_PATH=\`exec <&- 2>&-; which md5sum || command -v md5sum || type md5sum\`
     test -x "\$MD5_PATH" || MD5_PATH=\`exec <&- 2>&-; which md5 || command -v md5 || type md5\`
-	test -x "\$MD5_PATH" || MD5_PATH=\`exec <&- 2>&-; which digest || command -v digest || type digest\`
+    test -x "\$MD5_PATH" || MD5_PATH=\`exec <&- 2>&-; which digest || command -v digest || type digest\`
     PATH="\$OLD_PATH"
+
+    SHA_PATH=\`exec <&- 2>&-; which shasum || command -v shasum || type shasum\`
+    test -x "\$SHA_PATH" || SHA_PATH=\`exec <&- 2>&-; which sha256sum || command -v sha256sum || type sha256sum\`
 
     if test x"\$quiet" = xn; then
 		MS_Printf "Verifying archive integrity..."
@@ -185,6 +188,24 @@ MS_Check()
     for s in \$filesizes
     do
 		crc=\`echo \$CRCsum | cut -d" " -f\$i\`
+		if test -x "\$SHA_PATH"; then
+			if test x"\`basename \$SHA_PATH\`" = xshasum; then
+				SHA_ARG="-a 256"
+			fi
+			sha=\`echo \$SHA | cut -d" " -f\$i\`
+			if test x"\$sha" = x0000000000000000000000000000000000000000000000000000000000000000; then
+				test x"\$verb" = xy && echo " \$1 does not contain an embedded SHA256 checksum." >&2
+			else
+				shasum=\`MS_dd_Progress "\$1" \$offset \$s | eval "\$SHA_PATH \$SHA_ARG" | cut -b-64\`;
+				if test x"\$shasum" != x"\$sha"; then
+					echo "Error in SHA256 checksums: \$shasum is different from \$sha" >&2
+					exit 2
+				else
+					test x"\$verb" = xy && MS_Printf " SHA256 checksums are OK." >&2
+				fi
+				crc="0000000000"; verb=n
+			fi
+		fi
 		if test -x "\$MD5_PATH"; then
 			if test x"\`basename \$MD5_PATH\`" = xdigest; then
 				MD5_ARG="-a md5"
