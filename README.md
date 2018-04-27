@@ -10,7 +10,7 @@ will then uncompress itself to a temporary directory and an optional arbitrary
 command will be executed (for example an installation script). This is pretty
 similar to archives generated with WinZip Self-Extractor in the Windows world.
 Makeself archives also include checksums for integrity self-validation (CRC
-and/or MD5 checksums).
+and/or MD5/SHA256 checksums).
 
 The makeself.sh script itself is used only to create the archives from a
 directory of files. The resultant archive is actually a compressed (using
@@ -98,6 +98,7 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--nox11`** : Disable the automatic spawning of a new terminal in X11.
     * **`--nowait`** : When executed from a new X11 terminal, disable the user prompt at the end of the script execution.
     * **`--nomd5`** and **`--nocrc`** : Disable the creation of a MD5 / CRC checksum for the archive. This speeds up the extraction process if integrity checking is not necessary.
+    * **`--sha256`** : Adds a SHA256 checksum for the archive. This is in addition to the MD5 / CRC checksums unless `--nomd5` is also used.
     * **`--lsm` _file_** : Provide and LSM file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the `--lsm` argument to the archive. An example of a LSM file is provided with Makeself.
     * **`--tar-extra opt`** : Append more options to the tar command line.
 
@@ -111,7 +112,7 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--help-header file`** : Add a header to the archive's `--help` output.
   * `archive_dir` is the name of the directory that contains the files to be archived
   * `file_name` is the name of the archive to be created
-  * `label` is an arbitrary text string describing the package. It will be displayed while extracting the files.
+  * `label` is an arbitrary text string describing the package. It will be displayed while extracting the files.
   * `startup_script` is the command to be executed _from within_ the directory of extracted files. Thus, if you wish to execute a program contain in this directory, you must prefix your command with `./`. For example, `./program` will be fine. The `script_args` are additionnal arguments for this command.
 
 Here is an example, assuming the user has a package image stored in a **/home/joe/mysoft**, and he wants to generate a self-extracting package named
@@ -122,7 +123,7 @@ Here is an example, assuming the user has a package image stored in a **/home/jo
 
 Here is also how I created the [makeself.run][9] archive which contains the Makeself distribution :
 
-`makeself.sh --notemp makeself makeself.run "Makeself by Stephane Peter" echo "Makeself has extracted itself" `
+`makeself.sh --notemp makeself makeself.run "Makeself by Stephane Peter" echo "Makeself has extracted itself" `
 
 Archives generated with Makeself can be passed the following arguments:
 
@@ -167,7 +168,7 @@ I will gladly consider merging your pull requests on the [GitHub][10] repository
 
 ## Download
 
-Get the latest official distribution [here][9] (version 2.3.1).
+Get the latest official distribution [here][9] (version 2.4.0).
 
 The latest development version can be grabbed from [GitHub][10]. Feel free to submit any patches there through the fork and pull request process.
 
@@ -191,6 +192,7 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
   * **v2.2.0:** First major new release in years! Includes many bugfixes and user contributions. Please look at the [project page on Github][10] for all the details.
   * **v2.3.0:** Support for archive encryption via GPG or OpenSSL. Added LZO and LZ4 compression support. Options to set the packaging date and stop the umask from being overriden. Optionally ignore check for available disk space when extracting. New option to check for root permissions before extracting.
   * **v2.3.1:** Various compatibility updates. Added unit tests for Travis CI in the GitHub repo. New `--tar-extra`, `--untar-extra`, `--gpg-extra`, `--gpg-asymmetric-encrypt-sign` options.
+  * **v2.4.0:** Added optional support for SHA256 archive integrity checksums.
 
 ## Links
 
@@ -219,7 +221,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: https://github.com/megastep/makeself/releases/download/release-2.3.1/makeself-2.3.1.run
+   [9]: https://github.com/megastep/makeself/releases/download/release-2.4.0/makeself-2.4.0.run
    [10]: https://github.com/megastep/makeself
    [11]: https://github.com/megastep/loki_setup/
    [12]: http://www.unrealtournament2003.com/
