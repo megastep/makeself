@@ -251,14 +251,14 @@ MS_Check()
 MS_Decompress()
 {
     if test x"\$decrypt_cmd" != x""; then
-        eval "\$decrypt_cmd" || { echo " ... Decryption failed." >/dev/tty; } \
+        eval "\$decrypt_cmd" || echo " ... Decryption failed." >&2 \
         | eval "$GUNZIP_CMD"
     else
         eval "$GUNZIP_CMD"
     fi
     
     if test \$? -ne 0; then
-        echo " ... Decompression failed." >/dev/tty
+        echo " ... Decompression failed." >&2
     fi
 }
 
