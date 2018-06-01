@@ -513,14 +513,14 @@ none)
 esac
 
 if test x"$ENCRYPT" = x"openssl"; then
-    if test x"$APPEND" = xy; then
+    if test x"$APPEND" = x"y"; then
         echo "Appending to existing archive is not compatible with OpenSSL encryption." >&2
     fi
     
     ENCRYPT_CMD="openssl enc -aes-256-cbc -salt"
     DECRYPT_CMD="openssl enc -aes-256-cbc -d"
     
-    if test x"$OPENSSL_NO_MD" != xy; then
+    if test x"$OPENSSL_NO_MD" != x"y"; then
         ENCRYPT_CMD="$ENCRYPT_CMD -md sha256"
         DECRYPT_CMD="$DECRYPT_CMD -md sha256"
     fi
