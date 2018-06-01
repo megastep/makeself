@@ -119,6 +119,8 @@ MS_Usage()
     echo "    --ssl-passwd pass  : Use the given password to encrypt the data using OpenSSL"
     echo "    --ssl-pass-src src : Use the given src as the source of password to encrypt the data"
     echo "                         using OpenSSL. See \"PASS PHRASE ARGUMENTS\" in man openssl."
+    echo "                         If this option is not supplied, the user will be asked to enter"
+    echo "                         encryption password on the current terminal."
     echo "    --ssl-no-md        : Do not use \"-md\" option not supported by older OpenSSL."
     echo "    --nocomp           : Do not compress the data"
     echo "    --notemp           : The archive will create archive_dir in the"
@@ -251,8 +253,7 @@ do
 	if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --ssl-encrypt)
-	COMPRESS=openssl
-	ENCRYPT=y
+	ENCRYPT=openssl
  	shift
 	;;
     --ssl-passwd)
@@ -494,25 +495,12 @@ base64)
 gpg)
     GZIP_CMD="gpg $GPG_EXTRA -ac -z$COMPRESS_LEVEL"
     GUNZIP_CMD="gpg -d"
+    ENCRYPT="gpg"
     ;;
 gpg-asymmetric)
     GZIP_CMD="gpg $GPG_EXTRA -z$COMPRESS_LEVEL -es"
     GUNZIP_CMD="gpg --yes -d"
-    ;;
-openssl)
-    GZIP_CMD="openssl aes-256-cbc -a -salt"
-    GUNZIP_CMD="openssl aes-256-cbc -d -a"
-    
-    if test x"$OPENSSL_NO_MD" != xy; then
-        GZIP_CMD="$GZIP_CMD -md sha256"
-        GUNZIP_CMD="$GUNZIP_CMD -md sha256"
-    fi
-
-    if test -n "$PASSWD_SRC"; then
-        GZIP_CMD="$GZIP_CMD -pass $PASSWD_SRC"
-    elif test -n "$PASSWD"; then 
-        GZIP_CMD="$GZIP_CMD -pass pass:$PASSWD"
-    fi
+    ENCRYPT="gpg"
     ;;
 Unix)
     GZIP_CMD="compress -cf"
@@ -523,6 +511,26 @@ none)
     GUNZIP_CMD="cat"
     ;;
 esac
+
+if test x"$ENCRYPT" = x"openssl"; then
+    if test x"$APPEND" = xy; then
+        echo "Appending to existing archive is not compatible with OpenSSL encryption." >&2
+    fi
+    
+    ENCRYPT_CMD="openssl enc -aes-256-cbc -salt"
+    DECRYPT_CMD="openssl enc -aes-256-cbc -d"
+    
+    if test x"$OPENSSL_NO_MD" != xy; then
+        ENCRYPT_CMD="$ENCRYPT_CMD -md sha256"
+        DECRYPT_CMD="$DECRYPT_CMD -md sha256"
+    fi
+
+    if test -n "$PASSWD_SRC"; then
+        ENCRYPT_CMD="$ENCRYPT_CMD -pass $PASSWD_SRC"
+    elif test -n "$PASSWD"; then 
+        ENCRYPT_CMD="$ENCRYPT_CMD -pass pass:$PASSWD"
+    fi
+fi
 
 tmpfile="${TMPDIR:=/tmp}/mkself$$"
 
@@ -565,7 +573,7 @@ if test "." = "$archdirname"; then
 fi
 
 test -d "$archdir" || { echo "Error: $archdir does not exist."; rm -f "$tmpfile"; exit 1; }
-if test "$QUIET" = "n";then
+if test "$QUIET" = "n"; then
    echo About to compress $USIZE KB of data...
    echo Adding files to archive named \"$archname\"...
 fi
@@ -573,6 +581,12 @@ exec 3<> "$tmpfile"
 ( cd "$archdir" && ( tar $TAR_EXTRA -$TAR_ARGS - . | eval "$GZIP_CMD" >&3 ) ) || \
     { echo Aborting: archive directory not found or temporary file: "$tmpfile" could not be created.; exec 3>&-; rm -f "$tmpfile"; exit 1; }
 exec 3>&- # try to close the archive
+
+if test x"$ENCRYPT" = x"openssl"; then
+    echo About to encrypt archive \"$archname\"...
+    { eval "$ENCRYPT_CMD -in $tmpfile -out ${tmpfile}.enc" && mv -f ${tmpfile}.enc $tmpfile; } || \
+        { echo Aborting: could not encrypt temporary file: "$tmpfile".; rm -f "$tmpfile"; exit 1; }
+fi
 
 fsize=`cat "$tmpfile" | wc -c | tr -d " "`
 
