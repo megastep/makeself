@@ -27,6 +27,7 @@ quiet="n"
 accept="n"
 nodiskspace="n"
 export_conf="$EXPORT_CONF"
+decrypt_cmd="$DECRYPT_CMD"
 
 print_cmd_arg=""
 if type printf > /dev/null; then
@@ -150,11 +151,11 @@ MS_Help()
   \$0 [options] [--] [additional arguments to embedded script]
   with following options (in that order)
   --confirm             Ask before running embedded script
-  --quiet		Do not print anything except error messages
+  --quiet               Do not print anything except error messages
   --accept              Accept the license
   --noexec              Do not run embedded script
   --keep                Do not erase target directory after running
-			the embedded script
+                        the embedded script
   --noprogress          Do not show the progress during the decompression
   --nox11               Do not spawn an xterm
   --nochown             Do not give the extracted files to the current user
@@ -162,6 +163,10 @@ MS_Help()
   --target dir          Extract directly to a target directory (absolute or relative)
                         This directory may undergo recursive chown (see --nochown).
   --tar arg1 [arg2 ...] Access the contents of the archive through the tar command
+  --ssl-pass-src src    Use the given src as the source of password to decrypt the data
+                        using OpenSSL. See "PASS PHRASE ARGUMENTS" in man openssl.
+                        Default is to prompt the user to enter decryption password
+                        on the current terminal.
   --                    Following arguments will be passed to the embedded script
 EOH
 }
@@ -243,6 +248,20 @@ MS_Check()
     fi
 }
 
+MS_Decompress()
+{
+    if test x"\$decrypt_cmd" != x""; then
+        eval "\$decrypt_cmd" || echo " ... Decryption failed." >&2 \
+        | eval "$GUNZIP_CMD"
+    else
+        eval "$GUNZIP_CMD"
+    fi
+    
+    if test \$? -ne 0; then
+        echo " ... Decompression failed." >&2
+    fi
+}
+
 UnTAR()
 {
     if test x"\$quiet" = xn; then
@@ -283,6 +302,9 @@ do
 	echo Target directory: "\$targetdir"
 	echo Uncompressed size: $USIZE KB
 	echo Compression: $COMPRESS
+	if test x"$ENCRYPT" != x""; then
+	    echo Encryption: $ENCRYPT
+	fi
 	echo Date of packaging: $DATE
 	echo Built with Makeself version $MS_VERSION on $OSTYPE
 	echo Build command was: "$MS_COMMAND"
@@ -331,7 +353,7 @@ EOLSM
 	offset=\`head -n $SKIP "\$0" | wc -c | tr -d " "\`
 	for s in \$filesizes
 	do
-	    MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | UnTAR t
+	    MS_dd "\$0" \$offset \$s | MS_Decompress | UnTAR t
 	    offset=\`expr \$offset + \$s\`
 	done
 	exit 0
@@ -342,7 +364,7 @@ EOLSM
     if ! shift 2; then MS_Help; exit 1; fi
 	for s in \$filesizes
 	do
-	    MS_dd "\$0" \$offset \$s | eval "$GUNZIP_CMD" | tar "\$arg1" - "\$@"
+	    MS_dd "\$0" \$offset \$s | MS_Decompress | tar "\$arg1" - "\$@"
 	    offset=\`expr \$offset + \$s\`
 	done
 	exit 0
@@ -394,6 +416,14 @@ EOLSM
     --phase2)
 	copy=phase2
 	shift
+	;;
+	--ssl-pass-src)
+	if test x"$ENCRYPT" != x"openssl"; then
+	    echo "Invalid option --ssl-pass-src: \$0 was not encrypted with OpenSSL!" >&2
+	    exit 1
+	fi
+	decrypt_cmd="\$decrypt_cmd -pass \$2"
+	if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --)
 	shift
@@ -505,12 +535,12 @@ if test x"\$verbose" = xy; then
 fi
 
 if test x"\$quiet" = xn; then
-	MS_Printf "Uncompressing \$label"
-	
     # Decrypting with openssl will ask for password,
     # the prompt needs to start on new line
-	if test x"$ENCRYPT" = xy; then
-	    echo
+	if test x"$ENCRYPT" = x"openssl"; then
+	    echo "Decrypting and uncompressing \$label..."
+	else
+        MS_Printf "Uncompressing \$label"
 	fi
 fi
 res=3
@@ -535,7 +565,7 @@ fi
 
 for s in \$filesizes
 do
-    if MS_dd_Progress "\$0" \$offset \$s | eval "$GUNZIP_CMD" | ( cd "\$tmpdir"; umask \$ORIG_UMASK ; UnTAR xp ) 1>/dev/null; then
+    if MS_dd_Progress "\$0" \$offset \$s | MS_Decompress | ( cd "\$tmpdir"; umask \$ORIG_UMASK ; UnTAR xp ) 1>/dev/null; then
 		if test x"\$ownership" = xy; then
 			(cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
 		fi
