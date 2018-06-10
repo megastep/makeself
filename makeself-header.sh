@@ -95,7 +95,7 @@ MS_dd()
 MS_dd_Progress()
 {
     if test x"\$noprogress" = xy; then
-        MS_dd \$@
+        MS_dd "\$@"
         return \$?
     fi
     file="\$1"
