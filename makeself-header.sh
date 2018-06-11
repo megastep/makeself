@@ -544,7 +544,7 @@ if test x"\$quiet" = xn; then
 fi
 res=3
 if test x"\$keep" = xn; then
-    trap 'echo Signal caught, cleaning up >&2; cd \$TMPROOT; /bin/rm -rf "\$tmpdir"; eval \$finish; exit 15' 1 2 3 15
+    trap 'echo Signal caught, cleaning up >&2; cd "\$TMPROOT"; /bin/rm -rf "\$tmpdir"; eval \$finish; exit 15' 1 2 3 15
 fi
 
 if test x"\$nodiskspace" = xn; then
