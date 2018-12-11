@@ -1,0 +1,29 @@
+#!/bin/bash
+
+SUT=$(realpath $(dirname $0)/../makeself.sh)
+SOURCE=$(realpath ..)
+
+setupTests() {
+  temp=`mktemp -d -t XXXXX`
+  cd "$temp"
+  cd "$temp"
+  mkdir archive
+  cp -a $SOURCE archive/ 
+  $SUT $* archive makeself-test.run "Test $*" echo Testing --tar-extra="--exclude .git" 
+  mkdir -p append/append_dir/
+  cp -a $SOURCE/makeself.sh append/append_dir/
+  $SUT --append append/ makeself-test.run
+
+}
+
+
+testGzip()
+{
+  setupTests --gzip
+  
+  ./makeself-test.run --check
+  assertEqual $? 0
+}
+
+
+source bashunit/bashunit.bash
