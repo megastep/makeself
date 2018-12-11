@@ -8,6 +8,7 @@ script:
 - "./datetest"
 - "./extracttest"
 - "./tarextratest"
+- "./appendtest"
 - cd ..
 deploy:
   provider: releases
