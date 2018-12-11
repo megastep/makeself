@@ -17,7 +17,7 @@ testQuiet()
   setupTests
 
   ./makeself-test.run --quiet
-  assert $?
+  assertEqual $? 0
 }
 
 testGzip()
@@ -25,7 +25,7 @@ testGzip()
   setupTests --gzip
   
   ./makeself-test.run --check
-  assert $?
+  assertEqual $? 0
 }
 
 testBzip2()
@@ -33,7 +33,7 @@ testBzip2()
   setupTests --bzip2
   
   ./makeself-test.run --check
-  assert $?
+  assertEqual $? 0
 }
 
 testPBzip2()
@@ -41,7 +41,7 @@ testPBzip2()
   setupTests --pbzip2
 
   ./makeself-test.run --check
-  assert $?
+  assertEqual $? 0
 }
 
 

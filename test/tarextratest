@@ -20,7 +20,7 @@ testTarExtraOpts() {
   tar_extra="--verbose --exclude .git"
   ${SUT} --tar-extra "$tar_extra" src src.sh alabel startup.sh
 
-  assert $?
+  assertEqual $? 0
 
   tearDown
 }

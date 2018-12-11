@@ -22,7 +22,7 @@ testGzip()
   setupTests --gzip
   
   ./makeself-test.run --check
-  assert "-e $?"
+  assertEqual $? 0
 }
 
 
