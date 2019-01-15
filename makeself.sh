@@ -578,7 +578,7 @@ if test "$QUIET" = "n"; then
    echo Adding files to archive named \"$archname\"...
 fi
 exec 3<> "$tmpfile"
-( cd "$archdir" && ( tar $TAR_EXTRA -$TAR_ARGS - . | eval "$GZIP_CMD" >&3 ) ) || \
+( cd "$archdir" && ( find . | LC_ALL=C sort | tar -T- $TAR_EXTRA -$TAR_ARGS - | eval "$GZIP_CMD" >&3 ) ) || \
     { echo Aborting: archive directory not found or temporary file: "$tmpfile" could not be created.; exec 3>&-; rm -f "$tmpfile"; exit 1; }
 exec 3>&- # try to close the archive
 
