@@ -532,7 +532,7 @@ if test x"$ENCRYPT" = x"openssl"; then
     fi
 fi
 
-tmpfile="${TMPDIR:=/tmp}/mkself$$"
+tmpfile="${TMPDIR:-/tmp}/mkself$$"
 
 if test -f "$HEADER"; then
 	oldarchname="$archname"
@@ -578,7 +578,7 @@ if test "$QUIET" = "n"; then
    echo Adding files to archive named \"$archname\"...
 fi
 
-tmparch="${TMPDIR:=/tmp}/mkself$$.tar"
+tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
 (
     cd "$archdir"
     find . ! -type d | LC_ALL=C sort | xargs tar $TAR_EXTRA -$TAR_ARGS "$tmparch"
