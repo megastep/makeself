@@ -183,7 +183,7 @@ QUIET=n
 NOPROGRESS=n
 COPY=none
 NEED_ROOT=n
-TAR_ARGS=cvf
+TAR_ARGS=rvf
 TAR_EXTRA=""
 GPG_EXTRA=""
 DU_ARGS=-ks
@@ -320,7 +320,7 @@ do
         if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --follow)
-	TAR_ARGS=cvhf
+	TAR_ARGS=rvhf
 	DU_ARGS=-ksL
 	shift
 	;;
@@ -408,10 +408,10 @@ fi
 archname="$2"
 
 if test "$QUIET" = "y" || test "$TAR_QUIETLY" = "y"; then
-    if test "$TAR_ARGS" = "cvf"; then
-	TAR_ARGS="cf"
-    elif test "$TAR_ARGS" = "cvhf";then
-	TAR_ARGS="chf"
+    if test "$TAR_ARGS" = "rvf"; then
+	TAR_ARGS="rf"
+    elif test "$TAR_ARGS" = "rvhf";then
+	TAR_ARGS="rhf"
     fi
 fi
 
@@ -532,7 +532,7 @@ if test x"$ENCRYPT" = x"openssl"; then
     fi
 fi
 
-tmpfile="${TMPDIR:=/tmp}/mkself$$"
+tmpfile="${TMPDIR:-/tmp}/mkself$$"
 
 if test -f "$HEADER"; then
 	oldarchname="$archname"
@@ -577,10 +577,23 @@ if test "$QUIET" = "n"; then
    echo About to compress $USIZE KB of data...
    echo Adding files to archive named \"$archname\"...
 fi
-exec 3<> "$tmpfile"
-( cd "$archdir" && ( tar $TAR_EXTRA -$TAR_ARGS - . | eval "$GZIP_CMD" >&3 ) ) || \
-    { echo Aborting: archive directory not found or temporary file: "$tmpfile" could not be created.; exec 3>&-; rm -f "$tmpfile"; exit 1; }
-exec 3>&- # try to close the archive
+
+tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
+(
+    cd "$archdir"
+    find . ! -type d | LC_ALL=C sort | xargs tar $TAR_EXTRA -$TAR_ARGS "$tmparch"
+) || {
+    echo "ERROR: failed to create temporary archive: $tmparch"
+    rm -f "$tmparch" "$tmpfile"
+    exit 1
+}
+
+eval "$GZIP_CMD" <"$tmparch" >"$tmpfile" || {
+    echo "ERROR: failed to create temporary file: $tmpfile"
+    rm -f "$tmparch" "$tmpfile"
+    exit 1
+}
+rm -f "$tmparch"
 
 if test x"$ENCRYPT" = x"openssl"; then
     echo About to encrypt archive \"$archname\"...
