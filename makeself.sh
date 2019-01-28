@@ -581,7 +581,7 @@ fi
 tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
 (
     cd "$archdir"
-    find . ! -type d | LC_ALL=C sort | xargs -d '\n' tar $TAR_EXTRA -$TAR_ARGS "$tmparch"
+    find . ! -type d -print0 | LC_ALL=C sort | tr -d '\n' | xargs -0 tar $TAR_EXTRA -$TAR_ARGS "$tmparch"
 ) || {
     echo "ERROR: failed to create temporary archive: $tmparch"
     rm -f "$tmparch" "$tmpfile"
