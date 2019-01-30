@@ -9,6 +9,7 @@ script:
 - "./extracttest"
 - "./tarextratest"
 - "./appendtest"
+- "./whitespacetest"
 - cd ..
 deploy:
   provider: releases

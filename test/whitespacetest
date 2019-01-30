@@ -1,0 +1,23 @@
+#!/bin/bash
+
+THIS="$(readlink -f "$0")"
+HERE="$(dirname "${THIS}")"
+SUT="$(dirname "${HERE}")/makeself.sh"
+
+testWhiteSpace() {
+    local archive_dir="$(mktemp -dt archive_dir.XXXXXX)"
+    (
+        cd "${archive_dir}"
+        touch "$(printf "_\x09_character_tabulation.txt")"
+        touch "$(printf "_\x0b_line_tabulation.txt")"
+        touch "$(printf "_\x0c_form_feed.txt")"
+        touch "$(printf "_\x0d_carriage_return.txt")"
+        touch "$(printf "_\x20_space:.txt")"
+    )
+    local file_name="$(mktemp -t file_name.XXXXXX)"
+    "${SUT}" "${archive_dir}" "${file_name}" "white space test" "ls -lah ."
+    assertEqual $? 0
+    rm -rf "${archive_dir}" "${file_name}"
+}
+
+source "${HERE}/bashunit/bashunit.bash"
