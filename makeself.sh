@@ -122,6 +122,8 @@ MS_Usage()
     echo "                         If this option is not supplied, the user will be asked to enter"
     echo "                         encryption password on the current terminal."
     echo "    --ssl-no-md        : Do not use \"-md\" option not supported by older OpenSSL."
+    echo "    --nochown          : Do not change ownership of files (default)"
+    echo "    --chwon            : Change ownership of files"
     echo "    --nocomp           : Do not compress the data"
     echo "    --notemp           : The archive will create archive_dir in the"
     echo "                         current directory and uncompress in ./archive_dir"
@@ -193,6 +195,7 @@ NOOVERWRITE=n
 DATE=`LC_ALL=C date`
 EXPORT_CONF=n
 SHA256=n
+OWNERSHIP=n
 
 # LSM file stuff
 LSM_CMD="echo No LSM. >> \"\$archname\""
@@ -275,6 +278,14 @@ do
     --complevel)
 	COMPRESS_LEVEL="$2"
 	if ! shift 2; then MS_Help; exit 1; fi
+	;;
+    --nochown)
+	OWNERSHIP=n
+	shift
+	;;
+    --chown)
+	OWNERSHIP=y
+	shift
 	;;
     --notemp)
 	KEEP=y
