@@ -1,0 +1,36 @@
+#!/bin/bash
+
+THIS="$(readlink -f "$0")"
+HERE="$(dirname "${THIS}")"
+SUT="$(dirname "${HERE}")/makeself.sh"
+
+testSuidDoesntGetBroken() {
+    # Create a directory with a file on it
+    local archive_dir="$(mktemp -dt archive_dir.XXXXXX)"
+    (
+        cd "${archive_dir}"
+        touch deployedfile
+    )
+    # Create the self extracting that should extract deployedfile
+    local file_name="$(mktemp -t file_name.XXXXXX)"
+    "${SUT}" --target "${archive_dir}" "${archive_dir}" "${file_name}" "suid test"
+    assertEqual $? 0
+    # Target directory now has another file with sudo permissions
+    # This will get broken because of chown -R
+    (
+        cd "${archive_dir}"
+        touch suidfile.bin
+        chmod +xs suidfile.bin
+    )
+    permissionsBefore=$(stat -c %A "${archive_dir}"/suidfile.bin)
+    # We extract deployedfile, in hopes that it will not reset suid bit
+    # from suidfile.bin
+    "${file_name}"
+    assertEqual $? 0
+    permissionsAfter=$(stat -c %A "${archive_dir}"/suidfile.bin)
+    # And we check that permissions match
+    assertEqual "${permissionsBefore}" "${permissionsAfter}"
+    rm -rf "${archive_dir}" "${file_name}"
+}
+
+source "${HERE}/bashunit/bashunit.bash"

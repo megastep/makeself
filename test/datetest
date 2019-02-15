@@ -14,14 +14,13 @@ setupTests() {
 testCurrentDate() {
   setupTests
 
-  # Exercise
-  expected=`LC_ALL=C date +"%b"`
-
   ${SUT} src src.sh alabel startup.sh
 
   # Validate
   actual=`strings src.sh | grep packaging`
-  expected=`date +"%b"`
+
+  expected=`LC_ALL=C date +"%b"`
+
   if [[ ${actual} == *${expected}* ]]
   then
     found=0

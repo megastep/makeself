@@ -4,8 +4,7 @@ SUT=$(realpath $(dirname $0)/../makeself.sh)
 SOURCE=$(realpath ..)
 
 setupTests() {
-  temp=`mktemp -d -t XXXXX`
-  cd "$temp"
+  temp=`mktemp -d -t appendtest.XXXXX`
   cd "$temp"
   mkdir archive
   cp -a $SOURCE archive/ 
