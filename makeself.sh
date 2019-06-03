@@ -592,10 +592,18 @@ fi
 tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
 (
     cd "$archdir"
-    find . ! -type d \
-        | LC_ALL=C sort \
-        | sed 's/./\\&/g' \
-        | xargs tar $TAR_EXTRA -$TAR_ARGS "$tmparch"
+    
+    if [[ "$OSTYPE" == "msys" ]]; then
+        /bin/find . ! -type d \
+            | LC_ALL=C sort \
+            | sed 's/./\\&/g' \
+            | xargs tar $TAR_EXTRA -$TAR_ARGS "$tmparch"
+    else
+        find . ! -type d \
+            | LC_ALL=C sort \
+            | sed 's/./\\&/g' \
+            | xargs tar $TAR_EXTRA -$TAR_ARGS "$tmparch"
+    fi
 ) || {
     echo "ERROR: failed to create temporary archive: $tmparch"
     rm -f "$tmparch" "$tmpfile"
