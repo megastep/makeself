@@ -327,7 +327,7 @@ do
 	;;
     --license)
         # We need to escape all characters having a special meaning in double quotes
-        LICENSE=$(sed 's/\\/\\\\/g; s/"/\\\"/g; s/`/\\\`/g; s/\$/\\\$/g' $2)
+        LICENSE="$(echo "$2" | sed 's/./\\&/g' | xargs)"
         if ! shift 2; then MS_Help; exit 1; fi
 	;;
     --follow)
