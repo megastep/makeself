@@ -11,6 +11,7 @@ script:
 - "./tarextratest"
 - "./appendtest"
 - "./whitespacetest"
+- "./whitespacelicense"
 - cd ..
 deploy:
   provider: releases

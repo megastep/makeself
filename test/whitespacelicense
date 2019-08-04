@@ -1,0 +1,63 @@
+#!/bin/bash
+
+THIS="$(readlink -f "$0")"
+HERE="$(dirname "${THIS}")"
+SUT="$(dirname "${HERE}")/makeself.sh"
+
+testWhiteSpaceLicense() {
+    # for each license file: its canonical path is identical to its content
+    local license_dir="$(mktemp -dt license_dir.XXXXXX)"
+    (
+        cd "${license_dir}"
+        cat >"$(printf "_\x09_character_tabulation.txt")" <<EOF
+$(printf "_\x09_character_tabulation.txt")
+EOF
+        cat >"$(printf "_\x0b_line_tabulation.txt")" <<EOF
+$(printf "_\x0b_line_tabulation.txt")
+EOF
+        cat >"$(printf "_\x0c_form_feed.txt")"<<EOF
+$(printf "_\x0c_form_feed.txt")
+EOF
+        cat >"$(printf "_\x0d_carriage_return.txt")"<<EOF
+$(printf "_\x0d_carriage_return.txt")
+EOF
+        cat >"$(printf "_\x20_space.txt")"<<EOF
+$(printf "_\x20_space.txt")
+EOF
+    )
+
+    # The extraction progress diagnostics are buggy on empty archives, so give
+    # it something to extract
+    local archive_dir="$(mktemp -dt archive_dir.XXXXXX)"
+    (
+        cd "${archive_dir}"
+        touch foo bar qux
+    )
+
+    local file_name="$(mktemp -t file_name.XXXXXX)"
+    local label=""
+    local license_text=""
+    find "${license_dir}" -type f | while read license_file; do
+        "${SUT}" \
+            --license "${license_file}" \
+            "${archive_dir}" \
+            "${file_name}" \
+            "Label" \
+            ls -lah
+        assertEqual "$?" 0
+
+        # Assumes the license text is the first line of output
+        license_text="$("${file_name}" --accept --nox11 | head -n1)"
+
+        # This doesn't work for character tabulation...
+        #assertEqual "${license_text}" "${license_file}"
+
+        # ...so do this instead:
+        assertEqual \
+            "$(echo "${license_file}" | md5sum | cut -d' ' -f1)" \
+            "$(echo "${license_text}" | md5sum | cut -d' ' -f1)"
+    done
+    rm -rf "${license_dir}" "${archive_dir}" "${file_name}"
+}
+
+source "${HERE}/bashunit/bashunit.bash"
