@@ -592,7 +592,7 @@ fi
 tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
 (
     if test "$APPEND" = "y"; then
-        tail -n +$OLDSKIP "$archfile" | $GZIP_CMD > "$tmparch"
+        tail -n +$OLDSKIP "$archname" | $GUNZIP_CMD > "$tmparch"
     fi
     cd "$archdir"
     find . ! -type d \
