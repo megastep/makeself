@@ -591,6 +591,9 @@ fi
 
 tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
 (
+    if test "$APPEND" = "y"; then
+        tail -n +$OLDSKIP "$archfile" | $GZIP_CMD > "$tmparch"
+    fi
     cd "$archdir"
     find . ! -type d \
         | LC_ALL=C sort \
@@ -682,15 +685,13 @@ if test "$APPEND" = y; then
     mv "$archname" "$archname".bak || exit
 
     # Prepare entry for new archive
-    filesizes="$filesizes $fsize"
-    CRCsum="$CRCsum $crcsum"
-    MD5sum="$MD5sum $md5sum"
-    SHAsum="$SHAsum $shasum"
+    filesizes="$fsize"
+    CRCsum="$crcsum"
+    MD5sum="$md5sum"
+    SHAsum="$shasum"
     USIZE=`expr $USIZE + $OLDUSIZE`
     # Generate the header
     . "$HEADER"
-    # Append the original data
-    tail -n +$OLDSKIP "$archname".bak >> "$archname"
     # Append the new data
     cat "$tmpfile" >> "$archname"
 
