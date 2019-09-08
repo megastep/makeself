@@ -605,6 +605,8 @@ tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
     exit 1
 }
 
+USIZE=`du $DU_ARGS "$tmparch" | awk '{print $1}'`
+
 eval "$GZIP_CMD" <"$tmparch" >"$tmpfile" || {
     echo "ERROR: failed to create temporary file: $tmpfile"
     rm -f "$tmparch" "$tmpfile"
@@ -689,7 +691,6 @@ if test "$APPEND" = y; then
     CRCsum="$crcsum"
     MD5sum="$md5sum"
     SHAsum="$shasum"
-    USIZE=`expr $USIZE + $OLDUSIZE`
     # Generate the header
     . "$HEADER"
     # Append the new data

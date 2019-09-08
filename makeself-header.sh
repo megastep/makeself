@@ -341,7 +341,6 @@ do
 	echo CRCsum=\"\$CRCsum\"
 	echo MD5sum=\"\$MD5sum\"
 	echo SHAsum=\"\$SHAsum\"
-	echo OLDUSIZE=$USIZE
 	echo OLDSKIP=`expr $SKIP + 1`
 	exit 0
 	;;
