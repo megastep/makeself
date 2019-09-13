@@ -19,13 +19,14 @@ addons:
 script:
 - ./make-release.sh
 - cd test
+- "./appendtest"
 - "./datetest"
 - "./extracttest"
+- "./startupcommandtest"
 - "./suidtest"
 - "./tarextratest"
-- "./appendtest"
-- "./whitespacetest"
 - "./whitespacelicense"
+- "./whitespacetest"
 - cd ..
 deploy:
   provider: releases

@@ -76,22 +76,16 @@
 # Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
-MS_VERSION=2.4.0
-MS_COMMAND="$0"
-unset CDPATH
-
-for f in "${1+"$@"}"; do
-    MS_COMMAND="$MS_COMMAND \\\\
-    \\\"$f\\\""
-done
-
-# For Solaris systems
-if test -d /usr/xpg4/bin; then
-    PATH=/usr/xpg4/bin:$PATH
-    export PATH
-fi
-
 # Procedures
+
+# https://www.etalabs.net/sh_tricks.html, "Shell-quoting arbitrary strings"
+quote() { printf %s\\n "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/" ; }
+
+# https://www.etalabs.net/sh_tricks.html, "Working with arrays"
+save () {
+    for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
+        echo " "
+}
 
 MS_Usage()
 {
@@ -162,6 +156,16 @@ MS_Usage()
     echo "(i.e. with a ./ prefix if inside the archive)."
     exit 1
 }
+
+MS_VERSION=2.4.0
+MS_COMMAND="$(save $0 $@)"
+unset CDPATH
+
+# For Solaris systems
+if test -d /usr/xpg4/bin; then
+    PATH=/usr/xpg4/bin:$PATH
+    export PATH
+fi
 
 # Default settings
 if type gzip 2>&1 > /dev/null; then
@@ -459,10 +463,8 @@ else
     fi
 
     LABEL="$3"
-    SCRIPT="$4"
-    test "x$SCRIPT" = x || shift 1
     shift 3
-    SCRIPTARGS="$*"
+    STARTUP_COMMAND="$(save $@)"
 fi
 
 if test "$KEEP" = n -a "$CURRENT" = y; then

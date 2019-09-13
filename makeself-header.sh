@@ -15,8 +15,7 @@ TMPROOT=\${TMPDIR:=/tmp}
 USER_PWD="\$PWD"; export USER_PWD
 
 label="$LABEL"
-script="$SCRIPT"
-scriptargs="$SCRIPTARGS"
+startup_command=$(quote "$STARTUP_COMMAND")
 licensetxt="$LICENSE"
 helpheader='$HELPHEADER'
 targetdir="$archdirname"
@@ -311,10 +310,10 @@ do
 	fi
 	echo Date of packaging: $DATE
 	echo Built with Makeself version $MS_VERSION on $OSTYPE
-	echo Build command was: "$MS_COMMAND"
-	if test x"\$script" != x; then
-	    echo Script run after extraction:
-	    echo "    " \$script \$scriptargs
+	echo Build command was: $MS_COMMAND
+	if test x"\$startup_command" != x; then
+	    echo Command run after extraction:
+	    echo "    \$(echo \$startup_command | xargs)"
 	fi
 	if test x"$copy" = xcopy; then
 		echo "Archive will copy itself to a temporary location"
@@ -331,8 +330,7 @@ do
 	;;
     --dumpconf)
 	echo LABEL=\"\$label\"
-	echo SCRIPT=\"\$script\"
-	echo SCRIPTARGS=\"\$scriptargs\"
+	echo STARTUP_COMMAND=\"\$startup_command\"
 	echo archdirname=\"$archdirname\"
 	echo KEEP=$KEEP
 	echo NOOVERWRITE=$NOOVERWRITE
@@ -590,12 +588,11 @@ fi
 
 cd "\$tmpdir"
 res=0
-if test x"\$script" != x; then
+if test x"\$startup_command" != x; then
     if test x"\$export_conf" = x"y"; then
         MS_BUNDLE="\$0"
         MS_LABEL="\$label"
-        MS_SCRIPT="\$script"
-        MS_SCRIPTARGS="\$scriptargs"
+        MS_STARTUP_COMMAND="\$startup_command"
         MS_ARCHDIRNAME="\$archdirname"
         MS_KEEP="\$KEEP"
         MS_NOOVERWRITE="\$NOOVERWRITE"
@@ -608,13 +605,15 @@ if test x"\$script" != x; then
 		MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
 		read yn
 		if test x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY; then
-			eval "\"\$script\" \$scriptargs \"\\\$@\""; res=\$?;
+            eval "\$startup_command \"\\\$@\""; res=\$?
 		fi
     else
-		eval "\"\$script\" \$scriptargs \"\\\$@\""; res=\$?
+        eval "\$startup_command \"\\\$@\""; res=\$?
     fi
     if test "\$res" -ne 0; then
-		test x"\$verbose" = xy && echo "The program '\$script' returned an error code (\$res)" >&2
+        if test x"\$verbose" = xy; then
+            echo "The command '\$startup_command' returned an error code (\$res)" >&2
+        fi
     fi
 fi
 if test x"\$keep" = xn; then

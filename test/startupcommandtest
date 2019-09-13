@@ -1,0 +1,64 @@
+#!/bin/bash
+
+THIS="$(readlink -f "$0")"
+HERE="$(dirname "${THIS}")"
+SUT="$(dirname "${HERE}")/makeself.sh"
+
+testStartupCommand() {
+    (
+        export TMPDIR="$(mktemp -d "${PWD}/tmpdir.XXXXXX")"
+        
+        local weirdname_list="$(mktemp -t weirdname_list.XXXXXX)"
+        cat >"${weirdname_list}" <<'EOF'
+_!_exclamation_mark
+_"_quotation_mark
+_#_octothorp
+_$_dollar
+_%_percent
+_&_ampersand
+_'_apostrophe
+_(_left_parenthesis
+_)_right_parenthesis
+_*_asterisk
+_+_plus
+_,_comma
+_-_hyphen
+_._full_stop
+_:_colon
+_;_semicolon
+_<_less_than
+_=_equals
+_>_greater_than
+_?_interrogative
+_@_ampersat
+_[_left_square_bracket
+_\_reverse_solidus
+_]_right_square_bracket
+_^_caret
+_{_left_bracket
+_|_vertical_bar
+_}_right_bracket
+EOF
+
+        while read weirdname; do
+            local archive_dir="$(mktemp -dt archive_dir.XXXXXX)"
+            echo "${weirdname}" | tee "${archive_dir}/${weirdname}.txt"
+            local file_name="$(mktemp -ut "file_name.XXXXXX")"
+            "${SUT}" \
+                --nocomp --nox11 \
+                "${archive_dir}" "${file_name}" "The Label" "ls -lah ${weirdname}.txt"
+            assertEqual $? 0
+            "${file_name}" --list
+            assertEqual $? 0
+            "${file_name}" --info
+            assertEqual $? 0
+            "${file_name}" --dumpconf
+            assertEqual $? 0
+            "${file_name}"
+            assertEqual $? 0
+        done <"${weirdname_list}"
+        rm -rf "${TMPDIR}"
+    )
+}
+
+source "${HERE}/bashunit/bashunit.bash"
