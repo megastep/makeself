@@ -595,7 +595,7 @@ tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
         tail -n +$OLDSKIP "$archname" | $GUNZIP_CMD > "$tmparch"
     fi
     cd "$archdir"
-    find . -mindepth 1 \
+    find . ! -type d -o -links 2 \
         | LC_ALL=C sort \
         | sed 's/./\\&/g' \
         | xargs tar $TAR_EXTRA -$TAR_ARGS "$tmparch"
