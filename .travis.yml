@@ -4,8 +4,8 @@ os:
 - windows
 language: c
 before_install:
-- sudo apt-get -qq update
-- sudo apt-get install -y realpath pbzip2
+- [ "$TRAVIS_OS_NAME" = "linux" ] && sudo apt-get -qq update && sudo apt-get install -y realpath pbzip2
+- [ "$TRAVIS_OS_NAME" = "osx" ] && brew update && brew install realpath pbzip2
 script:
 - ./make-release.sh
 - cd test
