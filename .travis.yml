@@ -1,3 +1,7 @@
+os:
+- linux
+- osx
+- windows
 language: c
 before_install:
 - sudo apt-get -qq update
