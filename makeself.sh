@@ -591,6 +591,9 @@ fi
 
 tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
 (
+    if test "$APPEND" = "y"; then
+        tail -n +$OLDSKIP "$archname" | $GUNZIP_CMD > "$tmparch"
+    fi
     cd "$archdir"
     find . ! -type d \
         | LC_ALL=C sort \
@@ -601,6 +604,8 @@ tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
     rm -f "$tmparch" "$tmpfile"
     exit 1
 }
+
+USIZE=`du $DU_ARGS "$tmparch" | awk '{print $1}'`
 
 eval "$GZIP_CMD" <"$tmparch" >"$tmpfile" || {
     echo "ERROR: failed to create temporary file: $tmpfile"
@@ -682,15 +687,12 @@ if test "$APPEND" = y; then
     mv "$archname" "$archname".bak || exit
 
     # Prepare entry for new archive
-    filesizes="$filesizes $fsize"
-    CRCsum="$CRCsum $crcsum"
-    MD5sum="$MD5sum $md5sum"
-    SHAsum="$SHAsum $shasum"
-    USIZE=`expr $USIZE + $OLDUSIZE`
+    filesizes="$fsize"
+    CRCsum="$crcsum"
+    MD5sum="$md5sum"
+    SHAsum="$shasum"
     # Generate the header
     . "$HEADER"
-    # Append the original data
-    tail -n +$OLDSKIP "$archname".bak >> "$archname"
     # Append the new data
     cat "$tmpfile" >> "$archname"
 

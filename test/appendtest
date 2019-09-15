@@ -11,18 +11,38 @@ setupTests() {
   $SUT $* archive makeself-test.run "Test $*" echo Testing --tar-extra="--exclude .git" 
   mkdir -p append/append_dir/
   cp -a $SOURCE/makeself.sh append/append_dir/
-  $SUT --append append/ makeself-test.run
-
 }
 
 
 testGzip()
 {
   setupTests --gzip
-  
+
+  $SUT --append append/ makeself-test.run
+  assertEqual $? 0
   ./makeself-test.run --check
   assertEqual $? 0
 }
 
+
+testNocomp()
+{
+  setupTests --nocomp
+
+  $SUT --append append/ makeself-test.run
+  assertEqual $? 0
+  ./makeself-test.run --check
+  assertEqual $? 0
+}
+
+testBzip2()
+{
+  setupTests --bzip2
+
+  $SUT --append append/ makeself-test.run
+  assertEqual $? 0
+  ./makeself-test.run --check
+  assertEqual $? 0
+}
 
 source bashunit/bashunit.bash
