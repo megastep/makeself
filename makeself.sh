@@ -420,42 +420,42 @@ archname="$2"
 
 if test "$QUIET" = "y" || test "$TAR_QUIETLY" = "y"; then
     if test "$TAR_ARGS" = "rvf"; then
-	TAR_ARGS="rf"
+	    TAR_ARGS="rf"
     elif test "$TAR_ARGS" = "rvhf";then
-	TAR_ARGS="rhf"
+	    TAR_ARGS="rhf"
     fi
 fi
 
 if test "$APPEND" = y; then
     if test $# -lt 2; then
-	MS_Usage
+    	MS_Usage
     fi
 
     # Gather the info from the original archive
     OLDENV=`sh "$archname" --dumpconf`
     if test $? -ne 0; then
-	echo "Unable to update archive: $archname" >&2
-	exit 1
+	    echo "Unable to update archive: $archname" >&2
+	    exit 1
     else
-	eval "$OLDENV"
+	    eval "$OLDENV"
     fi
 else
     if test "$KEEP" = n -a $# = 3; then
-	echo "ERROR: Making a temporary archive with no embedded command does not make sense!" >&2
-	echo >&2
-	MS_Usage
+	    echo "ERROR: Making a temporary archive with no embedded command does not make sense!" >&2
+    	echo >&2
+    	MS_Usage
     fi
     # We don't want to create an absolute directory unless a target directory is defined
     if test "$CURRENT" = y; then
-	archdirname="."
+	    archdirname="."
     elif test x"$TARGETDIR" != x; then
-	archdirname="$TARGETDIR"
+	    archdirname="$TARGETDIR"
     else
-	archdirname=`basename "$1"`
+	    archdirname=`basename "$1"`
     fi
 
     if test $# -lt 3; then
-	MS_Usage
+	    MS_Usage
     fi
 
     LABEL="$3"
