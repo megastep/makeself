@@ -4,8 +4,8 @@ os:
 - windows
 language: c
 before_install:
-- test "$TRAVIS_OS_NAME" = "linux" && sudo apt-get -qq update && sudo apt-get install -y realpath pbzip2
-- test "$TRAVIS_OS_NAME" = "osx" && brew update && brew install realpath pbzip2
+- if test "$TRAVIS_OS_NAME" = "linux"; then sudo apt-get -qq update && sudo apt-get install -y realpath pbzip2; fi
+- if test "$TRAVIS_OS_NAME" = "osx"; then brew update && brew install realpath pbzip2; fi
 script:
 - ./make-release.sh
 - cd test
