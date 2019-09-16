@@ -145,20 +145,20 @@ MS_Help()
 \${helpheader}Makeself version $MS_VERSION
  1) Getting help or info about \$0 :
   \$0 --help   Print this message
-  \$0 --info   Print embedded info : title, default target directory, embedded script ...
+  \$0 --info   Print embedded info : title, default target directory, embedded command ...
   \$0 --lsm    Print embedded lsm entry (or no LSM)
   \$0 --list   Print the list of files in the archive
   \$0 --check  Checks integrity of the archive
 
  2) Running \$0 :
-  \$0 [options] [--] [additional arguments to embedded script]
+  \$0 [options] [--] [additional arguments to embedded command]
   with following options (in that order)
-  --confirm             Ask before running embedded script
+  --confirm             Ask before running embedded command
   --quiet               Do not print anything except error messages
   --accept              Accept the license
-  --noexec              Do not run embedded script
+  --noexec              Do not run embedded command
   --keep                Do not erase target directory after running
-                        the embedded script
+                        the embedded command
   --noprogress          Do not show the progress during the decompression
   --nox11               Do not spawn an xterm
   --nochown             Do not give the target folder to the current user
@@ -171,7 +171,7 @@ MS_Help()
                         using OpenSSL. See "PASS PHRASE ARGUMENTS" in man openssl.
                         Default is to prompt the user to enter decryption password
                         on the current terminal.
-  --                    Following arguments will be passed to the embedded script
+  --                    Following arguments will be passed to the embedded command
 EOH
 }
 
@@ -380,7 +380,7 @@ EOLSM
 	shift
 	;;
 	--noexec)
-	script=""
+	startup_command=""
 	shift
 	;;
     --keep)
@@ -597,7 +597,7 @@ if test x"\$startup_command" != x; then
         MS_KEEP="\$KEEP"
         MS_NOOVERWRITE="\$NOOVERWRITE"
         MS_COMPRESS="\$COMPRESS"
-        export MS_BUNDLE MS_LABEL MS_SCRIPT MS_SCRIPTARGS
+        export MS_BUNDLE MS_LABEL MS_STARTUP_COMMAND
         export MS_ARCHDIRNAME MS_KEEP MS_NOOVERWRITE MS_COMPRESS
     fi
 

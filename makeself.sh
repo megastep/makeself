@@ -89,7 +89,7 @@ save () {
 
 MS_Usage()
 {
-    echo "Usage: $0 [params] archive_dir file_name label startup_script [args]"
+    echo "Usage: $0 [params] archive_dir file_name label startup_command [args]"
     echo "params can be one or more of the following :"
     echo "    --version | -v     : Print out Makeself version number and exit"
     echo "    --help | -h        : Print out this help message"
@@ -125,7 +125,7 @@ MS_Usage()
     echo "    --copy             : Upon extraction, the archive will first copy itself to"
     echo "                         a temporary directory"
     echo "    --append           : Append more files to an existing Makeself archive"
-    echo "                         The label and startup scripts will then be ignored"
+    echo "                         The label and startup command will then be ignored"
     echo "    --target dir       : Extract directly to a target directory"
     echo "                         directory path can be either absolute or relative"
     echo "    --nooverwrite      : Do not extract the archive if the specified target directory exists"
@@ -136,7 +136,7 @@ MS_Usage()
     echo "    --nomd5            : Don't calculate an MD5 for archive"
     echo "    --nocrc            : Don't calculate a CRC for archive"
     echo "    --sha256           : Compute a SHA256 checksum for the archive"
-    echo "    --header file      : Specify location of the header script"
+    echo "    --header file      : Specify location of the header stub"
     echo "    --follow           : Follow the symlinks in the archive"
     echo "    --noprogress       : Do not show the progress during the decompression"
     echo "    --nox11            : Disable automatic spawn of a xterm"
@@ -150,9 +150,9 @@ MS_Usage()
     echo "                         instead of the current date."
     echo
     echo "    --keep-umask       : Keep the umask set to shell default, rather than overriding when executing self-extracting archive."
-    echo "    --export-conf      : Export configuration variables to startup_script"
+    echo "    --export-conf      : Export configuration variables to startup_command"
     echo
-    echo "Do not forget to give a fully qualified startup script name"
+    echo "Note: startup_command script invocations must be fully qualified"
     echo "(i.e. with a ./ prefix if inside the archive)."
     exit 1
 }
