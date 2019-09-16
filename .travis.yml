@@ -3,6 +3,9 @@ os:
 - osx
 - windows
 language: shell
+matrix:
+  allow_failures:
+    - os: windows
 addons:
   homebrew:
     packages:
