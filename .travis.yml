@@ -5,7 +5,11 @@ os:
 language: c
 before_install:
 - if test "$TRAVIS_OS_NAME" = "linux"; then sudo apt-get -qq update && sudo apt-get install -y realpath pbzip2; fi
-- if test "$TRAVIS_OS_NAME" = "osx"; then brew install md5sha1sum pbzip2; fi
+addons:
+  homebrew:
+    packages:
+    - pbzip2
+    - md5sha1sum
 script:
 - ./make-release.sh
 - cd test
