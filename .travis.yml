@@ -2,7 +2,7 @@ os:
 - linux
 - osx
 - windows
-language: c
+language: shell
 addons:
   homebrew:
     packages:
