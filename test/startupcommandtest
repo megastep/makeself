@@ -4,7 +4,7 @@ THIS="$(realpath "$0")"
 HERE="$(dirname "${THIS}")"
 SUT="$(dirname "${HERE}")/makeself.sh"
 
-testStartupCommand() {
+testStartupCommandWeirdNames() {
     (
         export TMPDIR="$(mktemp -d "${PWD}/tmpdir.XXXXXX")"
         
@@ -57,6 +57,73 @@ EOF
             "${file_name}"
             assertEqual $? 0
         done <"${weirdname_list}"
+        rm -rf "${TMPDIR}"
+    )
+}
+
+
+testStartupCommandShellExpr() {
+    (
+        export TMPDIR="$(mktemp -d "${PWD}/tmpdir.XXXXXX")"
+        local shellexpr_list="$(mktemp -t shellexpr_list.XXXXXX)"
+        cat >"${shellexpr_list}" <<'EOF'
+echo $PWD && echo "Second Line"
+sh -c 'echo $PWD && echo "Second Line"'
+EOF
+
+        while read shellexpr; do
+            local archive_dir="$(mktemp -dt archive_dir.XXXXXX)"
+            echo "${shellexpr}" | tee "${archive_dir}/shellexpr.txt"
+            local file_name="$(mktemp -ut "file_name.XXXXXX")"
+            "${SUT}" \
+                --nocomp --nox11 \
+                "${archive_dir}" "${file_name}" "The Label" "${shellexpr}"
+            assertEqual $? 0
+            "${file_name}" --list
+            assertEqual $? 0
+            "${file_name}" --info
+            assertEqual $? 0
+            "${file_name}" --dumpconf
+            assertEqual $? 0
+            "${file_name}"
+            assertEqual $? 0
+        done <"${shellexpr_list}"
+        rm -rf "${TMPDIR}"
+    )
+}
+
+testStartupCommandMoreArgs() {
+    (
+        export TMPDIR="$(mktemp -d "${PWD}/tmpdir.XXXXXX")"
+        local moreargs_list="$(mktemp -t moreargs_list.XXXXXX)"
+        cat >"${moreargs_list}" <<'EOF'
+echo $PWD && echo "Second Line" && ls
+sh -c 'echo $PWD && echo "Second Line" && ls'
+EOF
+
+        while read moreargs; do
+            local archive_dir="$(mktemp -dt archive_dir.XXXXXX)"
+            echo "${moreargs}" | tee "${archive_dir}/moreargs.txt"
+            local file_name="$(mktemp -ut "file_name.XXXXXX")"
+            "${SUT}" \
+                --nocomp --nox11 \
+                "${archive_dir}" "${file_name}" "The Label" "${moreargs}"
+            assertEqual $? 0
+            "${file_name}" --list
+            assertEqual $? 0
+            "${file_name}" --info
+            assertEqual $? 0
+            "${file_name}" --dumpconf
+            assertEqual $? 0
+            "${file_name}" --
+            assertEqual $? 0
+            "${file_name}" -- -l
+            assertEqual $? 0
+            "${file_name}" -- -la
+            assertEqual $? 0
+            "${file_name}" -- -lah
+            assertEqual $? 0
+        done <"${moreargs_list}"
         rm -rf "${TMPDIR}"
     )
 }

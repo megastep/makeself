@@ -601,14 +601,15 @@ if test x"\$startup_command" != x; then
         export MS_ARCHDIRNAME MS_KEEP MS_NOOVERWRITE MS_COMPRESS
     fi
 
+    eval "set -- \$startup_command \$@"
     if test x"\$verbose" = x"y"; then
-		MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
+		MS_Printf "OK to execute: \$(echo \$@ | xargs) ? [Y/n] "
 		read yn
 		if test x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY; then
-            eval "\$startup_command \"\\\$@\""; res=\$?
+            sh -c "\$(echo \$@ | xargs)"
 		fi
     else
-        eval "\$startup_command \"\\\$@\""; res=\$?
+        sh -c "\$(echo \$@ | xargs)"
     fi
     if test "\$res" -ne 0; then
         if test x"\$verbose" = xy; then
