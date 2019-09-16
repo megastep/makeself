@@ -606,14 +606,14 @@ if test x"\$startup_command" != x; then
 		MS_Printf "OK to execute: \$(echo \$@ | xargs) ? [Y/n] "
 		read yn
 		if test x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY; then
-            sh -c "\$(echo \$@ | xargs)"
+            sh -c "\$(echo \$@ | xargs)"; res=\$?
 		fi
     else
-        sh -c "\$(echo \$@ | xargs)"
+        sh -c "\$(echo \$@ | xargs)"; res=\$?
     fi
     if test "\$res" -ne 0; then
         if test x"\$verbose" = xy; then
-            echo "The command '\$startup_command' returned an error code (\$res)" >&2
+            echo "The command \"\$(echo \$@ | xargs)\" returned an error code (\$res)" >&2
         fi
     fi
 fi
