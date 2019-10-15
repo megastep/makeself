@@ -21,6 +21,7 @@ licensetxt="$LICENSE"
 helpheader='$HELPHEADER'
 targetdir="$archdirname"
 filesizes="$filesizes"
+skip="$SKIP"
 keep="$KEEP"
 nooverwrite="$NOOVERWRITE"
 quiet="n"
@@ -113,7 +114,7 @@ MS_dd_Progress()
     blocks=\`expr \$length / \$bsize\`
     bytes=\`expr \$length % \$bsize\`
     (
-        dd ibs=\$offset skip=1 2>/dev/null
+        dd ibs=\$offset skip=1 count=0 2>/dev/null
         pos=\`expr \$pos \+ \$bsize\`
         MS_Printf "     0%% " 1>&2
         if test \$blocks -gt 0; then
@@ -192,7 +193,7 @@ MS_Check()
     if test x"\$quiet" = xn; then
 		MS_Printf "Verifying archive integrity..."
     fi
-    offset=\`head -n $SKIP "\$1" | wc -c | tr -d " "\`
+    offset=\`head -n \$skip "\$1" | wc -c | tr -d " "\`
     verb=\$2
     i=1
     for s in \$filesizes
@@ -341,7 +342,7 @@ do
 	echo CRCsum=\"\$CRCsum\"
 	echo MD5sum=\"\$MD5sum\"
 	echo SHAsum=\"\$SHAsum\"
-	echo OLDSKIP=`expr $SKIP + 1`
+	echo OLDSKIP=`expr \$skip + 1`
 	exit 0
 	;;
     --lsm)
@@ -354,7 +355,7 @@ EOLSM
 	;;
     --list)
 	echo Target directory: \$targetdir
-	offset=\`head -n $SKIP "\$0" | wc -c | tr -d " "\`
+	offset=\`head -n \$skip "\$0" | wc -c | tr -d " "\`
 	for s in \$filesizes
 	do
 	    MS_dd "\$0" \$offset \$s | MS_Decompress | UnTAR t
@@ -363,7 +364,7 @@ EOLSM
 	exit 0
 	;;
 	--tar)
-	offset=\`head -n $SKIP "\$0" | wc -c | tr -d " "\`
+	offset=\`head -n \$skip "\$0" | wc -c | tr -d " "\`
 	arg1="\$2"
     if ! shift 2; then MS_Help; exit 1; fi
 	for s in \$filesizes
@@ -532,7 +533,7 @@ location="\`pwd\`"
 if test x"\$SETUP_NOCHECK" != x1; then
     MS_Check "\$0"
 fi
-offset=\`head -n $SKIP "\$0" | wc -c | tr -d " "\`
+offset=\`head -n \$skip "\$0" | wc -c | tr -d " "\`
 
 if test x"\$verbose" = xy; then
 	MS_Printf "About to extract $USIZE KB in \$tmpdir ... Proceed ? [Y/n] "
