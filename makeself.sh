@@ -372,7 +372,7 @@ do
 	if ! shift 2; then MS_Help; exit 1; fi
         ;;
     --help-header)
-	HELPHEADER=`sed -e "s/'/'\\\\\''/g" $2`
+	HELPHEADER=`sed -e "s/'/'\\\\''/g" $2`
     if ! shift 2; then MS_Help; exit 1; fi
 	[ -n "$HELPHEADER" ] && HELPHEADER="$HELPHEADER
 "
