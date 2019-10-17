@@ -253,7 +253,7 @@ do
 	;;
     --gpg-extra)
 	GPG_EXTRA="$2"
-	if ! shift 2; then MS_Help; exit 1; fi
+	if ! shift 2; then MS_Usage; exit 1; fi
 	;;
     --ssl-encrypt)
 	ENCRYPT=openssl
@@ -261,11 +261,11 @@ do
 	;;
     --ssl-passwd)
 	PASSWD=$2
-	if ! shift 2; then MS_Help; exit 1; fi
+	if ! shift 2; then MS_Usage; exit 1; fi
 	;;
     --ssl-pass-src)
 	PASSWD_SRC=$2
-	if ! shift 2; then MS_Help; exit 1; fi
+	if ! shift 2; then MS_Usage; exit 1; fi
 	;;
     --ssl-no-md)
 	OPENSSL_NO_MD=y
@@ -277,7 +277,7 @@ do
 	;;
     --complevel)
 	COMPRESS_LEVEL="$2"
-	if ! shift 2; then MS_Help; exit 1; fi
+	if ! shift 2; then MS_Usage; exit 1; fi
 	;;
     --nochown)
 	OWNERSHIP=n
@@ -302,16 +302,16 @@ do
 	;;
     --tar-extra)
 	TAR_EXTRA="$2"
-        if ! shift 2; then MS_Help; exit 1; fi
+        if ! shift 2; then MS_Usage; exit 1; fi
         ;;
     --untar-extra)
         UNTAR_EXTRA="$2"
-        if ! shift 2; then MS_Help; exit 1; fi
+        if ! shift 2; then MS_Usage; exit 1; fi
         ;;
     --target)
 	TARGETDIR="$2"
 	KEEP=y
-        if ! shift 2; then MS_Help; exit 1; fi
+        if ! shift 2; then MS_Usage; exit 1; fi
 	;;
     --nooverwrite)
         NOOVERWRITE=y
@@ -323,12 +323,12 @@ do
 	;;
     --header)
 	HEADER="$2"
-        if ! shift 2; then MS_Help; exit 1; fi
+        if ! shift 2; then MS_Usage; exit 1; fi
 	;;
     --license)
         # We need to escape all characters having a special meaning in double quotes
         LICENSE="$(echo "$2" | sed 's/./\\&/g' | xargs)"
-        if ! shift 2; then MS_Help; exit 1; fi
+        if ! shift 2; then MS_Usage; exit 1; fi
 	;;
     --follow)
 	TAR_ARGS=rvhf
@@ -365,15 +365,15 @@ do
 	;;
     --lsm)
 	LSM_CMD="cat \"$2\" >> \"\$archname\""
-    if ! shift 2; then MS_Help; exit 1; fi
+    if ! shift 2; then MS_Usage; exit 1; fi
 	;;
     --packaging-date)
 	DATE="$2"
-	if ! shift 2; then MS_Help; exit 1; fi
+	if ! shift 2; then MS_Usage; exit 1; fi
         ;;
     --help-header)
 	HELPHEADER=`sed -e "s/'/'\\\\''/g" $2`
-    if ! shift 2; then MS_Help; exit 1; fi
+    if ! shift 2; then MS_Usage; exit 1; fi
 	[ -n "$HELPHEADER" ] && HELPHEADER="$HELPHEADER
 "
     ;;
