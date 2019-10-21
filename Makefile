@@ -1,11 +1,20 @@
-.PHONY: all test
+.PHONY: all clean test help
 
 define NL
 
 
 endef
 
-all:
+VERSION := $(shell cat VERSION)
+OUTPUT  := makeself-$(VERSION).run
+
+all: $(OUTPUT)
+
+$(OUTPUT): makeself.sh makeself-header.sh VERSION
+	./make-release.sh
+
+clean:
+	$(RM) makeself-*.run
 
 test:
 	cd test && git submodule update --init --recursive
@@ -18,3 +27,6 @@ test:
 			echo; \
 			exit 1; \
 		fi$(NL))
+
+help:
+	$(info Targets: all $(OUTPUT) clean test help)
