@@ -17,16 +17,8 @@ addons:
     - pbzip2
     - realpath
 script:
-- ./make-release.sh
-- cd test
-- "./datetest"
-- "./extracttest"
-- "./suidtest"
-- "./tarextratest"
-- "./appendtest"
-- "./whitespacetest"
-- "./whitespacelicense"
-- cd ..
+- make
+- make test
 deploy:
   provider: releases
   api_key:
