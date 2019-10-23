@@ -17,7 +17,6 @@ clean:
 	$(RM) makeself-*.run
 
 test:
-	cd test && git submodule update --init --recursive
 	$(foreach f, \
 		$(notdir $(sort $(filter-out test/bashunit,$(wildcard test/*)))), \
 		cd test; \
