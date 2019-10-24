@@ -155,8 +155,8 @@ Within the startup script, you can use the `$USER_PWD` variable to get the path 
 
 Clone the git repo and execute `git submodule update --init --recursive` to obtain all submodules.
 
-To make a release: `make`
-To run all tests: `make test`
+* To make a release: `make`
+* To run all tests: `make test`
 
 ## Maven Usage
 
