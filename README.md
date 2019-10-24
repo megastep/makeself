@@ -1,4 +1,4 @@
-[![AUR](https://img.shields.io/aur/license/yaourt.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 [![Build Status](https://travis-ci.org/megastep/makeself.svg?branch=master)](https://travis-ci.org/megastep/makeself)
 
 # makeself - Make self-extractable archives on Unix
@@ -150,6 +150,13 @@ The startup script must be a regular Shell script.
 Within the startup script, you can use the `$USER_PWD` variable to get the path of the folder from which the self-extracting script is executed. This is especially useful to access files that are located in the same folder as the script, as shown in the example below. 
 
 `my-self-extracting-script.sh --fooBarFileParameter foo.bar`
+
+## Building and Testing
+
+Clone the git repo and execute `git submodule update --init --recursive` to obtain all submodules.
+
+* To make a release: `make`
+* To run all tests:  `make test`
 
 ## Maven Usage
 
