@@ -151,6 +151,13 @@ Within the startup script, you can use the `$USER_PWD` variable to get the path 
 
 `my-self-extracting-script.sh --fooBarFileParameter foo.bar`
 
+## Building and Testing
+
+Clone the git repo and execute `git submodule update --init --recursive` to obtain all submodules.
+
+To make a release: `make`
+To run all tests: `make test`
+
 ## Maven Usage
 
 Makeself is now supported by the following maven plugin [makeself-maven-plugin](https://github.com/hazendaz/makeself-maven-plugin).  Please refer to project for usage and report any bugs in regards to maven plugin on that project.
