@@ -54,6 +54,12 @@ Do not compress the data.
 .B --complevel lvl
 Specify the compression level for gzip,bzip2,pbzui2,xz,lzo or lz4
 .TP
+.B --compcmd cmd
+Use provided command to compress the archive from standard input to standard output. This option must be specified along with --decompcmd option.
+.TP
+.B --decompcmd cmd
+Use provided command to decompress the archive from standard input to standard output. This option must be specified along with --compcmd option.
+.TP
 .B --notemp
 The archive will create archive_dir in the current directory and 
 uncompress in ./archive_dir.

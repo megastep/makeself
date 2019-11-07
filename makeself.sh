@@ -125,6 +125,12 @@ MS_Usage()
     echo "    --nochown          : Do not give the target folder to the current user (default)"
     echo "    --chown            : Give the target folder to the current user recursively"
     echo "    --nocomp           : Do not compress the data"
+    echo "    --compcmd cmd"     : Use provided command to compress the archive from standard input"
+    echo "                         to standard output. This option must be specified along with"
+    echo "                         --decompcmd option."
+    echo "    --decompcmd cmd"   : Use provided command to decompress the archive from standard"
+    echo "                         input to standard output. This option must be specified along"
+    echo "                         with --compcmd option."
     echo "    --notemp           : The archive will create archive_dir in the"
     echo "                         current directory and uncompress in ./archive_dir"
     echo "    --needroot         : Check that the root user is extracting the archive before proceeding"
@@ -277,6 +283,16 @@ do
 	;;
     --complevel)
 	COMPRESS_LEVEL="$2"
+	if ! shift 2; then MS_Usage; exit 1; fi
+	;;
+    --compcmd)
+	COMPRESS=custom
+	GZIP_CMD="$2"
+	if ! shift 2; then MS_Usage; exit 1; fi
+	;;
+    --decompcmd)
+	COMPRESS=custom
+	GUNZIP_CMD="$2"
 	if ! shift 2; then MS_Usage; exit 1; fi
 	;;
     --nochown)
@@ -520,6 +536,16 @@ Unix)
 none)
     GZIP_CMD="cat"
     GUNZIP_CMD="cat"
+    ;;
+custom)
+    if test x"$GZIP_CMD" = x; then
+        echo "ERROR: --decompcmd was used without --compcmd" >&2
+        exit 1
+    fi
+    if test x"$GUNZIP_CMD" = x; then
+        echo "ERROR: --compcmd was used without --decompcmd" >&2
+        exit 1
+    fi
     ;;
 esac
 
