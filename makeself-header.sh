@@ -494,9 +494,9 @@ if test x"\$nox11" = xn; then
                 done
                 chmod a+x \$0 || echo Please add execution rights on \$0
                 if test \`echo "\$0" | cut -c1\` = "/"; then # Spawn a terminal!
-                    exec \$XTERM -title "\$label" -e "\$0" --xwin "\$initargs"
+                    exec \$XTERM -e "\$0" --xwin "\$initargs"
                 else
-                    exec \$XTERM -title "\$label" -e "./\$0" --xwin "\$initargs"
+                    exec \$XTERM -e "./\$0" --xwin "\$initargs"
                 fi
             fi
         fi
