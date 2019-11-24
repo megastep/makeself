@@ -14,5 +14,13 @@ jobs:
     - name: Run tests
       run: |
         cd test
-        # using GNU find
-        find . -maxdepth 1 -executable -type f -print \( -exec {} \; -o -quit \)
+        run_tests() {
+          rc=0
+          for f in * ; do
+            [ -f "$f" ] && [ -x "$f" ] && { 
+              echo "$f" ; ./"$f" || { rc=1 ; break ; }
+            }
+          done
+          return $rc
+        }
+        run_tests
