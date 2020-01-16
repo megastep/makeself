@@ -13,6 +13,7 @@ MD5="$MD5sum"
 SHA="$SHAsum"
 TMPROOT=\${TMPDIR:=/tmp}
 USER_PWD="\$PWD"; export USER_PWD
+RUNNING_DIR=\$(dirname \$0); export RUNNING_DIR
 
 label="$LABEL"
 script="$SCRIPT"
