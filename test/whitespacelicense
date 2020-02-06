@@ -54,7 +54,7 @@ EOF
 
         # ...so do this instead:
         assertEqual \
-            "$(echo "${license_file}" | md5sum | cut -d' ' -f1)" \
+            "$(cat "${license_file}" | md5sum | cut -d' ' -f1)" \
             "$(echo "${license_text}" | md5sum | cut -d' ' -f1)"
     done
     rm -rf "${license_dir}" "${archive_dir}" "${file_name}"
