@@ -164,7 +164,7 @@ MS_Usage()
 }
 
 # Default settings
-if type gzip 2>&1 > /dev/null; then
+if type gzip > /dev/null 2>&1; then
     COMPRESS=gzip
 else
     COMPRESS=Unix
@@ -556,7 +556,7 @@ if test -f "$HEADER"; then
 	SKIP=`expr $SKIP`
 	rm -f "$tmpfile"
     if test "$QUIET" = "n";then
-    	echo Header is $SKIP lines long >&2
+    	echo "Header is $SKIP lines long" >&2
     fi
 
 	archname="$oldarchname"
@@ -585,8 +585,8 @@ fi
 
 test -d "$archdir" || { echo "Error: $archdir does not exist."; rm -f "$tmpfile"; exit 1; }
 if test "$QUIET" = "n"; then
-   echo About to compress $USIZE KB of data...
-   echo Adding files to archive named \"$archname\"...
+   echo "About to compress $USIZE KB of data..."
+   echo "Adding files to archive named \"$archname\"..."
 fi
 
 tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
@@ -615,7 +615,7 @@ eval "$GZIP_CMD" <"$tmparch" >"$tmpfile" || {
 rm -f "$tmparch"
 
 if test x"$ENCRYPT" = x"openssl"; then
-    echo About to encrypt archive \"$archname\"...
+    echo "About to encrypt archive \"$archname\"..."
     { eval "$ENCRYPT_CMD -in $tmpfile -out ${tmpfile}.enc" && mv -f ${tmpfile}.enc $tmpfile; } || \
         { echo Aborting: could not encrypt temporary file: "$tmpfile".; rm -f "$tmpfile"; exit 1; }
 fi
@@ -633,7 +633,7 @@ if test "$NOCRC" = y; then
 		echo "skipping crc at user request"
 	fi
 else
-	crcsum=`cat "$tmpfile" | CMD_ENV=xpg4 cksum | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
+	crcsum=`CMD_ENV=xpg4 cksum < "$tmpfile" | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
 	if test "$QUIET" = "n";then
 		echo "CRC: $crcsum"
 	fi
@@ -642,10 +642,10 @@ fi
 if test "$SHA256" = y; then
 	SHA_PATH=`exec <&- 2>&-; which shasum || command -v shasum || type shasum`
 	if test -x "$SHA_PATH"; then
-		shasum=`cat "$tmpfile" | eval "$SHA_PATH -a 256" | cut -b-64`
+		shasum=`eval "$SHA_PATH -a 256" < "$tmpfile" | cut -b-64`
 	else
 		SHA_PATH=`exec <&- 2>&-; which sha256sum || command -v sha256sum || type sha256sum`
-		shasum=`cat "$tmpfile" | eval "$SHA_PATH" | cut -b-64`
+		shasum=`eval "$SHA_PATH" < "$tmpfile" | cut -b-64`
 	fi
 	if test "$QUIET" = "n"; then
 		if test -x "$SHA_PATH"; then
@@ -672,7 +672,7 @@ else
 		if test `basename ${MD5_PATH}`x = digestx; then
 			MD5_ARG="-a md5"
 		fi
-		md5sum=`cat "$tmpfile" | eval "$MD5_PATH $MD5_ARG" | cut -b-32`
+		md5sum=`eval "$MD5_PATH $MD5_ARG" < "$tmpfile" | cut -b-32`
 		if test "$QUIET" = "n";then
 			echo "MD5: $md5sum"
 		fi
@@ -699,7 +699,7 @@ if test "$APPEND" = y; then
     chmod +x "$archname"
     rm -f "$archname".bak
     if test "$QUIET" = "n";then
-    	echo Self-extractable archive \"$archname\" successfully updated.
+    	echo "Self-extractable archive \"$archname\" successfully updated."
     fi
 else
     filesizes="$fsize"
