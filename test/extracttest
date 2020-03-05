@@ -38,6 +38,8 @@ testBzip2()
 
 testPBzip2()
 {
+  # Skip if pbzip2 is not available
+  which pbzip2 || return
   setupTests --pbzip2
 
   ./makeself-test.run --check
