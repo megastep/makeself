@@ -69,18 +69,18 @@
 # - 2.3.0 : Option to specify packaging date to enable byte-for-byte reproducibility. (Marc Pawlowsky)
 # - 2.4.0 : Optional support for SHA256 checksums in archives.
 #
-# (C) 1998-2018 by Stephane Peter <megastep@megastep.org>
+# (C) 1998-2020 by Stephane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 # Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
-MS_VERSION=2.4.0
+MS_VERSION=2.4.1
 MS_COMMAND="$0"
 unset CDPATH
 
-for f in "${1+"$@"}"; do
+for f in ${1+"$@"}; do
     MS_COMMAND="$MS_COMMAND \\\\
     \\\"$f\\\""
 done
@@ -592,7 +592,7 @@ fi
 tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
 (
     if test "$APPEND" = "y"; then
-        tail -n +$OLDSKIP "$archname" | $GUNZIP_CMD > "$tmparch"
+        tail -n "+$OLDSKIP" "$archname" | $GUNZIP_CMD > "$tmparch"
     fi
     cd "$archdir"
     find . ! -type d -o -links 2 \
