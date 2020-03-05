@@ -8,21 +8,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-  steps:
-  - name: Install Linux packages
-    run: sudo env DEBIAN_FRONTEND=noninteractive apt-get -qq -y install pbzip2
+    steps:
+    - name: Install Linux packages
+      run: sudo env DEBIAN_FRONTEND=noninteractive apt-get -qq -y install pbzip2
 
-  - name: Checkout Makeself
-    uses: actions/checkout@v2
+    - name: Checkout Makeself
+      uses: actions/checkout@v2
 
-  - name: Build release
-    run: |
-      git submodule update --init --recursive
-      make
+    - name: Build release
+      run: |
+        git submodule update --init --recursive
+        make
 
-  - name: Upload to release
+    - name: Upload to release
       uses: JasonEtco/upload-to-release@master
       with:
         args: makeself-*.run
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
