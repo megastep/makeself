@@ -33,6 +33,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout Makeself
+      uses: actions/checkout@v2
     - name: Run ShellCheck
       uses: azohra/shell-linter@v0.2.0
       with:
