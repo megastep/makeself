@@ -28,3 +28,12 @@ jobs:
 
     - name: Run tests
       run: make test
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Run ShellCheck
+      uses: azohra/shell-linter@v0.2.0
+      with:
+        path: "makeself.sh"
