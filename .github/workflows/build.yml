@@ -10,6 +10,14 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
+    - name: Install Linux packages
+      if: runner.os == 'Linux'
+      run: sudo env DEBIAN_FRONTEND=noninteractive apt-get -qq -y install pbzip2 realpath
+
+    - name: Install macOS packages
+      if: runner.os == 'macOS'
+      run: brew install pbzip2 md5sha1sum
+
     - name: Checkout Makeself
       uses: actions/checkout@v2
 
