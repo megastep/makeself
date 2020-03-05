@@ -36,6 +36,7 @@ jobs:
     - name: Checkout Makeself
       uses: actions/checkout@v2
     - name: Run ShellCheck
-      uses: azohra/shell-linter@v0.2.0
+      uses: azohra/shell-linter@feature/add-severity-mode
       with:
         path: "makeself.sh"
+        severity: "error"
