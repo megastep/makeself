@@ -16,7 +16,7 @@ jobs:
 
     - name: Install macOS packages
       if: runner.os == 'macOS'
-      run: brew install pbzip2 md5sha1sum
+      run: brew install pbzip2 coreutils
 
     - name: Checkout Makeself
       uses: actions/checkout@v2
