@@ -1,8 +1,6 @@
 name: Release
 
-on:
-  release:
-    types: [created, published]
+on: release
     
 jobs:
   build:
@@ -26,4 +24,3 @@ jobs:
         args: makeself-*.run
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
