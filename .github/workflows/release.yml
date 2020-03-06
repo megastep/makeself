@@ -19,8 +19,7 @@ jobs:
         make
 
     - name: Upload to release
-      uses: JasonEtco/upload-to-release@master
-      with:
-        args: makeself-*.run
+      uses: fnkr/github-action-ghr@v1
       env:
+        GHR_PATH: release/
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
