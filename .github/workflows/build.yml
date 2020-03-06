@@ -26,6 +26,12 @@ jobs:
         git submodule update --init --recursive
         make
 
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: Makeself-Build
+        path: release
+        
     - name: Run tests
       run: make test
 
