@@ -1,6 +1,8 @@
 name: Release
 
-on: release
+on: 
+  release:
+    types: [created, published, prereleased]
     
 jobs:
   build:
