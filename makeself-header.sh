@@ -20,6 +20,7 @@ export ARCHIVE_DIR
 label="$LABEL"
 script="$SCRIPT"
 scriptargs="$SCRIPTARGS"
+cleanup_script="${CLEANUP_SCRIPT}"
 licensetxt="$LICENSE"
 helpheader='$HELPHEADER'
 targetdir="$archdirname"
@@ -162,6 +163,7 @@ MS_Help()
   --quiet               Do not print anything except error messages
   --accept              Accept the license
   --noexec              Do not run embedded script
+  --noexec-cleanup      Do not run embedded cleanup script
   --keep                Do not erase target directory after running
                         the embedded script
   --noprogress          Do not show the progress during the decompression
@@ -279,6 +281,23 @@ UnTAR()
     fi
 }
 
+MS_exec_cleanup() {
+    if test x"\$cleanup" = xy && test x"\$cleanup_script" != x""; then
+        cleanup=n
+        cd "\$tmpdir"
+        eval "\"\$cleanup_script\" \$scriptargs \"\\\$@\""
+    fi
+}
+
+MS_cleanup()
+{
+    echo 'Signal caught, cleaning up' >&2
+    MS_exec_cleanup
+    cd "\$TMPROOT"
+    rm -rf "\$tmpdir"
+    eval \$finish; exit 15
+}
+
 finish=true
 xterm_loop=
 noprogress=$NOPROGRESS
@@ -286,6 +305,7 @@ nox11=$NOX11
 copy=$COPY
 ownership=$OWNERSHIP
 verbose=n
+cleanup=y
 
 initargs="\$@"
 
@@ -337,6 +357,7 @@ do
 	echo LABEL=\"\$label\"
 	echo SCRIPT=\"\$script\"
 	echo SCRIPTARGS=\"\$scriptargs\"
+    echo CLEANUPSCRIPT=\"\$cleanup_script\"
 	echo archdirname=\"$archdirname\"
 	echo KEEP=$KEEP
 	echo NOOVERWRITE=$NOOVERWRITE
@@ -389,6 +410,10 @@ EOLSM
 	script=""
 	shift
 	;;
+    --noexec-cleanup)
+    cleanup_script=""
+    shift
+    ;;
     --keep)
 	keep=y
 	shift
@@ -557,7 +582,7 @@ if test x"\$quiet" = xn; then
 fi
 res=3
 if test x"\$keep" = xn; then
-    trap 'echo Signal caught, cleaning up >&2; cd "\$TMPROOT"; rm -rf "\$tmpdir"; eval \$finish; exit 15' 1 2 3 15
+    trap MS_cleanup 1 2 3 15
 fi
 
 if test x"\$nodiskspace" = xn; then
@@ -604,6 +629,7 @@ if test x"\$script" != x; then
         MS_KEEP="\$KEEP"
         MS_NOOVERWRITE="\$NOOVERWRITE"
         MS_COMPRESS="\$COMPRESS"
+        MS_CLEANUP="\$cleanup"
         export MS_BUNDLE MS_LABEL MS_SCRIPT MS_SCRIPTARGS
         export MS_ARCHDIRNAME MS_KEEP MS_NOOVERWRITE MS_COMPRESS
     fi
@@ -621,6 +647,9 @@ if test x"\$script" != x; then
 		test x"\$verbose" = xy && echo "The program '\$script' returned an error code (\$res)" >&2
     fi
 fi
+
+MS_exec_cleanup
+
 if test x"\$keep" = xn; then
     cd "\$TMPROOT"
     rm -rf "\$tmpdir"

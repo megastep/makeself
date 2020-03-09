@@ -143,6 +143,7 @@ MS_Usage()
     echo "    --nocrc            : Don't calculate a CRC for archive"
     echo "    --sha256           : Compute a SHA256 checksum for the archive"
     echo "    --header file      : Specify location of the header script"
+    echo "    --cleanup file     : Specify a cleanup script that executes on interrupt and when finished successfully."
     echo "    --follow           : Follow the symlinks in the archive"
     echo "    --noprogress       : Do not show the progress during the decompression"
     echo "    --nox11            : Disable automatic spawn of a xterm"
@@ -325,6 +326,10 @@ do
 	HEADER="$2"
         if ! shift 2; then MS_Usage; exit 1; fi
 	;;
+    --cleanup)
+    CLEANUP_SCRIPT="$2"
+        if ! shift 2; then MS_Usage; exit 1; fi
+    ;;
     --license)
         # We need to escape all characters having a special meaning in double quotes
         LICENSE=$(sed 's/\\/\\\\/g; s/"/\\\"/g; s/`/\\\`/g; s/\$/\\\$/g' "$2")
