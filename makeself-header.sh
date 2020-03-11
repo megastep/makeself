@@ -178,6 +178,8 @@ MS_Help()
                         using OpenSSL. See "PASS PHRASE ARGUMENTS" in man openssl.
                         Default is to prompt the user to enter decryption password
                         on the current terminal.
+  --cleanup-args args   Arguments to the cleanup script. Wrap in quotes to provide
+                        multiple arguments.
   --                    Following arguments will be passed to the embedded script
 EOH
 }
@@ -285,7 +287,7 @@ MS_exec_cleanup() {
     if test x"\$cleanup" = xy && test x"\$cleanup_script" != x""; then
         cleanup=n
         cd "\$tmpdir"
-        eval "\"\$cleanup_script\" \$scriptargs \"\\\$@\""
+        eval "\"\$cleanup_script\" \$scriptargs \$cleanupargs"
     fi
 }
 
@@ -306,6 +308,7 @@ copy=$COPY
 ownership=$OWNERSHIP
 verbose=n
 cleanup=y
+cleanupargs=
 
 initargs="\$@"
 
@@ -462,6 +465,10 @@ EOLSM
 	decrypt_cmd="\$decrypt_cmd -pass \$2"
 	if ! shift 2; then MS_Help; exit 1; fi
 	;;
+    --cleanup-args)
+    cleanupargs="\$2"
+    if ! shift 2; then MS_help; exit 1; fi
+    ;;
     --)
 	shift
 	break ;;

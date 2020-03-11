@@ -94,7 +94,7 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--follow`** : Follow the symbolic links inside of the archive directory, i.e. store the files that are being pointed to instead of the links themselves.
     * **`--append`** _(new in 2.1.x)_: Append data to an existing archive, instead of creating a new one. In this mode, the settings from the original archive are reused (compression type, label, embedded script), and thus don't need to be specified again on the command line.
     * **`--header`** : Makeself 2.0 uses a separate file to store the header stub, called `makeself-header.sh`. By default, it is assumed that it is stored in the same location as makeself.sh. This option can be used to specify its actual location if it is stored someplace else.
-    * **`--cleanup`** : Specify a script that is run when execution is interrupted or finishes successfully. The script is executed with the same environment/arguments as `startup_script`
+    * **`--cleanup`** : Specify a script that is run when execution is interrupted or finishes successfully. The script is executed with the same environment and initial `script_args` as `startup_script`. 
     * **`--copy`** : Upon extraction, the archive will first extract itself to a temporary directory. The main application of this is to allow self-contained installers stored in a Makeself archive on a CD, when the installer program will later need to unmount the CD and allow a new one to be inserted. This prevents "Filesystem busy" errors for installers that span multiple CDs.
     * **`--nox11`** : Disable the automatic spawning of a new terminal in X11.
     * **`--nowait`** : When executed from a new X11 terminal, disable the user prompt at the end of the script execution.
@@ -142,6 +142,7 @@ Archives generated with Makeself can be passed the following arguments:
   * **`--noexec`** : Do not run the embedded script after extraction.
   * **`--noexec-cleanup`** : Do not run the embedded cleanup script.
   * **`--nodiskspace`** : Do not check for available disk space before attempting to extract.
+  * **`--cleanup-args`** : Specify arguments to be passed to the cleanup script. Wrap value in quotes to specify multiple arguments.
 
 Any subsequent arguments to the archive will be passed as additional arguments to the embedded command. You must explicitly use the `--` special command-line construct before any such options to make sure that Makeself will not try to interpret them.
 
