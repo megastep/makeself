@@ -89,6 +89,8 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--compress`** : Use the UNIX `compress` command to compress the data. This should be the default on all platforms that don't have gzip available.
     * **`--nocomp`** : Do not use any compression for the archive, which will then be an uncompressed TAR.
     * **`--complevel`** : Specify the compression level for gzip, bzip2, pbzip2, xz, lzo or lz4. (defaults to 9)
+    * **`--compcmd cmd`**: Use provided command to compress the archive from standard input to standard output. This option must be specified along with `--decompcmd` option.
+    * **`--decompcmd cmd`**: Use provided command to decompress the archive from standard input to standard output. This option must be specified along with `--compcmd` option.
     * **`--notemp`** : The generated archive will not extract the files to a temporary directory, but in a new directory created in the current directory. This is better to distribute software packages that may extract and compile by themselves (i.e. launch the compilation through the embedded script).
     * **`--current`** : Files will be extracted to the current directory, instead of in a subdirectory. This option implies `--notemp` above.
     * **`--follow`** : Follow the symbolic links inside of the archive directory, i.e. store the files that are being pointed to instead of the links themselves.
