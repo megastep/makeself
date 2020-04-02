@@ -68,6 +68,8 @@
 # - 2.2.0 : Many bugfixes, updates and contributions from users. Check out the project page on Github for the details.
 # - 2.3.0 : Option to specify packaging date to enable byte-for-byte reproducibility. (Marc Pawlowsky)
 # - 2.4.0 : Optional support for SHA256 checksums in archives.
+# - 2.4.1 : ?
+# - 2.4.2 : Add support for threads for several compressors. (M. Limber)
 #
 # (C) 1998-2020 by Stephane Peter <megastep@megastep.org>
 #
@@ -76,7 +78,7 @@
 # Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
-MS_VERSION=2.4.1
+MS_VERSION=2.4.2
 MS_COMMAND="$0"
 unset CDPATH
 
@@ -110,6 +112,11 @@ MS_Usage()
     echo "    --lz4              : Compress using lz4 instead of gzip"
     echo "    --compress         : Compress using the UNIX 'compress' command"
     echo "    --complevel lvl    : Compression level for gzip pigz xz lzo lz4 bzip2 and pbzip2 (default 9)"
+    echo "    --threads thds     : Number of threads to be used by compressors that support parallelization."
+    echo "                         Omit to use compressor's default. Most useful (and required) for opting"
+    echo "                         into xz's threading, usually with '--threads=0' for all available cores."
+    echo "                         pbzip2 and pigz are parallel by default, and setting this value allows"
+    echo "                         limiting the number of threads they use."
     echo "    --base64           : Instead of compressing, encode the data using base64"
     echo "    --gpg-encrypt      : Instead of compressing, encrypt the data using GPG"
     echo "    --gpg-asymmetric-encrypt-sign"
@@ -175,6 +182,8 @@ PASSWD=""
 PASSWD_SRC=""
 OPENSSL_NO_MD=n
 COMPRESS_LEVEL=9
+DEFAULT_THREADS=123456 # Sentinel value
+THREADS=$DEFAULT_THREADS
 KEEP=n
 CURRENT=n
 NOX11=n
@@ -278,6 +287,10 @@ do
 	;;
     --complevel)
 	COMPRESS_LEVEL="$2"
+	if ! shift 2; then MS_Usage; exit 1; fi
+	;;
+    --threads)
+	THREADS="$2"
 	if ! shift 2; then MS_Usage; exit 1; fi
 	;;
     --nochown)
@@ -482,10 +495,16 @@ gzip)
     ;;
 pigz) 
     GZIP_CMD="pigz -$COMPRESS_LEVEL"
+    if test $THREADS -ne $DEFAULT_THREADS; then # Leave as the default if threads not indicated
+        GZIP_CMD="$GZIP_CMD --processes $THREADS"
+    fi
     GUNZIP_CMD="gzip -cd"
     ;;
 pbzip2)
     GZIP_CMD="pbzip2 -c$COMPRESS_LEVEL"
+    if test $THREADS -ne $DEFAULT_THREADS; then # Leave as the default if threads not indicated
+        GZIP_CMD="$GZIP_CMD -p$THREADS"
+    fi
     GUNZIP_CMD="bzip2 -d"
     ;;
 bzip2)
@@ -494,6 +513,10 @@ bzip2)
     ;;
 xz)
     GZIP_CMD="xz -c$COMPRESS_LEVEL"
+    # Must opt-in by specifying a value since not all versions of xz support threads
+    if test $THREADS -ne $DEFAULT_THREADS; then 
+        GZIP_CMD="$GZIP_CMD --threads=$THREADS"
+    fi
     GUNZIP_CMD="xz -d"
     ;;
 lzo)
