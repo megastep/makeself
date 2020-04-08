@@ -162,7 +162,7 @@ MS_Help()
   --confirm             Ask before running embedded script
   --quiet               Do not print anything except error messages
   --accept              Accept the license
-  --noexec              Do not run embedded script
+  --noexec              Do not run embedded script (implies --noexec-cleanup)
   --noexec-cleanup      Do not run embedded cleanup script
   --keep                Do not erase target directory after running
                         the embedded script
@@ -411,6 +411,7 @@ EOLSM
 	;;
 	--noexec)
 	script=""
+    cleanup_script=""
 	shift
 	;;
     --noexec-cleanup)
