@@ -218,7 +218,7 @@ MS_Check()
 				if test x"\$shasum" != x"\$sha"; then
 					echo "Error in SHA256 checksums: \$shasum is different from \$sha" >&2
 					exit 2
-				else
+				elif test x"\$quiet" = xn; then
 					MS_Printf " SHA256 checksums are OK." >&2
 				fi
 				crc="0000000000";
@@ -236,7 +236,7 @@ MS_Check()
 				if test x"\$md5sum" != x"\$md5"; then
 					echo "Error in MD5 checksums: \$md5sum is different from \$md5" >&2
 					exit 2
-				else
+				elif test x"\$quiet" = xn; then
 					MS_Printf " MD5 checksums are OK." >&2
 				fi
 				crc="0000000000"; verb=n
@@ -246,11 +246,11 @@ MS_Check()
 			test x"\$verb" = xy && echo " \$1 does not contain a CRC checksum." >&2
 		else
 			sum1=\`MS_dd_Progress "\$1" \$offset \$s | CMD_ENV=xpg4 cksum | awk '{print \$1}'\`
-			if test x"\$sum1" = x"\$crc"; then
-				MS_Printf " CRC checksums are OK." >&2
-			else
+			if test x"\$sum1" != x"\$crc"; then
 				echo "Error in checksums: \$sum1 is different from \$crc" >&2
-				exit 2;
+				exit 2
+			elif test x"\$quiet" = xn; then
+				MS_Printf " CRC checksums are OK." >&2
 			fi
 		fi
 		i=\`expr \$i + 1\`
