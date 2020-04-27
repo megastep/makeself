@@ -12,11 +12,11 @@ jobs:
     steps:
     - name: Install Linux packages
       if: runner.os == 'Linux'
-      run: sudo env DEBIAN_FRONTEND=noninteractive apt-get -qq -y install pbzip2
+      run: sudo env DEBIAN_FRONTEND=noninteractive apt-get -qq -y install pbzip2 zstd
 
     - name: Install macOS packages
       if: runner.os == 'macOS'
-      run: brew install pbzip2 coreutils
+      run: brew install pbzip2 coreutils zstd
 
     - name: Checkout Makeself
       uses: actions/checkout@v2

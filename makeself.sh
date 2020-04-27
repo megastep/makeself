@@ -105,13 +105,14 @@ MS_Usage()
     echo "    --quiet | -q       : Do not print any messages other than errors."
     echo "    --gzip             : Compress using gzip (default if detected)"
     echo "    --pigz             : Compress with pigz"
+    echo "    --zstd             : Compress with zstd"
     echo "    --bzip2            : Compress using bzip2 instead of gzip"
     echo "    --pbzip2           : Compress using pbzip2 instead of gzip"
     echo "    --xz               : Compress using xz instead of gzip"
     echo "    --lzo              : Compress using lzop instead of gzip"
     echo "    --lz4              : Compress using lz4 instead of gzip"
     echo "    --compress         : Compress using the UNIX 'compress' command"
-    echo "    --complevel lvl    : Compression level for gzip pigz xz lzo lz4 bzip2 and pbzip2 (default 9)"
+    echo "    --complevel lvl    : Compression level for gzip pigz zstd xz lzo lz4 bzip2 and pbzip2 (default 9)"
     echo "    --threads thds     : Number of threads to be used by compressors that support parallelization."
     echo "                         Omit to use compressor's default. Most useful (and required) for opting"
     echo "                         into xz's threading, usually with '--threads=0' for all available cores."
@@ -231,6 +232,10 @@ do
 	;;
     --pigz)
     	COMPRESS=pigz
+    	shift
+    	;;
+    --zstd)
+    	COMPRESS=zstd
     	shift
     	;;
     --xz)
@@ -499,6 +504,10 @@ pigz)
         GZIP_CMD="$GZIP_CMD --processes $THREADS"
     fi
     GUNZIP_CMD="gzip -cd"
+    ;;
+zstd)
+    GZIP_CMD="zstd -$COMPRESS_LEVEL"
+    GUNZIP_CMD="zstd -cd"
     ;;
 pbzip2)
     GZIP_CMD="pbzip2 -c$COMPRESS_LEVEL"
