@@ -79,18 +79,21 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--xz`** : Use xz instead of gzip for better compression. The xz command must be available in the command path. It is recommended that the archive prefix be set to something like '.xz.run' for the archive, so that potential users know that they'll need xz to extract it.
     * **`--lzo`** : Use lzop instead of gzip for better compression. The lzop command must be available in the command path. It is recommended that the archive prefix be set to something like `.lzo.run` for the archive, so that potential users know that they'll need lzop to extract it.
     * **`--lz4`** : Use lz4 instead of gzip for better compression. The lz4 command must be available in the command path. It is recommended that the archive prefix be set to something like '.lz4.run' for the archive, so that potential users know that they'll need lz4 to extract it.
+    * **`--zstd`** : Use zstd instead of gzip for better compression. The zstd command must be available in the command path. It is recommended that the archive prefix be set to something like '.zstd.run' for the archive, so that potential users know that they'll need zstd to extract it.
     * **`--pigz`** : Use pigz for compression.
     * **`--base64`** : Encode the archive to ASCII in Base64 format instead of compressing (base64 command required).
     * **`--gpg-encrypt`** : Encrypt the archive using `gpg -ac -z $COMPRESS_LEVEL`. This will prompt for a password to encrypt with. Assumes that potential users have `gpg` installed.
     * **`--ssl-encrypt`** : Encrypt the archive using `openssl aes-256-cbc -a -salt`. This will prompt for a password to encrypt with. Assumes that the potential users have the OpenSSL tools installed.
     * **`--compress`** : Use the UNIX `compress` command to compress the data. This should be the default on all platforms that don't have gzip available.
     * **`--nocomp`** : Do not use any compression for the archive, which will then be an uncompressed TAR.
-    * **`--complevel`** : Specify the compression level for gzip, bzip2, pbzip2, xz, lzo or lz4. (defaults to 9)
+    * **`--complevel`** : Specify the compression level for gzip, bzip2, pbzip2, zstd, xz, lzo or lz4. (defaults to 9)
+    * **`--threads`** : Specify the number of threads to be used by compressors that support parallelization. Omit to use compressor's default. Most useful (and required) for opting into xz's threading, usually with `--threads=0` for all available cores. pbzip2 and pigz are parallel by default, and setting this value allows limiting the number of threads they use.
     * **`--notemp`** : The generated archive will not extract the files to a temporary directory, but in a new directory created in the current directory. This is better to distribute software packages that may extract and compile by themselves (i.e. launch the compilation through the embedded script).
     * **`--current`** : Files will be extracted to the current directory, instead of in a subdirectory. This option implies `--notemp` above.
     * **`--follow`** : Follow the symbolic links inside of the archive directory, i.e. store the files that are being pointed to instead of the links themselves.
     * **`--append`** _(new in 2.1.x)_: Append data to an existing archive, instead of creating a new one. In this mode, the settings from the original archive are reused (compression type, label, embedded script), and thus don't need to be specified again on the command line.
-    * **`--header`** : Makeself 2.0 uses a separate file to store the header stub, called `makeself-header.sh`. By default, it is assumed that it is stored in the same location as makeself.sh. This option can be used to specify its actual location if it is stored someplace else.
+    * **`--header`** : Makeself uses a separate file to store the header stub, called `makeself-header.sh`. By default, it is assumed that it is stored in the same location as makeself.sh. This option can be used to specify its actual location if it is stored someplace else.
+    * **`--cleanup`** : Specify a script that is run when execution is interrupted or finishes successfully. The script is executed with the same environment and initial `script_args` as `startup_script`. 
     * **`--copy`** : Upon extraction, the archive will first extract itself to a temporary directory. The main application of this is to allow self-contained installers stored in a Makeself archive on a CD, when the installer program will later need to unmount the CD and allow a new one to be inserted. This prevents "Filesystem busy" errors for installers that span multiple CDs.
     * **`--nox11`** : Disable the automatic spawning of a new terminal in X11.
     * **`--nowait`** : When executed from a new X11 terminal, disable the user prompt at the end of the script execution.
@@ -109,8 +112,8 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--help-header file`** : Add a header to the archive's `--help` output.
   * `archive_dir` is the name of the directory that contains the files to be archived
   * `file_name` is the name of the archive to be created
-  * `label` is an arbitrary text string describing the package. It will be displayed while extracting the files.
-  * `startup_script` is the command to be executed _from within_ the directory of extracted files. Thus, if you wish to execute a program contain in this directory, you must prefix your command with `./`. For example, `./program` will be fine. The `script_args` are additionnal arguments for this command.
+  * `label` is an arbitrary text string describing the package. It will be displayed while extracting the files.
+  * `startup_script` is the command to be executed _from within_ the directory of extracted files. Thus, if you wish to execute a program contain in this directory, you must prefix your command with `./`. For example, `./program` will be fine. The `script_args` are additional arguments for this command.
 
 Here is an example, assuming the user has a package image stored in a **/home/joe/mysoft**, and he wants to generate a self-extracting package named
 **mysoft.sh**, which will launch the "setup" script initially stored in /home/joe/mysoft :
@@ -120,7 +123,7 @@ Here is an example, assuming the user has a package image stored in a **/home/jo
 
 Here is also how I created the [makeself.run][9] archive which contains the Makeself distribution :
 
-`makeself.sh --notemp makeself makeself.run "Makeself by Stephane Peter" echo "Makeself has extracted itself" `
+`makeself.sh --notemp makeself makeself.run "Makeself by Stephane Peter" echo "Makeself has extracted itself" `
 
 Archives generated with Makeself can be passed the following arguments:
 
@@ -136,7 +139,9 @@ Archives generated with Makeself can be passed the following arguments:
   * **`--nochown`** : By default, a `chown -R` command is run on the target directory after extraction, so that all files belong to the current user. This is mostly needed if you are running as root, as tar will then try to recreate the initial user ownerships. You may disable this behavior with this flag.
   * **`--tar`** : Run the tar command on the contents of the archive, using the following arguments as parameter for the command.
   * **`--noexec`** : Do not run the embedded script after extraction.
+  * **`--noexec-cleanup`** : Do not run the embedded cleanup script.
   * **`--nodiskspace`** : Do not check for available disk space before attempting to extract.
+  * **`--cleanup-args`** : Specify arguments to be passed to the cleanup script. Wrap value in quotes to specify multiple arguments.
 
 Any subsequent arguments to the archive will be passed as additional arguments to the embedded command. You must explicitly use the `--` special command-line construct before any such options to make sure that Makeself will not try to interpret them.
 
@@ -147,6 +152,13 @@ The startup script must be a regular Shell script.
 Within the startup script, you can use the `$USER_PWD` variable to get the path of the folder from which the self-extracting script is executed. This is especially useful to access files that are located in the same folder as the script, as shown in the example below. 
 
 `my-self-extracting-script.sh --fooBarFileParameter foo.bar`
+
+## Building and Testing
+
+Clone the git repo and execute `git submodule update --init --recursive` to obtain all submodules.
+
+* To make a release: `make`
+* To run all tests:  `make test`
 
 ## Maven Usage
 
@@ -165,7 +177,7 @@ I will gladly consider merging your pull requests on the [GitHub][10] repository
 
 ## Download
 
-Get the latest official distribution [here][9] (version 2.4.0).
+Get the latest official distribution [here][9] (version 2.4.2).
 
 The latest development version can be grabbed from [GitHub][10]. Feel free to submit any patches there through the fork and pull request process.
 
@@ -218,7 +230,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: https://github.com/megastep/makeself/releases/download/release-2.4.0/makeself-2.4.0.run
+   [9]: https://github.com/megastep/makeself/releases/download/release-2.4.2/makeself-2.4.2.run
    [10]: https://github.com/megastep/makeself
    [11]: https://github.com/megastep/loki_setup/
    [12]: http://www.unrealtournament2003.com/
