@@ -202,6 +202,7 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
   * **v2.3.0:** Support for archive encryption via GPG or OpenSSL. Added LZO and LZ4 compression support. Options to set the packaging date and stop the umask from being overriden. Optionally ignore check for available disk space when extracting. New option to check for root permissions before extracting.
   * **v2.3.1:** Various compatibility updates. Added unit tests for Travis CI in the GitHub repo. New `--tar-extra`, `--untar-extra`, `--gpg-extra`, `--gpg-asymmetric-encrypt-sign` options.
   * **v2.4.0:** Added optional support for SHA256 archive integrity checksums.
+  * **v2.4.2:** New --cleanup and --cleanup-args arguments for cleanup scripts. Added threading support for supported compressors. Now supports zstd compression.
 
 ## Links
 
