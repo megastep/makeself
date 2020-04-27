@@ -42,7 +42,7 @@ jobs:
     - name: Checkout Makeself
       uses: actions/checkout@v2
     - name: Run ShellCheck
-      uses: megastep/shell-linter@v0.3.1
+      uses: megastep/shell-linter@develop
       with:
         path: "makeself.sh"
         severity: "error"
