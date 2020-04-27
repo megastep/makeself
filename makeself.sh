@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Makeself version 2.3.x
+# Makeself version 2.4.x
 #  by Stephane Peter <megastep@megastep.org>
 #
 # Utility to create self-extracting tar.gz archives.
@@ -68,8 +68,8 @@
 # - 2.2.0 : Many bugfixes, updates and contributions from users. Check out the project page on Github for the details.
 # - 2.3.0 : Option to specify packaging date to enable byte-for-byte reproducibility. (Marc Pawlowsky)
 # - 2.4.0 : Optional support for SHA256 checksums in archives.
-# - 2.4.1 : ?
 # - 2.4.2 : Add support for threads for several compressors. (M. Limber)
+#           Added zstd support.
 #
 # (C) 1998-2020 by Stephane Peter <megastep@megastep.org>
 #
