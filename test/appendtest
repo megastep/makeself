@@ -1,4 +1,5 @@
 #!/bin/bash
+# FIXME: These tests need to check that the concatenation of archives works
 
 SUT=$(realpath $(dirname $0)/../makeself.sh)
 SOURCE=$(realpath ..)

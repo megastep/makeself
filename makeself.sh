@@ -588,15 +588,14 @@ if test -f "$HEADER"; then
 	archname="$tmpfile"
 	# Generate a fake header to count its lines
 	SKIP=0
-    . "$HEADER"
-    SKIP=`cat "$tmpfile" |wc -l`
+	. "$HEADER"
+	SKIP=`cat "$tmpfile" |wc -l`
 	# Get rid of any spaces
 	SKIP=`expr $SKIP`
 	rm -f "$tmpfile"
-    if test "$QUIET" = "n";then
-    	echo "Header is $SKIP lines long" >&2
-    fi
-
+	if test "$QUIET" = "n";then
+		echo "Header is $SKIP lines long" >&2
+	fi
 	archname="$oldarchname"
 else
     echo "Unable to open header file: $HEADER" >&2
