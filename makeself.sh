@@ -461,6 +461,7 @@ if test "$APPEND" = y; then
 	    exit 1
     else
 	    eval "$OLDENV"
+	    OLDSKIP=`expr $SKIP + 1`
     fi
 else
     if test "$KEEP" = n -a $# = 3; then
