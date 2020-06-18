@@ -11,8 +11,14 @@ setupTests() {
   $SUT $* archive makeself-test.run "Test $*" echo Testing --tar-extra="--exclude .git" 
   mkdir -p append/append_dir/
   cp -a $SOURCE/makeself.sh append/append_dir/
+}
 
-  old_filesize=`stat -c "%s" makeself-test.run`
+checkFiles() {
+  ./makeself-test.run --target "$temp/extact"
+  test -f "$temp/extact/append_dir/makeself.sh"
+  assertEqual $? 0
+  test -f "$temp/extact/makeself/makeself.sh"
+  assertEqual $? 0
 }
 
 
@@ -24,7 +30,8 @@ testGzip()
   assertEqual $? 0
   ./makeself-test.run --check
   assertEqual $? 0
-  assertLessThan $old_filesize `stat -c "%s" makeself-test.run`
+
+  checkFiles
 }
 
 
@@ -36,7 +43,8 @@ testNocomp()
   assertEqual $? 0
   ./makeself-test.run --check
   assertEqual $? 0
-  assertLessThan $old_filesize `stat -c "%s" makeself-test.run`
+
+  checkFiles
 }
 
 testBzip2()
@@ -47,7 +55,8 @@ testBzip2()
   assertEqual $? 0
   ./makeself-test.run --check
   assertEqual $? 0
-  assertLessThan $old_filesize `stat -c "%s" makeself-test.run`
+
+  checkFiles
 }
 
 source bashunit/bashunit.bash
