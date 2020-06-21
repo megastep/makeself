@@ -97,8 +97,8 @@ fi
 
 MS_Usage()
 {
-    echo "Usage: $0 [params] archive_dir file_name label startup_script [args]"
-    echo "params can be one or more of the following :"
+    echo "Usage: $0 [args] archive_dir file_name label startup_script [script_args]"
+    echo "args can be one or more of the following :"
     echo "    --version | -v     : Print out Makeself version number and exit"
     echo "    --help | -h        : Print out this help message"
     echo "    --tar-quietly      : Suppress verbose output from the tar command"
