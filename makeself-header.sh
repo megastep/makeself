@@ -14,7 +14,7 @@ SHA="$SHAsum"
 TMPROOT=\${TMPDIR:=/tmp}
 USER_PWD="\$PWD"
 export USER_PWD
-ARCHIVE_DIR=\`dirname \$0\`
+ARCHIVE_DIR=\`dirname "\$0"\`
 export ARCHIVE_DIR
 
 label="$LABEL"

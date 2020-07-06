@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+SUT=$(realpath $(dirname $0)/../makeself.sh)
+SOURCE=$(realpath ..)
+
+setupTests() {
+  temp=`mktemp -d -t XXXXX`
+  cd "$temp"
+  mkdir archive
+  touch archive/file
+
+  # $SUT archive makeself-test.run "Test $1" declare -p "${1}"
+  $SUT archive makeself-test.run "Test $1" echo \\\"\${${1}}\\\"
+}
+
+testArchiveDir()
+{
+  setupTests ARCHIVE_DIR
+  local ans=$'./complicated\n dir\twith  spaces'
+  mkdir "${ans}"
+  mv ./makeself-test.run "${ans}/"
+  actual_archive_dir="$("${ans}/makeself-test.run" --quiet)"
+
+  assertEqual "${actual_archive_dir}" "${ans}"
+}
+
+testTmpRoot()
+{
+  setupTests TMPROOT
+  local ans="${temp}"$'/complicated\n dir\twith  spaces'
+  mkdir -p "${ans}"
+
+  actual_tmp_root="$(TMPDIR="${ans}" "./makeself-test.run" --quiet)"
+
+  assertEqual "${actual_tmp_root}" "${ans}"
+}
+
+testUserPWD()
+{
+  setupTests USER_PWD
+  local ans="${temp}"$'/complicated\n dir\twith  spaces'
+  mkdir -p "${ans}"
+  cd "${ans}"
+
+  actual_user_pwd="$("${temp}/makeself-test.run" --quiet)"
+
+  assertEqual "${actual_user_pwd}" "${ans}"
+}
+
+
+source bashunit/bashunit.bash
