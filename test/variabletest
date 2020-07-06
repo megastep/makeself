@@ -9,7 +9,8 @@ setupTests() {
   mkdir archive
   touch archive/file
 
-  $SUT archive makeself-test.run "Test $1" declare -p "${1}"
+  # $SUT archive makeself-test.run "Test $1" declare -p "${1}"
+  $SUT archive makeself-test.run "Test $1" echo \\\"\${${1}}\\\"
 }
 
 testArchiveDir()
@@ -20,7 +21,6 @@ testArchiveDir()
   mv ./makeself-test.run "${ans}/"
   actual_archive_dir="$("${ans}/makeself-test.run" --quiet)"
 
-  ans="$(export ARCHIVE_DIR="${ans}"; declare -p ARCHIVE_DIR)"
   assertEqual "${actual_archive_dir}" "${ans}"
 }
 
@@ -32,7 +32,6 @@ testTmpRoot()
 
   actual_tmp_root="$(TMPDIR="${ans}" "./makeself-test.run" --quiet)"
 
-  ans="$(TMPROOT="${ans}"; declare -p TMPROOT)"
   assertEqual "${actual_tmp_root}" "${ans}"
 }
 
@@ -45,7 +44,6 @@ testUserPWD()
 
   actual_user_pwd="$("${temp}/makeself-test.run" --quiet)"
 
-  ans="$(export USER_PWD="${ans}"; declare -p USER_PWD)"
   assertEqual "${actual_user_pwd}" "${ans}"
 }
 
