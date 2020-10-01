@@ -632,7 +632,23 @@ tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
         tail -n "+$OLDSKIP" "$archname" | $GUNZIP_CMD > "$tmparch"
     fi
     cd "$archdir"
-    find . ! -type d -o -links 2 \
+    # "Determining if a directory is empty"
+    # https://www.etalabs.net/sh_tricks.html
+    find . \
+        \( \
+        ! -type d \
+        -o \
+        \( -links 2 -exec sh -c '
+            is_empty () (
+                cd "$1"
+                set -- .[!.]* ; test -f "$1" && return 1
+                set -- ..?* ; test -f "$1" && return 1
+                set -- * ; test -f "$1" && return 1
+                return 0
+            )
+            is_empty "$0"' {} \; \
+        \) \
+        \) -print \
         | LC_ALL=C sort \
         | sed 's/./\\&/g' \
         | xargs tar $TAR_EXTRA -$TAR_ARGS "$tmparch"
