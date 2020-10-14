@@ -1,0 +1,27 @@
+#!/bin/bash
+# Test that corrupted archives actually fail validation
+
+SUT=$(realpath $(dirname $0)/../makeself.sh)
+SOURCE=$(realpath ..)
+
+setupTests() {
+  temp=`mktemp -d -t appendtest.XXXXX`
+  cd "$temp"
+  mkdir archive
+  cp -a $SOURCE archive/
+  $SUT $* archive makeself-test.run "Test $*" echo Testing --tar-extra="--exclude .git" 
+}
+
+testCorrupt() {
+    setupTests --sha256
+
+    ./makeself-test.run --check
+    assertEqual $? 0
+
+    echo "Adding a bunch of random characters at the end!!" >> makeself-test.run
+
+    ./makeself-test.run --check
+    assertNotEqual $? 0
+}
+
+source bashunit/bashunit.bash
