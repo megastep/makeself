@@ -444,7 +444,7 @@ archname="$2"
 if test "$QUIET" = "y" || test "$TAR_QUIETLY" = "y"; then
     if test "$TAR_ARGS" = "rvf"; then
 	    TAR_ARGS="rf"
-    elif test "$TAR_ARGS" = "rvhf";then
+    elif test "$TAR_ARGS" = "rvhf"; then
 	    TAR_ARGS="rhf"
     fi
 fi
@@ -593,7 +593,7 @@ if test -f "$HEADER"; then
 	# Get rid of any spaces
 	SKIP=`expr $SKIP`
 	rm -f "$tmpfile"
-	if test "$QUIET" = "n";then
+	if test "$QUIET" = "n"; then
 		echo "Header is $SKIP lines long" >&2
 	fi
 	archname="$oldarchname"
@@ -602,7 +602,7 @@ else
     exit 1
 fi
 
-if test "$QUIET" = "n";then 
+if test "$QUIET" = "n"; then
     echo
 fi
 
@@ -682,12 +682,12 @@ md5sum=00000000000000000000000000000000
 crcsum=0000000000
 
 if test "$NOCRC" = y; then
-	if test "$QUIET" = "n";then
+	if test "$QUIET" = "n"; then
 		echo "skipping crc at user request"
 	fi
 else
 	crcsum=`CMD_ENV=xpg4 cksum < "$tmpfile" | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
-	if test "$QUIET" = "n";then
+	if test "$QUIET" = "n"; then
 		echo "CRC: $crcsum"
 	fi
 fi
@@ -709,7 +709,7 @@ if test "$SHA256" = y; then
 	fi
 fi
 if test "$NOMD5" = y; then
-	if test "$QUIET" = "n";then
+	if test "$QUIET" = "n"; then
 		echo "Skipping md5sum at user request"
 	fi
 else
@@ -726,11 +726,11 @@ else
 			MD5_ARG="-a md5"
 		fi
 		md5sum=`eval "$MD5_PATH $MD5_ARG" < "$tmpfile" | cut -b-32`
-		if test "$QUIET" = "n";then
+		if test "$QUIET" = "n"; then
 			echo "MD5: $md5sum"
 		fi
 	else
-		if test "$QUIET" = "n";then
+		if test "$QUIET" = "n"; then
 			echo "MD5: none, MD5 command not found"
 		fi
 	fi
@@ -751,7 +751,7 @@ if test "$APPEND" = y; then
 
     chmod +x "$archname"
     rm -f "$archname".bak
-    if test "$QUIET" = "n";then
+    if test "$QUIET" = "n"; then
     	echo "Self-extractable archive \"$archname\" successfully updated."
     fi
 else
@@ -764,12 +764,12 @@ else
     . "$HEADER"
 
     # Append the compressed tar data after the stub
-    if test "$QUIET" = "n";then
+    if test "$QUIET" = "n"; then
     	echo
     fi
     cat "$tmpfile" >> "$archname"
     chmod +x "$archname"
-    if test "$QUIET" = "n";then
+    if test "$QUIET" = "n"; then
     	echo Self-extractable archive \"$archname\" successfully created.
     fi
 fi
