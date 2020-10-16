@@ -12,7 +12,7 @@ setupTests() {
   $SUT $* archive makeself-test.run "Test $*" echo Testing --tar-extra="--exclude .git" 
 }
 
-testCorrupt() {
+testExtraBytes() {
     setupTests --sha256
 
     ./makeself-test.run --check
@@ -21,6 +21,17 @@ testCorrupt() {
     echo "Adding a bunch of random characters at the end!!" >> makeself-test.run
 
     ./makeself-test.run --check
+    assertNotEqual $? 0
+}
+
+testTruncated() {
+    setupTests --sha256
+
+    ./makeself-test.run --check
+    assertEqual $? 0
+
+    dd if=makeself-test.run of=truncated.run bs=1 count=34303
+    bash truncated.run --check
     assertNotEqual $? 0
 }
 
