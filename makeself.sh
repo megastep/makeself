@@ -736,6 +736,12 @@ else
 	fi
 fi
 
+totalsize=0
+for size in $fsize;
+do
+    totalsize=`expr $totalsize + $size`
+done
+
 if test "$APPEND" = y; then
     mv "$archname" "$archname".bak || exit
 

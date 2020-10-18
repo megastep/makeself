@@ -25,6 +25,7 @@ licensetxt="$LICENSE"
 helpheader='$HELPHEADER'
 targetdir="$archdirname"
 filesizes="$filesizes"
+totalsize="$totalsize"
 keep="$KEEP"
 nooverwrite="$NOOVERWRITE"
 quiet="n"
@@ -201,6 +202,11 @@ MS_Check()
 		MS_Printf "Verifying archive integrity..."
     fi
     offset=\`head -n "\$skip" "\$1" | wc -c | tr -d " "\`
+    fsize=\`cat "\$1" | wc -c | tr -d " "\`
+    if test \$totalsize -ne \`expr \$fsize - \$offset\`; then
+        echo " Unexpected archive size." >&2
+        exit 2
+    fi
     verb=\$2
     i=1
     for s in \$filesizes
@@ -366,6 +372,7 @@ do
 	echo NOOVERWRITE=$NOOVERWRITE
 	echo COMPRESS=$COMPRESS
 	echo filesizes=\"\$filesizes\"
+    echo totalsize=\"\$totalsize\"
 	echo CRCsum=\"\$CRCsum\"
 	echo MD5sum=\"\$MD5sum\"
 	echo SHAsum=\"\$SHAsum\"
