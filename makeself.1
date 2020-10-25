@@ -103,11 +103,11 @@ Here is an example, assuming the user has a package image stored in a /home/joe/
 and he wants to generate a self-extracting package named mysoft.sh, which will launch
 the "setup" script initially stored in /home/joe/mysoft:
 .TP
-$ makeself.sh /home/joe/mysoft mysoft.sh "Joe's Nice Software Package" ./setup
+makeself.sh /home/joe/mysoft mysoft.sh "Joe's Nice Software Package" ./setup
 .TP
 Here is also how I created the makeself.run archive which contains the Makeself distribution:
 .TP
-$ makeself.sh --notemp makeself makeself.run "Makeself by Stephane Peter" echo "Makeself has extracted itself"
+makeself.sh --notemp makeself makeself.run "Makeself by Stephane Peter" echo "Makeself has extracted itself"
 .SH "AUTHORS"
 .LP 
 Makeself has been written by Stéphane Peter <megastep@megastep.org>.
