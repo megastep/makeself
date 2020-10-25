@@ -1,19 +1,14 @@
-.TH "makeself" "1" "2.1.6"
+.TH "MAKESELF" "1" "2.1.6"
 .SH "NAME"
 makeself \- An utility to generate self-extractable archives.
 .SH "SYNTAX"
-.LP 
-.B makeself [\fIoptions\fP] archive_dir file_name label 
+.B makeself [\fIoptions\fP] archive_dir file_name label
 .B [\fIstartup_script\fP] [\fIargs\fP]
 .SH "DESCRIPTION"
-.LP 
-This program is a free (GPL) utility designed to create self-extractable 
-archives from a directory. 
-.br
+This program is a free (GPL) utility designed to create self-extractable
+archives from a directory.
 .SH "OPTIONS"
-.LP 
 The following options are supported.
-.LP 
 .TP 15
 .B -v, --version
 Prints out the makeself version number and exits.
@@ -55,7 +50,7 @@ Do not compress the data.
 Specify the compression level for gzip,bzip2,pbzui2,xz,lzo or lz4
 .TP
 .B --notemp
-The archive will create archive_dir in the current directory and 
+The archive will create archive_dir in the current directory and
 uncompress in ./archive_dir.
 .TP
 .B --copy
@@ -71,7 +66,7 @@ Files will be extracted to the current directory. Both --current and --target di
 Extract directly to a target directory. Directory path can be either absolute or relative.
 .TP
 .B --header file
-Specify location of the header script. 
+Specify location of the header script.
 .TP
 .B --cleanup file
 Specify a cleanup script that executes on interrupt and when finished successfully.
@@ -98,10 +93,18 @@ Do not create a CRC32 checksum for the archive.
 LSM file describing the package.
 .B --packaging-date date
 Use provided string as the packaging date instead of the current date.
-.PD
+.SH "EXAMPLES"
+Here is an example, assuming the user has a package image stored in a /home/joe/mysoft,
+and he wants to generate a self-extracting package named mysoft.sh, which will launch
+the "setup" script initially stored in /home/joe/mysoft:
+.TP
+makeself.sh /home/joe/mysoft mysoft.sh "Joe's Nice Software Package" ./setup
+.TP
+Here is also how I created the makeself.run archive which contains the Makeself distribution:
+.TP
+makeself.sh --notemp makeself makeself.run "Makeself by Stephane Peter" echo "Makeself has extracted itself"
 .SH "AUTHORS"
-.LP 
-Makeself has been written by Stéphane Peter <megastep@megastep.org>.
-.BR 
-This man page was originally written by Bartosz Fenski <fenio@o2.pl> for the 
+Makeself has been written by StÃ©phane Peter <megastep@megastep.org>.
+.BR
+This man page was originally written by Bartosz Fenski <fenio@o2.pl> for the
 Debian GNU/Linux distribution (but it may be used by others).
