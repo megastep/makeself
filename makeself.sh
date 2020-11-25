@@ -173,10 +173,13 @@ MS_Usage()
 }
 
 # Default settings
-if type gzip > /dev/null 2>&1; then
+if type gzip >/dev/null 2>&1; then
     COMPRESS=gzip
+elif type compress >/dev/null 2>&1; then
+    COMPRESS=compress
 else
-    COMPRESS=Unix
+    echo "ERROR: missing commands: gzip, compress" >&2
+    MS_Usage
 fi
 ENCRYPT=n
 PASSWD=""
@@ -251,7 +254,7 @@ do
 	shift
 	;;
     --compress)
-	COMPRESS=Unix
+	COMPRESS=compress
 	shift
 	;;
     --base64)
@@ -551,9 +554,9 @@ gpg-asymmetric)
     GUNZIP_CMD="gpg --yes -d"
     ENCRYPT="gpg"
     ;;
-Unix)
-    GZIP_CMD="compress -cf"
-    GUNZIP_CMD="exec 2>&-; uncompress -c || test \\\$? -eq 2 || gzip -cd"
+compress)
+    GZIP_CMD="compress -fc"
+    GUNZIP_CMD="(type compress >/dev/null 2>&1 && compress -fcd || gzip -cd)"
     ;;
 none)
     GZIP_CMD="cat"
@@ -629,7 +632,7 @@ fi
 tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
 (
     if test "$APPEND" = "y"; then
-        tail -n "+$OLDSKIP" "$archname" | $GUNZIP_CMD > "$tmparch"
+        tail -n "+$OLDSKIP" "$archname" | eval "$GUNZIP_CMD" > "$tmparch"
     fi
     cd "$archdir"
     # "Determining if a directory is empty"
