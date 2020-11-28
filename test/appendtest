@@ -1,63 +1,100 @@
 #!/bin/bash
 # FIXME: These tests need to check that the concatenation of archives works
 
-SUT=$(realpath $(dirname $0)/../makeself.sh)
-SOURCE=$(realpath ..)
+set -eu
 
-setupTests() {
-  temp=`mktemp -d -t appendtest.XXXXX`
-  cd "$temp"
-  mkdir archive
-  cp -a $SOURCE archive/
-  $SUT $* archive makeself-test.run "Test $*" echo Testing --tar-extra="--exclude .git" 
-  mkdir -p append/append_dir/
-  cp -a $SOURCE/makeself.sh append/append_dir/
+THIS="$(realpath "$0")"
+WHAT="$(basename "${THIS}")"
+HERE="$(dirname "${THIS}")"
+SRCDIR="$(dirname "${HERE}")"
+SUT="${SRCDIR}/makeself.sh"
+
+readonly archive_dir_create="$(mktemp -dt archive_dir_create.XXXXXX)"
+readonly archive_dir_append="$(mktemp -dt archive_dir_append.XXXXXX)"
+touch "${archive_dir_create}/fee"
+touch "${archive_dir_create}/fie"
+touch "${archive_dir_append}/foe"
+touch "${archive_dir_append}/fum"
+
+evalAssert() {
+    eval "$@"
+    assertEqual "$?" "0"
 }
 
-checkFiles() {
-  ./makeself-test.run --target "$temp/extact"
-  test -f "$temp/extact/append_dir/makeself.sh"
-  assertEqual $? 0
-  test -f "$temp/extact/makeself/makeself.sh"
-  assertEqual $? 0
+# $1 : file_name
+doInfoListCheckExec() {
+    evalAssert "$1" --info
+    evalAssert "$1" --list
+    evalAssert "$1" --check
+    evalAssert "$1"
 }
 
-
-testGzip()
-{
-  setupTests --gzip
-
-  $SUT --append append/ makeself-test.run
-  assertEqual $? 0
-  ./makeself-test.run --check
-  assertEqual $? 0
-
-  checkFiles
+# $1 : file_name
+# rest : content basenames
+assertContains() {
+    local file_name=""
+    file_name="$(realpath "$1")"
+    shift
+    local target="${file_name}.d"
+    rm -rf "${target}"
+    mkdir -p "${target}"
+    evalAssert "${file_name}" --target "${target}"
+    assertEqual \
+        "$(find "${target}" -type f -exec basename -a {} + | sort)" \
+        "$(echo "$@" | sort)"
+    rm -rf "${target}"
 }
 
+# $@ : makeself options
+doTestOpts() {
+    local stem=""
+    stem="$(printf '%s' "${WHAT}" "$@" | tr -sc '[:alnum:]_.-' '_')"
+    local file_name=""
+    file_name="$(realpath "${stem}.run")"
 
-testNocomp()
-{
-  setupTests --nocomp
+    evalAssert "${SUT}" "$@" --sha256 \
+        "${archive_dir_create}" \
+        "${file_name}" \
+        "${stem}" \
+        "echo ${stem}"
+    doInfoListCheckExec "${file_name}"
+    assertContains "${file_name}" "fee" "fie"
 
-  $SUT --append append/ makeself-test.run
-  assertEqual $? 0
-  ./makeself-test.run --check
-  assertEqual $? 0
+    evalAssert "${SUT}" "$@" --sha256 \
+        --append "${archive_dir_append}" \
+        "${file_name}"
+    doInfoListCheckExec "${file_name}"
+    assertContains "${file_name}" "fee" "fie" "foe" "fum"
 
-  checkFiles
+    rm -f "${file_name}"
 }
 
-testBzip2()
-{
-  setupTests --bzip2
-
-  $SUT --append append/ makeself-test.run
-  assertEqual $? 0
-  ./makeself-test.run --check
-  assertEqual $? 0
-
-  checkFiles
+# $1 : compression option
+doTestComp() {
+    if ! command -v "${1#--*}" >/dev/null 2>&1; then
+        echo "WARNING: missing command: ${1#--*}" >&2
+        return 0
+    fi
+    doTestOpts "$1"
 }
+
+################################################################################
+
+testDefault() { doTestOpts; }
+
+testNocomp() { doTestOpts --nocomp; }
+
+testBase64() { doTestComp --base64; }
+testBzip2() { doTestComp --bzip2; }
+testCompress() { doTestComp --compress; }
+testGzip() { doTestComp --gzip; }
+testLz4() { doTestComp --lz4; }
+testLzo() { doTestComp --lzo; }
+testPbzip2() { doTestComp --pbzip2; }
+testPigz() { doTestComp --pigz; }
+testXz() { doTestComp --xz; }
+testZstd() { doTestComp --zstd; }
 
 source bashunit/bashunit.bash
+
+rm -rf "${archive_dir_create}" "${archive_dir_append}"
