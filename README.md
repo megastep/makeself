@@ -111,7 +111,6 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--packaging-date date`** : Use provided string as the packaging date instead of the current date.
     * **`--license`** : Append a license file.
     * **`--nooverwrite`** : Do not extract the archive if the specified target directory already exists.
-    * **`--header file`** : Specify the location of the header script file (default `makeself-header.sh`)
     * **`--help-header file`** : Add a header to the archive's `--help` output.
   * `archive_dir` is the name of the directory that contains the files to be archived
   * `file_name` is the name of the archive to be created
