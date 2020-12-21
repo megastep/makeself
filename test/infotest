@@ -5,6 +5,7 @@
 THIS="$(realpath "$0")"
 HERE="$(dirname "${THIS}")"
 SRCDIR="$(dirname "${HERE}")"
+VERSION="$(xargs printf '%s' <"${SRCDIR}/VERSION")"
 
 ################################################################################
 
@@ -41,21 +42,21 @@ diffInfo() {
 
 testDefault() (
     cd "$(mktemp -d)" || return 1
-    diffInfo --packaging-date "@0" <<'EOF'
+    diffInfo --packaging-date "@0" <<EOF
 Identification: infotest
 Target directory: infotest
 Uncompressed size: 12 KB
 Compression: gzip
 Encryption: n
 Date of packaging: @0
-Built with Makeself version 2.4.2
-Build command was: ./makeself.sh \
-    "--packaging-date" \
-    "@0" \
-    "./infotest" \
-    "./infotest.run" \
-    "infotest" \
-    "ls" \
+Built with Makeself version ${VERSION}
+Build command was: ./makeself.sh \\
+    "--packaging-date" \\
+    "@0" \\
+    "./infotest" \\
+    "./infotest.run" \\
+    "infotest" \\
+    "ls" \\
     "-lah"
 Script run after extraction:
      ls -lah
@@ -66,22 +67,22 @@ EOF
 
 testNocomp() (
     cd "$(mktemp -d)" || return 1
-    diffInfo --packaging-date "@0" --nocomp <<'EOF'
+    diffInfo --packaging-date "@0" --nocomp <<EOF
 Identification: infotest
 Target directory: infotest
 Uncompressed size: 12 KB
 Compression: none
 Encryption: n
 Date of packaging: @0
-Built with Makeself version 2.4.2
-Build command was: ./makeself.sh \
-    "--packaging-date" \
-    "@0" \
-    "--nocomp" \
-    "./infotest" \
-    "./infotest.run" \
-    "infotest" \
-    "ls" \
+Built with Makeself version ${VERSION}
+Build command was: ./makeself.sh \\
+    "--packaging-date" \\
+    "@0" \\
+    "--nocomp" \\
+    "./infotest" \\
+    "./infotest.run" \\
+    "infotest" \\
+    "ls" \\
     "-lah"
 Script run after extraction:
      ls -lah
@@ -92,22 +93,22 @@ EOF
 
 testNotemp() (
     cd "$(mktemp -d)" || return 1
-    diffInfo --packaging-date "@0" --notemp <<'EOF'
+    diffInfo --packaging-date "@0" --notemp <<EOF
 Identification: infotest
 Target directory: infotest
 Uncompressed size: 12 KB
 Compression: gzip
 Encryption: n
 Date of packaging: @0
-Built with Makeself version 2.4.2
-Build command was: ./makeself.sh \
-    "--packaging-date" \
-    "@0" \
-    "--notemp" \
-    "./infotest" \
-    "./infotest.run" \
-    "infotest" \
-    "ls" \
+Built with Makeself version ${VERSION}
+Build command was: ./makeself.sh \\
+    "--packaging-date" \\
+    "@0" \\
+    "--notemp" \\
+    "./infotest" \\
+    "./infotest.run" \\
+    "infotest" \\
+    "ls" \\
     "-lah"
 Script run after extraction:
      ls -lah
