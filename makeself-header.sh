@@ -348,7 +348,7 @@ do
 	    echo Encryption: $ENCRYPT
 	fi
 	echo Date of packaging: $DATE
-	echo Built with Makeself version $MS_VERSION on $OSTYPE
+	echo Built with Makeself version $MS_VERSION
 	echo Build command was: "$MS_COMMAND"
 	if test x"\$script" != x; then
 	    echo Script run after extraction:
