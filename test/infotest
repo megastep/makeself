@@ -1,0 +1,122 @@
+#!/bin/bash
+
+# makeself/test/infotest
+
+THIS="$(realpath "$0")"
+HERE="$(dirname "${THIS}")"
+SRCDIR="$(dirname "${HERE}")"
+VERSION="$(xargs printf '%s' <"${SRCDIR}/VERSION")"
+
+################################################################################
+
+# Take makeself options, generate a predefined archive, print --info to stdout.
+#
+# $@ : makeself options
+haveInfo() (
+    cd "${SRCDIR}" || return 1
+    mkdir -p infotest
+    ./makeself.sh "$@" ./infotest ./infotest.run infotest ls -lah >/dev/null 2>&1
+    assertEqual "$?" 0 >&2
+    ./infotest.run --info
+    assertEqual "$?" 0 >&2
+    rm -rf infotest infotest.run
+)
+
+# Read want.info from stdin. Generate have.info using given options. Invoke
+# diff want.info have.info and return its exit status
+#
+# $@ : makeself options
+diffInfo() {
+    local rc=""
+    cd "$(mktemp -d)" || return 1
+    cat >want.info
+    haveInfo "$@" >have.info
+    if diff want.info have.info >&2; then
+        rc="$?"
+    else
+        rc="$?"
+    fi
+    rm -f have.info want.info
+    return "${rc}"
+}
+
+testDefault() (
+    cd "$(mktemp -d)" || return 1
+    diffInfo --packaging-date "@0" <<EOF
+Identification: infotest
+Target directory: infotest
+Uncompressed size: 12 KB
+Compression: gzip
+Encryption: n
+Date of packaging: @0
+Built with Makeself version ${VERSION}
+Build command was: ./makeself.sh \\
+    "--packaging-date" \\
+    "@0" \\
+    "./infotest" \\
+    "./infotest.run" \\
+    "infotest" \\
+    "ls" \\
+    "-lah"
+Script run after extraction:
+     ls -lah
+infotest will be removed after extraction
+EOF
+    assertEqual "$?" 0
+)
+
+testNocomp() (
+    cd "$(mktemp -d)" || return 1
+    diffInfo --packaging-date "@0" --nocomp <<EOF
+Identification: infotest
+Target directory: infotest
+Uncompressed size: 12 KB
+Compression: none
+Encryption: n
+Date of packaging: @0
+Built with Makeself version ${VERSION}
+Build command was: ./makeself.sh \\
+    "--packaging-date" \\
+    "@0" \\
+    "--nocomp" \\
+    "./infotest" \\
+    "./infotest.run" \\
+    "infotest" \\
+    "ls" \\
+    "-lah"
+Script run after extraction:
+     ls -lah
+infotest will be removed after extraction
+EOF
+    assertEqual "$?" 0
+)
+
+testNotemp() (
+    cd "$(mktemp -d)" || return 1
+    diffInfo --packaging-date "@0" --notemp <<EOF
+Identification: infotest
+Target directory: infotest
+Uncompressed size: 12 KB
+Compression: gzip
+Encryption: n
+Date of packaging: @0
+Built with Makeself version ${VERSION}
+Build command was: ./makeself.sh \\
+    "--packaging-date" \\
+    "@0" \\
+    "--notemp" \\
+    "./infotest" \\
+    "./infotest.run" \\
+    "infotest" \\
+    "ls" \\
+    "-lah"
+Script run after extraction:
+     ls -lah
+directory infotest is permanent
+EOF
+    assertEqual "$?" 0
+)
+
+################################################################################
+
+source "${HERE}/bashunit/bashunit.bash"
