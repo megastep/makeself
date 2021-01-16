@@ -70,15 +70,16 @@
 # - 2.4.0 : Optional support for SHA256 checksums in archives.
 # - 2.4.2 : Add support for threads for several compressors. (M. Limber)
 #           Added zstd support.
+# - 2.4.3 : Make explicit POSIX tar archives for increased compatibility.
 #
-# (C) 1998-2020 by Stephane Peter <megastep@megastep.org>
+# (C) 1998-2021 by Stephane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 # Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
-MS_VERSION=2.4.2
+MS_VERSION=2.4.3
 MS_COMMAND="$0"
 unset CDPATH
 
