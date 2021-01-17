@@ -205,6 +205,7 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
   * **v2.3.1:** Various compatibility updates. Added unit tests for Travis CI in the GitHub repo. New `--tar-extra`, `--untar-extra`, `--gpg-extra`, `--gpg-asymmetric-encrypt-sign` options.
   * **v2.4.0:** Added optional support for SHA256 archive integrity checksums.
   * **v2.4.2:** New --cleanup and --cleanup-args arguments for cleanup scripts. Added threading support for supported compressors. Now supports zstd compression.
+  * **v2.4.3:** Make explicit POSIX tar archives for increased compatibility.
 
 ## Links
 
