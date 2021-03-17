@@ -20,7 +20,7 @@ test:
 			echo "*** ERROR: Test '$(f)' failed!"; \
 			echo; \
 			exit 1; \
-		fi)
+		fi;)
 
 help:
 	$(info Targets: all $(OUTPUT) clean test help)

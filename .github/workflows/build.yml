@@ -37,6 +37,7 @@ jobs:
       run: make test
 
   test-freebsd:
+    needs: test
     runs-on: macos-latest
     name: Test Makeself on FreeBSD
     steps:
