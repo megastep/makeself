@@ -27,6 +27,7 @@ jobs:
         make
 
     - name: Upload build artifact
+      if: runner.os == 'Linux'
       uses: actions/upload-artifact@v1
       with:
         name: Makeself-Build
@@ -34,6 +35,21 @@ jobs:
         
     - name: Run tests
       run: make test
+
+  test-freebsd:
+    runs-on: macos-latest
+    name: Test Makeself on FreeBSD
+    steps:
+    - uses: actions/checkout@v2
+    - name: Test on FreeBSD
+      uses: vmactions/freebsd-vm@v0.1.2
+      with:
+        usesh: true
+        prepare: pkg install -y pbzip2
+        run: |
+          pwd; freebsd-version
+          git submodule update --init --recursive
+          make && make test
 
   lint:
     runs-on: ubuntu-latest
