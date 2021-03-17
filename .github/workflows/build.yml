@@ -60,6 +60,30 @@ jobs:
           sh ./artifact/makeself*.run --target /tmp/makeself
           make && make test
 
+  test-solaris:
+    needs: test
+    runs-on: macos-latest
+    name: Test Makeself on Solaris
+    steps:
+    - name: Checkout Makeself
+      uses: actions/checkout@v2
+    - name: Install git submodules
+      run: git submodule update --init --recursive
+    - name: Download Linux-built artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: Makeself-Build
+        path: artifact
+    - name: Test on Solaris
+      uses: vmactions/solaris-vm@v0.0.3
+      with:
+        prepare: pkgutil -y -i pbzip2
+        run: |
+          pwd
+          sh ./artifact/makeself*.run --target /tmp/makeself
+          make && make test
+
+
   lint:
     runs-on: ubuntu-latest
 
