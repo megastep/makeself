@@ -45,7 +45,7 @@ jobs:
       uses: vmactions/freebsd-vm@v0.1.2
       with:
         usesh: true
-        prepare: pkg install -y pbzip2
+        prepare: pkg install -y pbzip2 git 
         run: |
           pwd; freebsd-version
           git submodule update --init --recursive

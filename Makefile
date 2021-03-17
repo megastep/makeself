@@ -1,10 +1,5 @@
 .PHONY: all clean test help
 
-define NL
-
-
-endef
-
 VERSION := $(shell cat VERSION)
 OUTPUT  := makeself-$(VERSION).run
 
@@ -25,7 +20,7 @@ test:
 			echo "*** ERROR: Test '$(f)' failed!"; \
 			echo; \
 			exit 1; \
-		fi$(NL))
+		fi)
 
 help:
 	$(info Targets: all $(OUTPUT) clean test help)
