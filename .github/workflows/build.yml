@@ -48,7 +48,7 @@ jobs:
     - name: Download Linux-built artifact
       uses: actions/download-artifact@v2
       with:
-        name: Makeself-build
+        name: Makeself-Build
         path: artifact
     - name: Test on FreeBSD
       uses: vmactions/freebsd-vm@v0.1.2

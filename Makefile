@@ -12,15 +12,7 @@ clean:
 	$(RM) makeself-*.run
 
 test:
-	$(foreach f, \
-		$(notdir $(sort $(filter-out test/bashunit,$(wildcard test/*)))), \
-		cd test; \
-		if ! ./$(f); then \
-			echo; \
-			echo "*** ERROR: Test '$(f)' failed!"; \
-			echo; \
-			exit 1; \
-		fi;)
+	./run-tests.sh
 
 help:
 	$(info Targets: all $(OUTPUT) clean test help)
