@@ -57,8 +57,8 @@ jobs:
         prepare: pkg install -y pbzip2
         run: |
           pwd; freebsd-version
-          make && make test
           sh ./artifact/makeself*.run --target /tmp/makeself
+          make && make test
 
   lint:
     runs-on: ubuntu-latest

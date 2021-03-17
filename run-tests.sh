@@ -3,10 +3,5 @@
 cd test
 for test in *test;
 do
-	if ! ./$test; then
-		echo
-		echo "*** ERROR: Test '$?' failed!"
-		echo
-		exit 1
-	fi
+	./$test || { echo "*** ERROR: Test '$test' failed!"; exit 1; }
 done
