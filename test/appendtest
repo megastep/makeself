@@ -57,6 +57,7 @@ doTestOpts() {
         "${file_name}" \
         "${stem}" \
         "echo ${stem}"
+    file_name="$(realpath ${file_name})"
     doInfoListCheckExec "${file_name}"
     assertContains "${file_name}" "fee" "fie"
 
