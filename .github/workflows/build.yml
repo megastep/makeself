@@ -82,7 +82,7 @@ jobs:
         run: |
           pwd
           sh ./artifact/makeself*.run --target /tmp/makeself
-          make && make test
+          ./make-release.sh && ./run-tests.sh
 
 
   lint:
