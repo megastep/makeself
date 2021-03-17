@@ -41,16 +41,24 @@ jobs:
     runs-on: macos-latest
     name: Test Makeself on FreeBSD
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Makeself
+      uses: actions/checkout@v2
+    - name: Install git submodules
+      run: git submodule update --init --recursive
+    - name: Download Linux-built artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: Makeself-build
+        path: artifact
     - name: Test on FreeBSD
       uses: vmactions/freebsd-vm@v0.1.2
       with:
         usesh: true
-        prepare: pkg install -y pbzip2 git 
+        prepare: pkg install -y pbzip2
         run: |
           pwd; freebsd-version
-          git submodule update --init --recursive
           make && make test
+          sh ./artifact/makeself*.run --target /tmp/makeself
 
   lint:
     runs-on: ubuntu-latest
