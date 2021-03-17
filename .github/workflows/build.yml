@@ -54,6 +54,7 @@ jobs:
       uses: vmactions/freebsd-vm@v0.1.2
       with:
         usesh: true
+        sync: sshfs
         prepare: pkg install -y pbzip2
         run: |
           pwd; freebsd-version
