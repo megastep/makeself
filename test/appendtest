@@ -50,7 +50,7 @@ doTestOpts() {
     local stem=""
     stem="$(printf '%s' "${WHAT}" "$@" | tr -sc '[:alnum:]_.-' '_')"
     local file_name=""
-    file_name="$(realpath "${stem}.run")"
+    file_name="${stem}.run"
 
     evalAssert "${SUT}" "$@" --sha256 \
         "${archive_dir_create}" \
