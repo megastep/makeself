@@ -55,7 +55,7 @@ jobs:
       with:
         usesh: true
         sync: sshfs
-        prepare: pkg install -y pbzip2
+        prepare: pkg install -y pbzip2 bash
         run: |
           pwd; freebsd-version
           sh ./artifact/makeself*.run --target /tmp/makeself
@@ -78,6 +78,7 @@ jobs:
     - name: Test on Solaris
       uses: vmactions/solaris-vm@v0.0.3
       with:
+        mem: 2048
         prepare: pkgutil -y -i pbzip2
         run: |
           pwd
