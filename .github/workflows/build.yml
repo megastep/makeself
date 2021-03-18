@@ -29,7 +29,7 @@ jobs:
     - name: Upload build artifact
       uses: actions/upload-artifact@v1
       with:
-        name: Makeself-Build-{{ runner.os }}
+        name: Makeself-Build-${{ runner.os }}
         path: release
         
     - name: Run tests
@@ -54,6 +54,11 @@ jobs:
       with:
         name: Makeself-Build-macOS
         path: mac
+    - name: Download Windows-built artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: Makeself-Build-Windows
+        path: windows
     - name: Test on FreeBSD
       uses: vmactions/freebsd-vm@v0.1.2
       with:
@@ -64,6 +69,7 @@ jobs:
           pwd; freebsd-version
           sh ./linux/makeself*.run --target /tmp/makeself-linux
           sh ./mac/makeself*.run --target /tmp/makeself-mac
+          sh ./windows/makeself*.run --target /tmp/makeself-windows
 
   test-solaris:
     needs: test
@@ -84,6 +90,11 @@ jobs:
       with:
         name: Makeself-Build-macOS
         path: mac
+    - name: Download Windows-built artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: Makeself-Build-Windows
+        path: windows
     - name: Test on Solaris
       uses: vmactions/solaris-vm@v0.0.3
       with:
@@ -93,6 +104,7 @@ jobs:
           pwd
           sh ./linux/makeself*.run --target /tmp/makeself-linux
           sh ./mac/makeself*.run --target /tmp/makeself-mac
+          sh ./windows/makeself*.run --target /tmp/makeself-windows
 
 
   lint:
