@@ -27,10 +27,9 @@ jobs:
         make
 
     - name: Upload build artifact
-      if: runner.os == 'Linux'
       uses: actions/upload-artifact@v1
       with:
-        name: Makeself-Build
+        name: Makeself-Build-{{ runner.os }}
         path: release
         
     - name: Run tests
@@ -48,8 +47,13 @@ jobs:
     - name: Download Linux-built artifact
       uses: actions/download-artifact@v2
       with:
-        name: Makeself-Build
-        path: artifact
+        name: Makeself-Build-Linux
+        path: linux
+    - name: Download Mac-built artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: Makeself-Build-macOS
+        path: mac
     - name: Test on FreeBSD
       uses: vmactions/freebsd-vm@v0.1.2
       with:
@@ -58,8 +62,8 @@ jobs:
         prepare: pkg install -y pbzip2 bash
         run: |
           pwd; freebsd-version
-          sh ./artifact/makeself*.run --target /tmp/makeself
-          make && make test
+          sh ./linux/makeself*.run --target /tmp/makeself-linux
+          sh ./mac/makeself*.run --target /tmp/makeself-mac
 
   test-solaris:
     needs: test
@@ -73,8 +77,13 @@ jobs:
     - name: Download Linux-built artifact
       uses: actions/download-artifact@v2
       with:
-        name: Makeself-Build
-        path: artifact
+        name: Makeself-Build-Linux
+        path: linux
+    - name: Download Mac-built artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: Makeself-Build-macOS
+        path: mac
     - name: Test on Solaris
       uses: vmactions/solaris-vm@v0.0.3
       with:
@@ -82,8 +91,8 @@ jobs:
         prepare: pkgutil -y -i pbzip2
         run: |
           pwd
-          sh ./artifact/makeself*.run --target /tmp/makeself
-          ./make-release.sh && ./run-tests.sh
+          sh ./linux/makeself*.run --target /tmp/makeself-linux
+          sh ./mac/makeself*.run --target /tmp/makeself-mac
 
 
   lint:
