@@ -158,6 +158,7 @@ MS_Usage()
     echo "    --nox11            : Disable automatic spawn of a xterm"
     echo "    --nowait           : Do not wait for user input after executing embedded"
     echo "                         program from an xterm"
+    echo "    --sign passphrase  : Signature private key to sign the package with"
     echo "    --lsm file         : LSM file describing the package"
     echo "    --license file     : Append a license file"
     echo "    --help-header file : Add a header to the archive's --help output"
@@ -205,12 +206,15 @@ TAR_EXTRA=""
 GPG_EXTRA=""
 DU_ARGS=-ks
 HEADER=`dirname "$0"`/makeself-header.sh
+SIGNATURE=""
 TARGETDIR=""
 NOOVERWRITE=n
 DATE=`LC_ALL=C date`
 EXPORT_CONF=n
 SHA256=n
 OWNERSHIP=n
+SIGN=n
+GPG_PASSPHRASE=""
 
 # LSM file stuff
 LSM_CMD="echo No LSM. >> \"\$archname\""
@@ -336,6 +340,11 @@ do
 	KEEP=y
         if ! shift 2; then MS_Usage; exit 1; fi
 	;;
+    --sign)
+    SIGN=y
+    GPG_PASSPHRASE="$2"
+        if ! shift 2; then MS_Usage; exit 1; fi
+    ;;
     --nooverwrite)
         NOOVERWRITE=y
 	shift
@@ -739,6 +748,19 @@ else
 		fi
 	fi
 fi
+if test "$SIGN" = y; then
+    GPG_PATH=`exec <&- 2>&-; which gpg || command -v gpg || type gpg`
+    if test -x "$GPG_PATH"; then
+        SIGNATURE=`eval "echo $GPG_PASSPHRASE | $GPG_PATH --batch --yes --passphrase-fd 0 --output - --detach-sig $tmpfile | base64 -w0"`
+    fi
+    if test "$QUIET" = "n"; then
+        if test -x "$GPG_PATH"; then
+            echo "Signature: $SIGNATURE"
+        else
+            echo "Signature: gpg couldn't sign the tmp file"
+        fi
+    fi
+fi
 
 totalsize=0
 for size in $fsize;
@@ -754,6 +776,7 @@ if test "$APPEND" = y; then
     CRCsum="$crcsum"
     MD5sum="$md5sum"
     SHAsum="$shasum"
+    Signature="$SIGNATURE"
     # Generate the header
     . "$HEADER"
     # Append the new data
@@ -769,6 +792,7 @@ else
     CRCsum="$crcsum"
     MD5sum="$md5sum"
     SHAsum="$shasum"
+    Signature="$SIGNATURE"
 
     # Generate the header
     . "$HEADER"
