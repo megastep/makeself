@@ -751,7 +751,7 @@ fi
 if test "$SIGN" = y; then
     GPG_PATH=`exec <&- 2>&-; which gpg || command -v gpg || type gpg`
     if test -x "$GPG_PATH"; then
-        SIGNATURE=`$GPG_PATH --pinentry-mode=loopback --batch --yes --passphrase '$GPG_PASSPHRASE' --output - --detach-sig $tmpfile | base64 | tr -d \\\\n`
+        SIGNATURE=`$GPG_PATH --pinentry-mode=loopback --batch --yes --passphrase "$GPG_PASSPHRASE" --output - --detach-sig $tmpfile | base64 | tr -d \\\\n`
     fi
     if test "$QUIET" = "n"; then
         if test -x "$GPG_PATH"; then
