@@ -195,11 +195,18 @@ EOH
 MS_Verify_Sig()
 {
     GPG_PATH=\`exec <&- 2>&-; which gpg || command -v gpg || type gpg\`
+    MKTEMP_PATH=\`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp\`
     test -x "\$GPG_PATH" || GPG_PATH=\`exec <&- 2>&-; which gpg || command -v gpg || type gpg\`
+    test -x "\$MKTEMP_PATH" || MKTEMP_PATH=\`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp\`
     skip_lines=\`expr \$(cat \$1 | wc -l) - \$skip + 1 | tr -d " "\`
-    echo \$SIGNATURE | base64 -d > tmp_sig.gpg
-    gpg_result=\`tail -n \$skip_lines \$1 | $GPG_PATH --verify tmp_sig.gpg - 2>&1\`
-    rm -f tmp_sig.gpg
+    temp_dir=`mktemp -d -t XXXXX`
+    if [ ! -d $temp_dir ];then
+        echo "Could not create temp dir"
+        exit 2
+    fi
+    echo \$SIGNATURE | base64 -d > \$temp_dir/tmp_sig.gpg
+    gpg_result=\`tail -n \$skip_lines \$1 | $GPG_PATH --verify \$temp_dir/tmp_sig.gpg - 2>&1\`
+    rm -rf \$temp_dir
     if [ "\$(echo \$gpg_result | grep -c Good)" -eq "1" ];then
         if [ "\$(echo \$gpg_result | grep -c \$sig_key)" -eq "1" ];then
             echo "Signature is good"
