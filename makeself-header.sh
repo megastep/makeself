@@ -201,7 +201,7 @@ MS_Verify_Sig()
         gpg_result=\`eval "/bin/bash -c '$GPG_PATH --verify <(echo \$SIGNATURE | base64 -d) <(tail -n \$skip_lines \$1)' 2>&1"\`
     else
         echo \$SIGNATURE | base64 -d > tmp_sig.gpg
-        gpg_result=\`eval "tail -n \$skip_lines \$1 | $GPG_PATH --verify tmp_sig.gpg - 2>&1"\`
+        gpg_result=\`/bin/sh -c "tail -n \$skip_lines \$1 | $GPG_PATH --verify tmp_sig.gpg - 2>&1"\`
         rm -f tmp_sig.gpg
     fi
     if [ "\$(echo \$gpg_result | grep -c Good)" -eq "1" ];then
