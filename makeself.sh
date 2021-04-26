@@ -753,9 +753,9 @@ if test "$SIGN" = y; then
     if test -x "$GPG_PATH"; then
         echo test | base64 -w0 >/dev/null 2>/dev/null
         if [ $? -ne 0 ]; then
-            SIGNATURE=`eval "$GPG_PATH --pinentry-mode=loopback --batch --yes --passphrase $GPG_PASSPHRASE --output - --detach-sig $tmpfile | base64"`
+            SIGNATURE=`eval "$GPG_PATH --pinentry-mode=loopback --batch --yes --passphrase '$GPG_PASSPHRASE' --output - --detach-sig $tmpfile | base64"`
         else
-            SIGNATURE=`eval "$GPG_PATH --pinentry-mode=loopback --batch --yes --passphrase $GPG_PASSPHRASE --output - --detach-sig $tmpfile | base64 -w0"`
+            SIGNATURE=`eval "$GPG_PATH --pinentry-mode=loopback --batch --yes --passphrase '$GPG_PASSPHRASE' --output - --detach-sig $tmpfile | base64 -w0"`
         fi
     fi
     if test "$QUIET" = "n"; then
