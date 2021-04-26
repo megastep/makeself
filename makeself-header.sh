@@ -199,7 +199,7 @@ MS_Verify_Sig()
     test -x "\$GPG_PATH" || GPG_PATH=\`exec <&- 2>&-; which gpg || command -v gpg || type gpg\`
     test -x "\$MKTEMP_PATH" || MKTEMP_PATH=\`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp\`
     skip_lines=\`expr \$(cat \$1 | wc -l) - \$skip + 1 | tr -d " "\`
-    temp_dir=`mktemp -d -t XXXXX`
+    temp_dir=\`mktemp -d -t XXXXX\`
     if [ ! -d $temp_dir ];then
         echo "Could not create temp dir"
         exit 2
