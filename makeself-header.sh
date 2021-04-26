@@ -197,7 +197,13 @@ MS_Verify_Sig()
     GPG_PATH=\`exec <&- 2>&-; which gpg || command -v gpg || type gpg\`
     test -x "\$GPG_PATH" || GPG_PATH=\`exec <&- 2>&-; which gpg || command -v gpg || type gpg\`
     skip_lines=\`expr \$(cat \$1 | wc -l) - \$skip + 1 | tr -d " "\`
-    gpg_result=\`eval "/bin/bash -c '$GPG_PATH --verify <(echo \$SIGNATURE | base64 -d) <(tail -n \$skip_lines \$1)' 2>&1"\`
+    if test -x /bin/bash; then
+        gpg_result=\`eval "/bin/bash -c '$GPG_PATH --verify <(echo \$SIGNATURE | base64 -d) <(tail -n \$skip_lines \$1)' 2>&1"\`
+    else
+        echo \$SIGNATURE | base64 -d > tmp_sig.gpg
+        gpg_result=\`eval "tail -n \$skip_lines \$1 | $GPG_PATH --verify tmp_sig.gpg - 2>&1"\`
+        rm -f tmp_sig.gpg
+    fi
     if [ "\$(echo \$gpg_result | grep -c Good)" -eq "1" ];then
         if [ "\$(echo \$gpg_result | grep -c \$sig_key)" -eq "1" ];then
             echo "Signature is good"
