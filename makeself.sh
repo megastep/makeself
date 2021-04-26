@@ -751,7 +751,8 @@ fi
 if test "$SIGN" = y; then
     GPG_PATH=`exec <&- 2>&-; which gpg || command -v gpg || type gpg`
     if test -x "$GPG_PATH"; then
-        if test -d "/Users"; then # Determine if OSX
+        echo test | base64 -w0 2>&1 >/dev/null
+        if [ $? -ne 0 ]; then
             SIGNATURE=`eval "$GPG_PATH --pinentry-mode=loopback --batch --yes --passphrase $GPG_PASSPHRASE --output - --detach-sig $tmpfile | base64"`
         else
             SIGNATURE=`eval "$GPG_PATH --pinentry-mode=loopback --batch --yes --passphrase $GPG_PASSPHRASE --output - --detach-sig $tmpfile | base64 -w0"`
