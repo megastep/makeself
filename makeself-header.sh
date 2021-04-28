@@ -446,7 +446,7 @@ EOLSM
 	;;
     --verify-sig)
     sig_key="\$2"
-    if ! shift 2; then MS_help; exit 1; fi
+    shift 2 || { MS_Help; exit 1; }
     MS_Verify_Sig "\$0"
     ;;
     --confirm)
