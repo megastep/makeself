@@ -11,6 +11,7 @@ fi
 CRCsum="$CRCsum"
 MD5="$MD5sum"
 SHA="$SHAsum"
+SIGNATURE="$Signature"
 TMPROOT=\${TMPDIR:=/tmp}
 USER_PWD="\$PWD"
 export USER_PWD
@@ -161,6 +162,7 @@ MS_Help()
   \$0 --lsm    Print embedded lsm entry (or no LSM)
   \$0 --list   Print the list of files in the archive
   \$0 --check  Checks integrity of the archive
+  \$0 --verify-sig key Verify signature agains a provided key id
 
  2) Running \$0 :
   \$0 [options] [--] [additional arguments to embedded script]
@@ -188,6 +190,30 @@ MS_Help()
                         multiple arguments.
   --                    Following arguments will be passed to the embedded script
 EOH
+}
+
+MS_Verify_Sig()
+{
+    GPG_PATH=\`exec <&- 2>&-; which gpg || command -v gpg || type gpg\`
+    MKTEMP_PATH=\`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp\`
+    test -x "\$GPG_PATH" || GPG_PATH=\`exec <&- 2>&-; which gpg || command -v gpg || type gpg\`
+    test -x "\$MKTEMP_PATH" || MKTEMP_PATH=\`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp\`
+    skip_lines=\`expr \$(cat \$1 | wc -l) - \$skip + 1 | tr -d " "\`
+    temp_dir=\`mktemp -d -t XXXXX\`
+    echo \$SIGNATURE | base64 --decode > \$temp_dir/tmp_sig.gpg
+    gpg_result=\`tail -n \$skip_lines \$1 | $GPG_PATH --verify \$temp_dir/tmp_sig.gpg - 2>&1\`
+    rm -rf \$temp_dir
+    if [ "\$(echo \$gpg_result | grep -c Good)" -eq "1" ];then
+        if [ "\$(echo \$gpg_result | grep -c \$sig_key)" -eq "1" ];then
+            echo "Signature is good"
+        else
+            echo "Signature key does not match" >&2
+            exit 2
+        fi
+    else
+        echo "Signature is bad" >&2
+        exit 2
+    fi
 }
 
 MS_Check()
@@ -320,6 +346,7 @@ ownership=$OWNERSHIP
 verbose=n
 cleanup=y
 cleanupargs=
+sig_key=
 
 initargs="\$@"
 
@@ -417,6 +444,11 @@ EOLSM
 	MS_Check "\$0" y
 	exit 0
 	;;
+    --verify-sig)
+    sig_key="\$2"
+    if ! shift 2; then MS_help; exit 1; fi
+    MS_Verify_Sig "\$0"
+    ;;
     --confirm)
 	verbose=y
 	shift
