@@ -60,7 +60,7 @@ jobs:
         name: Makeself-Build-Windows
         path: windows
     - name: Test on FreeBSD
-      uses: vmactions/freebsd-vm@v0.1.2
+      uses: vmactions/freebsd-vm@v0.1.4
       with:
         usesh: true
         sync: sshfs
