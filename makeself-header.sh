@@ -405,7 +405,7 @@ EOLSM
 	--tar)
 	offset=\`head -n "\$skip" "\$0" | wc -c | tr -d " "\`
 	arg1="\$2"
-    if ! shift 2; then MS_Help; exit 1; fi
+    shift 2 || { MS_Help; exit 1; }
 	for s in \$filesizes
 	do
 	    MS_dd "\$0" \$offset \$s | MS_Decompress | tar "\$arg1" - "\$@"
@@ -437,7 +437,7 @@ EOLSM
     --target)
 	keep=y
 	targetdir="\${2:-.}"
-    if ! shift 2; then MS_Help; exit 1; fi
+    shift 2 || { MS_Help; exit 1; }
 	;;
     --noprogress)
 	noprogress=y
@@ -476,11 +476,11 @@ EOLSM
 	    exit 1
 	fi
 	decrypt_cmd="\$decrypt_cmd -pass \$2"
-	if ! shift 2; then MS_Help; exit 1; fi
+    shift 2 || { MS_Help; exit 1; }
 	;;
     --cleanup-args)
     cleanupargs="\$2"
-    if ! shift 2; then MS_help; exit 1; fi
+    shift 2 || { MS_Help; exit 1; }
     ;;
     --)
 	shift

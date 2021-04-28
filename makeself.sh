@@ -272,7 +272,7 @@ do
 	;;
     --gpg-extra)
 	GPG_EXTRA="$2"
-	if ! shift 2; then MS_Usage; exit 1; fi
+    shift 2 || { MS_Usage; exit 1; }
 	;;
     --ssl-encrypt)
 	ENCRYPT=openssl
@@ -280,11 +280,11 @@ do
 	;;
     --ssl-passwd)
 	PASSWD=$2
-	if ! shift 2; then MS_Usage; exit 1; fi
+    shift 2 || { MS_Usage; exit 1; }
 	;;
     --ssl-pass-src)
 	PASSWD_SRC=$2
-	if ! shift 2; then MS_Usage; exit 1; fi
+    shift 2 || { MS_Usage; exit 1; }
 	;;
     --ssl-no-md)
 	OPENSSL_NO_MD=y
@@ -296,11 +296,11 @@ do
 	;;
     --complevel)
 	COMPRESS_LEVEL="$2"
-	if ! shift 2; then MS_Usage; exit 1; fi
+    shift 2 || { MS_Usage; exit 1; }
 	;;
     --threads)
 	THREADS="$2"
-	if ! shift 2; then MS_Usage; exit 1; fi
+    shift 2 || { MS_Usage; exit 1; }
 	;;
     --nochown)
 	OWNERSHIP=n
@@ -325,17 +325,17 @@ do
 	;;
     --tar-extra)
 	TAR_EXTRA="$2"
-        if ! shift 2; then MS_Usage; exit 1; fi
-        ;;
+    shift 2 || { MS_Usage; exit 1; }
+    ;;
     --untar-extra)
         UNTAR_EXTRA="$2"
-        if ! shift 2; then MS_Usage; exit 1; fi
+        shift 2 || { MS_Usage; exit 1; }
         ;;
     --target)
 	TARGETDIR="$2"
 	KEEP=y
-        if ! shift 2; then MS_Usage; exit 1; fi
-	;;
+    shift 2 || { MS_Usage; exit 1; }
+    ;;
     --nooverwrite)
         NOOVERWRITE=y
 	shift
@@ -346,16 +346,16 @@ do
 	;;
     --header)
 	HEADER="$2"
-        if ! shift 2; then MS_Usage; exit 1; fi
+    shift 2 || { MS_Usage; exit 1; }
 	;;
     --cleanup)
     CLEANUP_SCRIPT="$2"
-        if ! shift 2; then MS_Usage; exit 1; fi
+    shift 2 || { MS_Usage; exit 1; }
     ;;
     --license)
         # We need to escape all characters having a special meaning in double quotes
         LICENSE=$(sed 's/\\/\\\\/g; s/"/\\\"/g; s/`/\\\`/g; s/\$/\\\$/g' "$2")
-        if ! shift 2; then MS_Usage; exit 1; fi
+        shift 2 || { MS_Usage; exit 1; }
 	;;
     --follow)
 	TAR_ARGS=rvhf
@@ -392,15 +392,15 @@ do
 	;;
     --lsm)
 	LSM_CMD="cat \"$2\" >> \"\$archname\""
-    if ! shift 2; then MS_Usage; exit 1; fi
+    shift 2 || { MS_Usage; exit 1; }
 	;;
     --packaging-date)
 	DATE="$2"
-	if ! shift 2; then MS_Usage; exit 1; fi
+    shift 2 || { MS_Usage; exit 1; }
         ;;
     --help-header)
 	HELPHEADER=`sed -e "s/'/'\\\\''/g" $2`
-    if ! shift 2; then MS_Usage; exit 1; fi
+    shift 2 || { MS_Usage; exit 1; }
 	[ -n "$HELPHEADER" ] && HELPHEADER="$HELPHEADER
 "
     ;;
