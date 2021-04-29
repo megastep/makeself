@@ -664,7 +664,7 @@ tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
         \) -print \
         | LC_ALL=C sort \
         | sed 's/./\\&/g' \
-        | xargs tar $TAR_EXTRA --posix -$TAR_ARGS "$tmparch"
+        | xargs tar $TAR_EXTRA --format ustar -$TAR_ARGS "$tmparch"
 ) || {
     echo "ERROR: failed to create temporary archive: $tmparch"
     rm -f "$tmparch" "$tmpfile"
