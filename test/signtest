@@ -6,6 +6,7 @@ GPG_SECRET_KEY="secret_key.gpg"
 GPG_KEY_ID="64F66800CCC556CB7E8FE108EE8CE9E55B602BD9"
 BAD_GPG_KEY_ID="64F66800CCC556CB7E8FE108EE8CE9E55B602BD8"
 GPG_KEY_PASSPHRASE="123123"
+ARCHIVE="makeself-test.run"
 ################################################################################
 
 setupGPGKey() 
@@ -20,22 +21,22 @@ deleteGPGKey()
 
 testCreateSingedArchive() 
 {
-    setupGPGKey
-    mkdir archive
-    touch archive/file
-    output=$($SUT --sign $GPG_KEY_PASSPHRASE archive makeself-test.run "Test" id)
-    assertReturn "$output" 0
-    assertEqual "$(echo $output | grep -c Signature:)" "1"
-    deleteGPGKey
+  setupGPGKey
+  mkdir archive
+  touch archive/file
+  output=$($SUT --sign "$GPG_KEY_PASSPHRASE" archive $ARCHIVE "Test" id)
+  assertReturn $? 0
+  assertEqual "$(echo $output | grep -c Signature:)" "1"
 }
 
 testVerifySingedArchive()
 {
-    setupGPGKey
-    assertReturn "$(./makeself-test.run --verify-sig $GPG_KEY_ID --quiet)" 0
-    assertReturn "$(./makeself-test.run --verify-sig $BAD_GPG_KEY_ID --quiet)" 2
-    deleteGPGKey
-    rm -rf archive
+  ./$ARCHIVE --verify-sig $GPG_KEY_ID
+  assertReturn $? 0
+  ./$ARCHIVE --verify-sig $BAD_GPG_KEY_ID
+  assertReturn $? 2
+  deleteGPGKey
+  rm -rf archive $ARCHIVE
 }
 
 ################################################################################

@@ -198,20 +198,21 @@ MS_Verify_Sig()
     MKTEMP_PATH=\`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp\`
     test -x "\$GPG_PATH" || GPG_PATH=\`exec <&- 2>&-; which gpg || command -v gpg || type gpg\`
     test -x "\$MKTEMP_PATH" || MKTEMP_PATH=\`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp\`
-    skip_lines=\`expr \$(cat \$1 | wc -l) - \$skip + 1 | tr -d " "\`
-    temp_dir=\`mktemp -d -t XXXXX\`
-    echo \$SIGNATURE | base64 --decode > \$temp_dir/tmp_sig.gpg
-    gpg_result=\`tail -n \$skip_lines \$1 | $GPG_PATH --verify \$temp_dir/tmp_sig.gpg - 2>&1\`
-    rm -rf \$temp_dir
-    if [ "\$(echo \$gpg_result | grep -c Good)" -eq "1" ];then
-        if [ "\$(echo \$gpg_result | grep -c \$sig_key)" -eq "1" ];then
-            echo "Signature is good"
+	offset=\`head -n "\$skip" "\$1" | wc -c | tr -d " "\`
+    temp_sig=\`mktemp -t XXXXX\`
+    echo \$SIGNATURE | base64 --decode > "\$temp_sig"
+    gpg_output=\`MS_dd "\$1" \$offset \$totalsize | LC_ALL=C "\$GPG_PATH" --verify "\$temp_sig" - 2>&1\`
+    gpg_res=\$?
+    rm -f "\$temp_sig"
+    if test \$gpg_res -eq 0 && test \`echo \$gpg_output | grep -c Good\` -eq 1; then
+        if test \`echo \$gpg_output | grep -c \$sig_key\` -eq 1; then
+            test x"\$quiet" = xn && echo "GPG signature is good" >&2
         else
-            echo "Signature key does not match" >&2
+            echo "GPG Signature key does not match" >&2
             exit 2
         fi
     else
-        echo "Signature is bad" >&2
+        test x"\$quiet" = xn && echo "GPG signature failed to verify" >&2
         exit 2
     fi
 }
