@@ -639,6 +639,10 @@ if test "$QUIET" = "n"; then
    echo "Adding files to archive named \"$archname\"..."
 fi
 
+# See if we have GNU tar
+TAR=`exec <&- 2>&-; which gtar || command -v gtar || type gtar`
+test -x "$TAR" || TAR=tar
+
 tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
 (
     if test "$APPEND" = "y"; then
@@ -664,7 +668,7 @@ tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
         \) -print \
         | LC_ALL=C sort \
         | sed 's/./\\&/g' \
-        | xargs tar $TAR_EXTRA --format v7 -$TAR_ARGS "$tmparch"
+        | xargs $TAR $TAR_EXTRA --format pax -$TAR_ARGS "$tmparch"
 ) || {
     echo "ERROR: failed to create temporary archive: $tmparch"
     rm -f "$tmparch" "$tmpfile"
