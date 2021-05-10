@@ -521,6 +521,9 @@ pigz)
     ;;
 zstd)
     GZIP_CMD="zstd -$COMPRESS_LEVEL"
+    if test $THREADS -ne $DEFAULT_THREADS; then # Leave as the default if threads not indicated
+        GZIP_CMD="$GZIP_CMD --threads=$THREADS"
+    fi
     GUNZIP_CMD="zstd -cd"
     ;;
 pbzip2)
