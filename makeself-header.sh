@@ -64,11 +64,13 @@ MS_Printf()
 
 MS_PrintLicense()
 {
+  PAGER=\${PAGER:=more}
   if test x"\$licensetxt" != x; then
-    if test x"\$accept" = xy; then
-      echo "\$licensetxt"
+    PAGER_PATH=\`exec <&- 2>&-; which \$PAGER || command -v \$PAGER || type \$PAGER\`
+    if test -x "\$PAGER_PATH"; then
+      echo "\$licensetxt" | \$PAGER
     else
-      echo "\$licensetxt" | more
+      echo "\$licensetxt"
     fi
     if test x"\$accept" != xy; then
       while true
