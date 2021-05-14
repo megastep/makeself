@@ -115,7 +115,7 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
   * `archive_dir` is the name of the directory that contains the files to be archived
   * `file_name` is the name of the archive to be created
   * `label` is an arbitrary text string describing the package. It will be displayed while extracting the files.
-  * `startup_script` is the command to be executed _from within_ the directory of extracted files. Thus, if you wish to execute a program contain in this directory, you must prefix your command with `./`. For example, `./program` will be fine. The `script_args` are additional arguments for this command.
+  * `startup_script` is the command to be executed _from within_ the directory of extracted files. Thus, if you wish to execute a program contained in this directory, you must prefix your command with `./`. For example, `./program` will be fine. The `script_args` are additional arguments for this command.
 
 Here is an example, assuming the user has a package image stored in a **/home/joe/mysoft**, and he wants to generate a self-extracting package named
 **mysoft.sh**, which will launch the "setup" script initially stored in /home/joe/mysoft :
