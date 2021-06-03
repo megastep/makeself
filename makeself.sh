@@ -408,7 +408,7 @@ do
     shift 2 || { MS_Usage; exit 1; }
         ;;
     --help-header)
-	HELPHEADER=`sed -e "s/'/'\\\\''/g" $2`
+	HELPHEADER=`sed -e "s/'/'\\\\\''/g" $2`
     shift 2 || { MS_Usage; exit 1; }
 	[ -n "$HELPHEADER" ] && HELPHEADER="$HELPHEADER
 "
