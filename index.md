@@ -231,7 +231,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: https://github.com/megastep/makeself/releases/download/release-2.4.3/makeself-2.4.3.run
+   [9]: https://github.com/megastep/makeself/releases/download/release-2.4.4/makeself-2.4.4.run
    [10]: https://github.com/megastep/makeself
    [11]: https://github.com/megastep/loki_setup/
    [12]: http://www.unrealtournament2003.com/
