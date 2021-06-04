@@ -206,6 +206,7 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
   * **v2.4.0:** Added optional support for SHA256 archive integrity checksums.
   * **v2.4.2:** New --cleanup and --cleanup-args arguments for cleanup scripts. Added threading support for supported compressors. Now supports zstd compression.
   * **v2.4.3:** Make explicit POSIX tar archives for increased compatibility.
+  * **v2.4.4:** Fixed various compatibility issues (no longer use POSIX tar archives), Github Actions to check on Solaris and FreeBSD
 
 ## Links
 
