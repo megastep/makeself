@@ -79,7 +79,7 @@
 # Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
-MS_VERSION=2.4.3
+MS_VERSION=2.4.4
 MS_COMMAND="$0"
 unset CDPATH
 
