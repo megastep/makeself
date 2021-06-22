@@ -103,6 +103,7 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--nomd5`** and **`--nocrc`** : Disable the creation of a MD5 / CRC checksum for the archive. This speeds up the extraction process if integrity checking is not necessary.
     * **`--sha256`** : Adds a SHA256 checksum for the archive. This is in addition to the MD5 / CRC checksums unless `--nomd5` is also used.
     * **`--lsm` _file_** : Provide and LSM file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the `--lsm` argument to the archive. An example of a LSM file is provided with Makeself.
+    * **`--tar-format opt`** : Specify the tar archive format (default is ustar); you may use any value accepted by your tar command (such as posix, v7, etc).
     * **`--tar-extra opt`** : Append more options to the tar command line.
 
         For instance, in order to exclude the `.git` directory from the packaged archive directory using the GNU `tar`, one can use `makeself.sh --tar-extra "--exclude=.git" ...`
@@ -206,7 +207,8 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
   * **v2.4.0:** Added optional support for SHA256 archive integrity checksums.
   * **v2.4.2:** New --cleanup and --cleanup-args arguments for cleanup scripts. Added threading support for supported compressors. Now supports zstd compression.
   * **v2.4.3:** Make explicit POSIX tar archives for increased compatibility.
-  * **v2.4.4:** Fixed various compatibility issues (no longer use POSIX tar archives), Github Actions to check on Solaris and FreeBSD
+  * **v2.4.4:** Fixed various compatibility issues (no longer use POSIX tar archives), Github Actions to check on Solaris and FreeBSD.
+  * **v2.4.5:** Added `--tar-format` option to set the tar archive format (default is ustar)
 
 ## Links
 
