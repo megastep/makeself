@@ -71,6 +71,7 @@
 # - 2.4.2 : Add support for threads for several compressors. (M. Limber)
 #           Added zstd support.
 # - 2.4.3 : Make explicit POSIX tar archives for increased compatibility.
+# - 2.4.5 : Added --tar-format to override ustar tar archive format
 #
 # (C) 1998-2021 by Stephane Peter <megastep@megastep.org>
 #
@@ -79,7 +80,7 @@
 # Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
-MS_VERSION=2.4.4
+MS_VERSION=2.4.5
 MS_COMMAND="$0"
 unset CDPATH
 
@@ -146,6 +147,7 @@ MS_Usage()
     echo "    --nooverwrite      : Do not extract the archive if the specified target directory exists"
     echo "    --current          : Files will be extracted to the current directory"
     echo "                         Both --current and --target imply --notemp"
+    echo "    --tar-format opt   : Specify a tar archive format (default is ustar)"
     echo "    --tar-extra opt    : Append more options to the tar command line"
     echo "    --untar-extra opt  : Append more options to the during the extraction of the tar archive"
     echo "    --nomd5            : Don't calculate an MD5 for archive"
@@ -202,6 +204,7 @@ NOPROGRESS=n
 COPY=none
 NEED_ROOT=n
 TAR_ARGS=rvf
+TAR_FORMAT=ustar
 TAR_EXTRA=""
 GPG_EXTRA=""
 DU_ARGS=-ks
@@ -327,9 +330,13 @@ do
 	KEEP=y
 	shift
 	;;
+    --tar-format)
+	    TAR_FORMAT="$2"
+        shift 2 || { MS_Usage; exit 1; }
+    ;;
     --tar-extra)
-	TAR_EXTRA="$2"
-    shift 2 || { MS_Usage; exit 1; }
+	    TAR_EXTRA="$2"
+        shift 2 || { MS_Usage; exit 1; }
     ;;
     --untar-extra)
         UNTAR_EXTRA="$2"
@@ -671,7 +678,7 @@ tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
         \) -print \
         | LC_ALL=C sort \
         | sed 's/./\\&/g' \
-        | xargs $TAR $TAR_EXTRA --format ustar -$TAR_ARGS "$tmparch"
+        | xargs $TAR $TAR_EXTRA --format $TAR_FORMAT -$TAR_ARGS "$tmparch"
 ) || {
     echo "ERROR: failed to create temporary archive: $tmparch"
     rm -f "$tmparch" "$tmpfile"
