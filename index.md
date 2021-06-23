@@ -100,6 +100,7 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--nomd5`** and **`--nocrc`** : Disable the creation of a MD5 / CRC checksum for the archive. This speeds up the extraction process if integrity checking is not necessary.
     * **`--sha256`** : Adds a SHA256 checksum for the archive. This is in addition to the MD5 / CRC checksums unless `--nomd5` is also used.
     * **`--lsm` _file_** : Provide and LSM file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the `--lsm` argument to the archive. An example of a LSM file is provided with Makeself.
+    * **`--tar-format opt`** : Specify the tar archive format (default is ustar); you may use any value accepted by your tar command (such as posix, v7, etc).
     * **`--tar-extra opt`** : Append more options to the tar command line.
 
         For instance, in order to exclude the `.git` directory from the packaged archive directory using the GNU `tar`, one can use `makeself.sh --tar-extra "--exclude=.git" ...`
@@ -112,7 +113,7 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
   * `archive_dir` is the name of the directory that contains the files to be archived
   * `file_name` is the name of the archive to be created
   * `label` is an arbitrary text string describing the package. It will be displayed while extracting the files.
-  * `startup_script` is the command to be executed _from within_ the directory of extracted files. Thus, if you wish to execute a program contain in this directory, you must prefix your command with `./`. For example, `./program` will be fine. The `script_args` are additional arguments for this command.
+  * `startup_script` is the command to be executed _from within_ the directory of extracted files. Thus, if you wish to execute a program contained in this directory, you must prefix your command with `./`. For example, `./program` will be fine. The `script_args` are additional arguments for this command.
 
 Here is an example, assuming the user has a package image stored in a **/home/joe/mysoft**, and he wants to generate a self-extracting package named
 **mysoft.sh**, which will launch the "setup" script initially stored in /home/joe/mysoft :
@@ -176,7 +177,7 @@ I will gladly consider merging your pull requests on the [GitHub][10] repository
 
 ## Download
 
-Get the latest official distribution [here][9] (version 2.4.3).
+Get the latest official distribution [here][9] (version 2.4.2).
 
 The latest development version can be grabbed from [GitHub][10]. Feel free to submit any patches there through the fork and pull request process.
 
@@ -203,7 +204,8 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
   * **v2.4.0:** Added optional support for SHA256 archive integrity checksums.
   * **v2.4.2:** New --cleanup and --cleanup-args arguments for cleanup scripts. Added threading support for supported compressors. Now supports zstd compression.
   * **v2.4.3:** Make explicit POSIX tar archives for increased compatibility.
-  * **v2.4.4:** Fixed various compatibility issues (no longer use POSIX tar archives), Github Actions to check on Solaris and FreeBSD
+  * **v2.4.4:** Fixed various compatibility issues (no longer use POSIX tar archives), Github Actions to check on Solaris and FreeBSD.
+  * **v2.4.5:** Added `--tar-format` option to set the tar archive format (default is ustar)
 
 ## Links
 
@@ -232,7 +234,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: https://github.com/megastep/makeself/releases/download/release-2.4.4/makeself-2.4.4.run
+   [9]: https://github.com/megastep/makeself/releases/download/release-2.4.5/makeself-2.4.5.run
    [10]: https://github.com/megastep/makeself
    [11]: https://github.com/megastep/loki_setup/
    [12]: http://www.unrealtournament2003.com/
