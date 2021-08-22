@@ -407,7 +407,7 @@ do
 	shift
 	;;
     --lsm)
-	LSM_CMD="cat \"$2\" >> \"\$archname\""
+	LSM_CMD="awk 1 \"$2\" >> \"\$archname\""
     shift 2 || { MS_Usage; exit 1; }
 	;;
     --packaging-date)

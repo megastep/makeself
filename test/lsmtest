@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# makeself/test/lsmtest
+
+set -eu
+
+THIS="$(realpath "$0")"
+HERE="$(dirname "${THIS}")"
+SRCDIR="$(dirname "${HERE}")"
+
+################################################################################
+
+# Take makeself options, generate a predefined archive, print --lsm to stdout.
+#
+# $@ : makeself options
+withlsm() (
+    cd "${SRCDIR}"
+    mkdir -p lsmtest
+    ./makeself.sh "$@" ./lsmtest ./lsmtest.run lsmtest ls -lah >/dev/null 2>&1
+    assertEqual "$?" 0 >&2
+    ./lsmtest.run --lsm
+    assertEqual "$?" 0 >&2
+    rm -rf lsmtest lsmtest.run
+)
+
+test_lsm_empty() {
+    printf '' >lsm_empty.txt
+    wc lsm_empty.txt
+    withlsm --lsm lsm_empty.txt
+    rm -f lsm_empty.txt
+}
+
+test_lsm_one_line() {
+    printf 'one line\n' >lsm_one_line.txt
+    withlsm --lsm lsm_one_line.txt
+    rm -f lsm_one_line.txt
+}
+
+test_lsm_one_line_without_nl() {
+    printf 'one line without nl' >lsm_one_line_without_nl.txt
+    withlsm --lsm lsm_one_line_without_nl.txt
+    rm -f lsm_one_line_without_nl.txt
+}
+
+################################################################################
+
+# shellcheck disable=SC1091
+source "${HERE}/bashunit/bashunit.bash"
