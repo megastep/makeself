@@ -37,7 +37,7 @@ jobs:
 
   test-freebsd:
     needs: test
-    runs-on: macos-latest
+    runs-on: macos-10.15
     name: Test Makeself on FreeBSD
     steps:
     - name: Checkout Makeself
@@ -72,7 +72,7 @@ jobs:
 
   test-solaris:
     needs: test
-    runs-on: macos-latest
+    runs-on: macos-10.15
     name: Test Makeself on Solaris
     steps:
     - name: Checkout Makeself
