@@ -60,7 +60,7 @@ jobs:
         name: Makeself-Build-Windows
         path: windows
     - name: Test on FreeBSD
-      uses: vmactions/freebsd-vm@v0.1.4
+      uses: vmactions/freebsd-vm@v0.1.5
       with:
         usesh: true
         prepare: pkg install -y pbzip2 bash
