@@ -556,6 +556,7 @@ copy)
     cp "\$0" "\$SCRIPT_COPY"
     chmod +x "\$SCRIPT_COPY"
     cd "\$TMPROOT"
+    export USER_PWD="\$tmpdir"
     exec "\$SCRIPT_COPY" --phase2 -- \$initargs
     ;;
 phase2)
