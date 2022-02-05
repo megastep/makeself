@@ -2,3 +2,4 @@ _site
 *.run
 .*-cache/
 release/
+tools/

@@ -652,6 +652,7 @@ fi
 
 # See if we have GNU tar
 TAR=`exec <&- 2>&-; which gtar || command -v gtar || type gtar`
+test -x "$TAR" || TAR=`exec <&- 2>&-; which bsdtar || command -v bsdtar || type bsdtar`
 test -x "$TAR" || TAR=tar
 
 tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
