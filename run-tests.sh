@@ -3,10 +3,6 @@
 
 THISDIR="$(realpath "$(dirname "$0")")"
 
-# custom tools
-PATH="$THISDIR"/tools:"$PATH"
-export PATH
-
 cd "$THISDIR/test"
 for test in *test;
 do
