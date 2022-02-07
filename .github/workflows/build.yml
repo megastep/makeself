@@ -69,6 +69,7 @@ jobs:
       uses: vmactions/freebsd-vm@v0.1.5
       with:
         usesh: true
+        prepare: pkg install -y pbzip2
         run: |
           pwd; freebsd-version
           sh ./linux/makeself*.run --target /tmp/makeself-linux
@@ -96,6 +97,7 @@ jobs:
       uses: vmactions/solaris-vm@v0.0.3
       with:
         mem: 2048
+        prepare: pkgutil -y -i pbzip2
         run: |
           pwd
           sh ./linux/makeself*.run --target /tmp/makeself-linux
