@@ -29,8 +29,8 @@ filesizes="$filesizes"
 totalsize="$totalsize"
 keep="$KEEP"
 nooverwrite="$NOOVERWRITE"
-quiet="n"
-accept="n"
+quiet="y"
+accept="y"
 nodiskspace="n"
 export_conf="$EXPORT_CONF"
 decrypt_cmd="$DECRYPT_CMD"
@@ -342,193 +342,16 @@ MS_cleanup()
 
 finish=true
 xterm_loop=
-noprogress=$NOPROGRESS
+noprogress=y
 nox11=$NOX11
 copy=$COPY
-ownership=$OWNERSHIP
+ownership=y
 verbose=n
 cleanup=y
 cleanupargs=
 sig_key=
 
 initargs="\$@"
-
-while true
-do
-    case "\$1" in
-    -h | --help)
-	MS_Help
-	exit 0
-	;;
-    -q | --quiet)
-	quiet=y
-	noprogress=y
-	shift
-	;;
-	--accept)
-	accept=y
-	shift
-	;;
-    --info)
-	echo Identification: "\$label"
-	echo Target directory: "\$targetdir"
-	echo Uncompressed size: $USIZE KB
-	echo Compression: $COMPRESS
-	if test x"$ENCRYPT" != x""; then
-	    echo Encryption: $ENCRYPT
-	fi
-	echo Date of packaging: $DATE
-	echo Built with Makeself version $MS_VERSION
-	echo Build command was: "$MS_COMMAND"
-	if test x"\$script" != x; then
-	    echo Script run after extraction:
-	    echo "    " \$script \$scriptargs
-	fi
-	if test x"$copy" = xcopy; then
-		echo "Archive will copy itself to a temporary location"
-	fi
-	if test x"$NEED_ROOT" = xy; then
-		echo "Root permissions required for extraction"
-	fi
-	if test x"$KEEP" = xy; then
-	    echo "directory \$targetdir is permanent"
-	else
-	    echo "\$targetdir will be removed after extraction"
-	fi
-	exit 0
-	;;
-    --dumpconf)
-	echo LABEL=\"\$label\"
-	echo SCRIPT=\"\$script\"
-	echo SCRIPTARGS=\"\$scriptargs\"
-    echo CLEANUPSCRIPT=\"\$cleanup_script\"
-	echo archdirname=\"$archdirname\"
-	echo KEEP=$KEEP
-	echo NOOVERWRITE=$NOOVERWRITE
-	echo COMPRESS=$COMPRESS
-	echo filesizes=\"\$filesizes\"
-    echo totalsize=\"\$totalsize\"
-	echo CRCsum=\"\$CRCsum\"
-	echo MD5sum=\"\$MD5sum\"
-	echo SHAsum=\"\$SHAsum\"
-	echo SKIP=\"\$skip\"
-	exit 0
-	;;
-    --lsm)
-cat << EOLSM
-EOF
-eval "$LSM_CMD"
-cat << EOF  >> "$archname"
-EOLSM
-	exit 0
-	;;
-    --list)
-	echo Target directory: \$targetdir
-	offset=\`head -n "\$skip" "\$0" | wc -c | tr -d " "\`
-	for s in \$filesizes
-	do
-	    MS_dd "\$0" \$offset \$s | MS_Decompress | UnTAR t
-	    offset=\`expr \$offset + \$s\`
-	done
-	exit 0
-	;;
-	--tar)
-	offset=\`head -n "\$skip" "\$0" | wc -c | tr -d " "\`
-	arg1="\$2"
-    shift 2 || { MS_Help; exit 1; }
-	for s in \$filesizes
-	do
-	    MS_dd "\$0" \$offset \$s | MS_Decompress | tar "\$arg1" - "\$@"
-	    offset=\`expr \$offset + \$s\`
-	done
-	exit 0
-	;;
-    --check)
-	MS_Check "\$0" y
-	exit 0
-	;;
-    --verify-sig)
-    sig_key="\$2"
-    shift 2 || { MS_Help; exit 1; }
-    MS_Verify_Sig "\$0"
-    ;;
-    --confirm)
-	verbose=y
-	shift
-	;;
-	--noexec)
-	script=""
-    cleanup_script=""
-	shift
-	;;
-    --noexec-cleanup)
-    cleanup_script=""
-    shift
-    ;;
-    --keep)
-	keep=y
-	shift
-	;;
-    --target)
-	keep=y
-	targetdir="\${2:-.}"
-    shift 2 || { MS_Help; exit 1; }
-	;;
-    --noprogress)
-	noprogress=y
-	shift
-	;;
-    --nox11)
-	nox11=y
-	shift
-	;;
-    --nochown)
-	ownership=n
-	shift
-	;;
-    --chown)
-        ownership=y
-        shift
-        ;;
-    --nodiskspace)
-	nodiskspace=y
-	shift
-	;;
-    --xwin)
-	if test "$NOWAIT" = n; then
-		finish="echo Press Return to close this window...; read junk"
-	fi
-	xterm_loop=1
-	shift
-	;;
-    --phase2)
-	copy=phase2
-	shift
-	;;
-	--ssl-pass-src)
-	if test x"$ENCRYPT" != x"openssl"; then
-	    echo "Invalid option --ssl-pass-src: \$0 was not encrypted with OpenSSL!" >&2
-	    exit 1
-	fi
-	decrypt_cmd="\$decrypt_cmd -pass \$2"
-    shift 2 || { MS_Help; exit 1; }
-	;;
-    --cleanup-args)
-    cleanupargs="\$2"
-    shift 2 || { MS_Help; exit 1; }
-    ;;
-    --)
-	shift
-	break ;;
-    -*)
-	echo Unrecognized flag : "\$1" >&2
-	MS_Help
-	exit 1
-	;;
-    *)
-	break ;;
-    esac
-done
 
 if test x"\$quiet" = xy -a x"\$verbose" = xy; then
 	echo Cannot be verbose and quiet at the same time. >&2
@@ -673,7 +496,10 @@ if test x"\$quiet" = xn; then
 	echo
 fi
 
+# In our case we need to clean throughly
+chmod -R +w "\$tmpdir"
 cd "\$tmpdir"
+
 res=0
 if test x"\$script" != x; then
     if test x"\$export_conf" = x"y"; then
