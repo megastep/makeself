@@ -31,7 +31,7 @@ keep="$KEEP"
 nooverwrite="$NOOVERWRITE"
 quiet="y"
 accept="y"
-nodiskspace="n"
+nodiskspace="y"
 export_conf="$EXPORT_CONF"
 decrypt_cmd="$DECRYPT_CMD"
 skip="$SKIP"
@@ -437,9 +437,6 @@ else
 fi
 
 location="\`pwd\`"
-if test x"\$SETUP_NOCHECK" != x1; then
-    MS_Check "\$0"
-fi
 offset=\`head -n "\$skip" "\$0" | wc -c | tr -d " "\`
 
 if test x"\$verbose" = xy; then
