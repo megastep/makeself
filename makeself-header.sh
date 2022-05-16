@@ -565,7 +565,7 @@ phase2)
 esac
 
 if test x"\$nox11" = xn; then
-    if tty -s; then                 # Do we have a terminal?
+    if test -t 1; then  # Do we have a terminal on stdout?
 	:
     else
         if test x"\$DISPLAY" != x -a x"\$xterm_loop" = x; then  # No, but do we have X?
