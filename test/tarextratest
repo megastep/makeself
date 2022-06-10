@@ -1,6 +1,8 @@
 #!/bin/bash
-
-SUT=$(realpath "$(dirname "$0")/../makeself.sh")
+set -eu
+THIS="$(realpath "$0")"
+THISDIR="$(dirname "${THIS}")"
+SUT="$(dirname "${THISDIR}")/makeself.sh"
 
 setupTests() {
   temp=$(mktemp -d -t XXXXX)
@@ -20,9 +22,11 @@ testTarExtraOpts() {
   tar_extra="--verbose --exclude .git"
   ${SUT} --tar-extra "$tar_extra" src src.sh alabel startup.sh
 
-  assertEqual $? 0
+  assertEquals $? 0
 
   tearDown
 }
 
-source bashunit/bashunit.bash
+# Load and run shUnit2.
+source "./shunit2/shunit2"
+

@@ -1,7 +1,8 @@
-#!/usr/bin/env bash
-
-SUT=$(realpath $(dirname $0)/../makeself.sh)
-SOURCE=$(realpath ..)
+#!/bin/bash
+set -eu
+THIS="$(realpath "$0")"
+THISDIR="$(dirname "${THIS}")"
+SUT="$(dirname "${THISDIR}")/makeself.sh"
 
 setupTests() {
   temp=`mktemp -d -t XXXXX`
@@ -21,7 +22,7 @@ testArchiveDir()
   mv ./makeself-test.run "${ans}/"
   actual_archive_dir="$("${ans}/makeself-test.run" --quiet)"
 
-  assertEqual "${actual_archive_dir}" "${ans}"
+  assertEquals "${actual_archive_dir}" "${ans}"
 }
 
 testTmpRoot()
@@ -32,7 +33,7 @@ testTmpRoot()
 
   actual_tmp_root="$(TMPDIR="${ans}" "./makeself-test.run" --quiet)"
 
-  assertEqual "${actual_tmp_root}" "${ans}"
+  assertEquals "${actual_tmp_root}" "${ans}"
 }
 
 testUserPWD()
@@ -44,8 +45,8 @@ testUserPWD()
 
   actual_user_pwd="$("${temp}/makeself-test.run" --quiet)"
 
-  assertEqual "${actual_user_pwd}" "${ans}"
+  assertEquals "${actual_user_pwd}" "${ans}"
 }
 
-
-source bashunit/bashunit.bash
+# Load and run shUnit2.
+source "./shunit2/shunit2"

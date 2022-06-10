@@ -1,14 +1,16 @@
 #!/bin/bash
-
-SUT=$(realpath $(dirname $0)/../makeself.sh)
-SOURCE=$(realpath ..)
+set -eu
+THIS="$(realpath "$0")"
+THISDIR="$(dirname "${THIS}")"
+SRCDIR="$(dirname "${THISDIR}")"
+SUT="${SRCDIR}/makeself.sh"
 
 setupTests() {
   temp=`mktemp -d -t XXXXX`
   cd "$temp"
   mkdir archive
-  cp -a $SOURCE archive/ 
-  $SUT $* archive makeself-test.run "Test $*" echo Testing
+  cp -a "$SRCDIR" archive/
+  $SUT $* archive makeself-test.run "Test $*" echo Testing --tar-extra="--exclude .git"
 }
 
 
@@ -17,7 +19,7 @@ testQuiet()
   setupTests
 
   ./makeself-test.run --quiet
-  assertEqual $? 0
+  assertEquals $? 0
 }
 
 testGzip()
@@ -25,7 +27,7 @@ testGzip()
   setupTests --gzip
   
   ./makeself-test.run --check
-  assertEqual $? 0
+  assertEquals $? 0
 }
 
 testBzip2()
@@ -33,28 +35,29 @@ testBzip2()
   setupTests --bzip2
   
   ./makeself-test.run --check
-  assertEqual $? 0
+  assertEquals $? 0
 }
 
 testPBzip2()
 {
   # Skip if pbzip2 is not available
-  which pbzip2 || return
+  which pbzip2 || startSkipping
   setupTests --pbzip2
 
   ./makeself-test.run --check
-  assertEqual $? 0
+  assertEquals $? 0
 }
 
 testZstd()
 {
   # Skip if zstd is not available
-  which zstd || return
+  which zstd || startSkipping
   setupTests --zstd
 
   ./makeself-test.run --check
-  assertEqual $? 0
+  assertEquals $? 0
 }
 
-source bashunit/bashunit.bash
+# Load and run shUnit2.
+source "./shunit2/shunit2"
 

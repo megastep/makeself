@@ -1,12 +1,8 @@
 #!/bin/bash
-
-# makeself/test/lsmtest
-
 set -eu
-
 THIS="$(realpath "$0")"
-HERE="$(dirname "${THIS}")"
-SRCDIR="$(dirname "${HERE}")"
+THISDIR="$(dirname "${THIS}")"
+SRCDIR="$(dirname "${THISDIR}")"
 
 ################################################################################
 
@@ -17,9 +13,9 @@ withlsm() (
     cd "${SRCDIR}"
     mkdir -p lsmtest
     ./makeself.sh "$@" ./lsmtest ./lsmtest.run lsmtest ls -lah >/dev/null 2>&1
-    assertEqual "$?" 0 >&2
+    assertEquals "$?" 0 >&2
     ./lsmtest.run --lsm
-    assertEqual "$?" 0 >&2
+    assertEquals "$?" 0 >&2
     rm -rf lsmtest lsmtest.run
 )
 
@@ -44,5 +40,5 @@ test_lsm_one_line_without_nl() {
 
 ################################################################################
 
-# shellcheck disable=SC1091
-source "${HERE}/bashunit/bashunit.bash"
+# Load and run shUnit2.
+source "./shunit2/shunit2"

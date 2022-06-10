@@ -1,8 +1,8 @@
 #!/bin/bash
-
+set -eu
 THIS="$(realpath "$0")"
-HERE="$(dirname "${THIS}")"
-SUT="$(dirname "${HERE}")/makeself.sh"
+THISDIR="$(dirname "${THIS}")"
+SUT="$(dirname "${THISDIR}")/makeself.sh"
 
 testWhiteSpace() {
     local archive_dir="$(mktemp -dt archive_dir.XXXXXX)"
@@ -16,8 +16,9 @@ testWhiteSpace() {
     )
     local file_name="$(mktemp -t file_name.XXXXXX)"
     "${SUT}" "${archive_dir}" "${file_name}" "white space test" "ls -lah ."
-    assertEqual $? 0
+    assertEquals $? 0
     rm -rf "${archive_dir}" "${file_name}"
 }
 
-source "${HERE}/bashunit/bashunit.bash"
+# Load and run shUnit2.
+source "./shunit2/shunit2"

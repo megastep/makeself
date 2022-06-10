@@ -1,38 +1,45 @@
 #!/bin/bash
+set -eu
+THIS="$(realpath "$0")"
+THISDIR="$(dirname "${THIS}")"
+SRCDIR="$(dirname "${THISDIR}")"
+SUT="${SRCDIR}/makeself.sh"
+
 # Test that corrupted archives actually fail validation
 
-SUT=$(realpath $(dirname $0)/../makeself.sh)
-SOURCE=$(realpath ..)
+cd "$THISDIR"
 
 setupTests() {
-  temp=`mktemp -d -t appendtest.XXXXX`
-  cd "$temp"
-  mkdir archive
-  cp -a $SOURCE archive/
-  $SUT $* archive makeself-test.run "Test $*" echo Testing --tar-extra="--exclude .git" 
+  temp_path="$(mktemp -dt appendtest.XXXXXX)"
+  cd "$temp_path"
+  mkdir -p archive
+  cp -a "$SRCDIR" archive/
+  "$SUT" "$*" archive makeself-test.run "Test $*" echo Testing --tar-extra="--exclude .git"
 }
 
 testExtraBytes() {
     setupTests --sha256
 
     ./makeself-test.run --check
-    assertEqual $? 0
+    assertEquals $? 0
 
     echo "Adding a bunch of random characters at the end!!" >> makeself-test.run
 
     ./makeself-test.run --check
-    assertNotEqual $? 0
+    assertNotEquals $? 0
 }
 
 testTruncated() {
     setupTests --sha256
 
     ./makeself-test.run --check
-    assertEqual $? 0
+    assertEquals $? 0
 
     dd if=makeself-test.run of=truncated.run bs=1 count=34303
     bash truncated.run --check
-    assertNotEqual $? 0
+    assertNotEquals $? 0
 }
 
-source bashunit/bashunit.bash
+# Load and run shUnit2.
+source "./shunit2/shunit2"
+

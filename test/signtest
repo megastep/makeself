@@ -1,10 +1,8 @@
 #!/bin/bash
-
 set -eu
-
 THIS="$(realpath "$0")"
-HERE="$(dirname "${THIS}")"
-SUT="$(dirname "${HERE}")/makeself.sh"
+THISDIR="$(dirname "${THIS}")"
+SUT="$(dirname "${THISDIR}")/makeself.sh"
 
 ################################################################################
 
@@ -147,9 +145,9 @@ EOF
 checked_import_key() {
     cat_key "$1" \
         | gpg --quiet --import --passphrase=password123 --pinentry-mode=loopback --trust-model=always
-    assertEqual "$?" 0
+    assertEquals "$?" 0
     gpg --list-secret-keys "$1" >/dev/null 2>&1
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 }
 
 # $1 : keyid
@@ -173,11 +171,11 @@ create_sign_verify() {
     "${SUT}" --sign password123 "$@" \
         "${archive_dir}" "${archive_run}" "signtest" ls \
         >"${output}"
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     # check output for signature
     grep -Exq 'Signature: [[:alnum:]+/]+' "${output}"
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     # verify signature
     local res=""
@@ -197,10 +195,10 @@ testSingleKey() (
     export GNUPGHOME
 
     checked_import_key 3DD6797A5EDE9A253311C13AED3E040B19F6996E
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     create_sign_verify 3DD6797A5EDE9A253311C13AED3E040B19F6996E
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     rm -rf "${GNUPGHOME}"
 )
@@ -210,20 +208,20 @@ testMultipleKeys() (
     export GNUPGHOME
 
     checked_import_key 3DD6797A5EDE9A253311C13AED3E040B19F6996E
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     checked_import_key 3F717988DF7D8D55A1660FC1A5ECF255B5AE77E1
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     create_sign_verify \
         3DD6797A5EDE9A253311C13AED3E040B19F6996E \
         --gpg-extra "--local-user=3DD6797A5EDE9A253311C13AED3E040B19F6996E"
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     create_sign_verify \
         3F717988DF7D8D55A1660FC1A5ECF255B5AE77E1 \
         --gpg-extra "--local-user=3F717988DF7D8D55A1660FC1A5ECF255B5AE77E1"
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     rm -rf "${GNUPGHOME}"
 )
@@ -233,20 +231,20 @@ testWrongKey() (
     export GNUPGHOME
 
     checked_import_key 3DD6797A5EDE9A253311C13AED3E040B19F6996E
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     checked_import_key 3F717988DF7D8D55A1660FC1A5ECF255B5AE77E1
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     create_sign_verify \
         3DD6797A5EDE9A253311C13AED3E040B19F6996E \
         --gpg-extra "--local-user=3F717988DF7D8D55A1660FC1A5ECF255B5AE77E1" \
-        || assertEqual "$?" 2
+        || assertEquals "$?" 2
 
     create_sign_verify \
         3F717988DF7D8D55A1660FC1A5ECF255B5AE77E1 \
         --gpg-extra "--local-user=3DD6797A5EDE9A253311C13AED3E040B19F6996E" \
-        || assertEqual "$?" 2
+        || assertEquals "$?" 2
 
     rm -rf "${GNUPGHOME}"
 )
@@ -256,10 +254,10 @@ testWrongPassword() (
     export GNUPGHOME
 
     checked_import_key 3DD6797A5EDE9A253311C13AED3E040B19F6996E
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     checked_import_key 3F717988DF7D8D55A1660FC1A5ECF255B5AE77E1
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     # prepare archive directory
     local archive_dir=""
@@ -276,15 +274,15 @@ testWrongPassword() (
     "${SUT}" --sign TheWrongPassword1357 "$@" \
         "${archive_dir}" "${archive_run}" "signtest" ls \
         >"${output}"
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     grep -Fxq 'Signature: ' "${output}"
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 
     rm -rf "${GNUPGHOME}" "${archive_dir}" "${archive_run}" "${output}"
 )
 
 ################################################################################
 
-# shellcheck disable=SC1091
-source "${HERE}/bashunit/bashunit.bash"
+# Load and run shUnit2.
+source "./shunit2/shunit2"
