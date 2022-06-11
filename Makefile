@@ -12,7 +12,7 @@ clean:
 	$(RM) makeself-*.run
 
 test:
-	./run-tests.sh
+	./test/run-tests.sh
 
 help:
 	$(info Targets: all $(OUTPUT) clean test help)

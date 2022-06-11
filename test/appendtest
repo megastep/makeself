@@ -1,13 +1,13 @@
 #!/bin/bash
+set -eu
+THIS="$(realpath "$0")"
+THISDIR="$(dirname "${THIS}")"
+SRCDIR="$(dirname "${THISDIR}")"
+SUT="${SRCDIR}/makeself.sh"
+WHAT="$(basename "${THIS}")"
+
 # FIXME: These tests need to check that the concatenation of archives works
 
-set -eu
-
-THIS="$(realpath "$0")"
-WHAT="$(basename "${THIS}")"
-HERE="$(dirname "${THIS}")"
-SRCDIR="$(dirname "${HERE}")"
-SUT="${SRCDIR}/makeself.sh"
 
 readonly archive_dir_create="$(mktemp -dt archive_dir_create.XXXXXX)"
 readonly archive_dir_append="$(mktemp -dt archive_dir_append.XXXXXX)"
@@ -18,7 +18,7 @@ touch "${archive_dir_append}/fum"
 
 evalAssert() {
     eval "$@"
-    assertEqual "$?" "0"
+    assertEquals "$?" "0"
 }
 
 # $1 : file_name
@@ -31,7 +31,7 @@ doInfoListCheckExec() {
 
 # $1 : file_name
 # rest : content basenames
-assertContains() {
+assertFileContains() {
     local file_name=""
     file_name="$(realpath "$1")"
     shift
@@ -39,9 +39,7 @@ assertContains() {
     rm -rf "${target}"
     mkdir -p "${target}"
     evalAssert "${file_name}" --target "${target}"
-    assertEqual \
-        "$(find "${target}" -type f -exec basename -a {} + | sort)" \
-        "$(echo "$@" | sort)"
+    assertEquals "$(find "${target}" -type f -exec basename -a {} + | sort)" "$(echo -e "$@" | sort)"
     rm -rf "${target}"
 }
 
@@ -59,13 +57,13 @@ doTestOpts() {
         "echo ${stem}"
     file_name="$(realpath ${file_name})"
     doInfoListCheckExec "${file_name}"
-    assertContains "${file_name}" "fee" "fie"
+    assertFileContains "${file_name}" "fee\nfie"
 
     evalAssert "${SUT}" "$@" --sha256 \
         --append "${archive_dir_append}" \
         "${file_name}"
     doInfoListCheckExec "${file_name}"
-    assertContains "${file_name}" "fee" "fie" "foe" "fum"
+    assertFileContains "${file_name}" "fee\nfie\nfoe\nfum"
 
     rm -f "${file_name}"
 }
@@ -96,6 +94,5 @@ testPigz() { doTestComp --pigz; }
 testXz() { doTestComp --xz; }
 testZstd() { doTestComp --zstd; }
 
-source bashunit/bashunit.bash
-
-rm -rf "${archive_dir_create}" "${archive_dir_append}"
+# Load and run shUnit2.
+source "./shunit2/shunit2"

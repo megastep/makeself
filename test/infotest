@@ -1,11 +1,13 @@
 #!/bin/bash
-
-# makeself/test/infotest
-
+set -eu
 THIS="$(realpath "$0")"
-HERE="$(dirname "${THIS}")"
-SRCDIR="$(dirname "${HERE}")"
-VERSION="$(xargs printf '%s' <"${SRCDIR}/VERSION")"
+THISDIR="$(dirname "${THIS}")"
+SRCDIR="$(dirname "${THISDIR}")"
+VERSION="$(cat "${SRCDIR}/VERSION")"
+
+is_alpine_distro=false && [[ -f "/etc/alpine-release" ]] && is_alpine_distro=true
+
+uncompressed_size="12 KB" && [[ $is_alpine_distro == true ]] && uncompressed_size="4 KB"
 
 ################################################################################
 
@@ -16,9 +18,9 @@ haveInfo() (
     cd "${SRCDIR}" || return 1
     mkdir -p infotest
     ./makeself.sh "$@" ./infotest ./infotest.run infotest ls -lah >/dev/null 2>&1
-    assertEqual "$?" 0 >&2
+    assertEquals "$?" 0 >&2
     ./infotest.run --info
-    assertEqual "$?" 0 >&2
+    assertEquals "$?" 0 >&2
     rm -rf infotest infotest.run
 )
 
@@ -45,7 +47,7 @@ testDefault() (
     diffInfo --packaging-date "@0" <<EOF
 Identification: infotest
 Target directory: infotest
-Uncompressed size: 12 KB
+Uncompressed size: $uncompressed_size
 Compression: gzip
 Encryption: n
 Date of packaging: @0
@@ -62,7 +64,7 @@ Script run after extraction:
      ls -lah
 infotest will be removed after extraction
 EOF
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 )
 
 testNocomp() (
@@ -70,7 +72,7 @@ testNocomp() (
     diffInfo --packaging-date "@0" --nocomp <<EOF
 Identification: infotest
 Target directory: infotest
-Uncompressed size: 12 KB
+Uncompressed size: $uncompressed_size
 Compression: none
 Encryption: n
 Date of packaging: @0
@@ -88,7 +90,7 @@ Script run after extraction:
      ls -lah
 infotest will be removed after extraction
 EOF
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 )
 
 testNotemp() (
@@ -96,7 +98,7 @@ testNotemp() (
     diffInfo --packaging-date "@0" --notemp <<EOF
 Identification: infotest
 Target directory: infotest
-Uncompressed size: 12 KB
+Uncompressed size: $uncompressed_size
 Compression: gzip
 Encryption: n
 Date of packaging: @0
@@ -114,9 +116,10 @@ Script run after extraction:
      ls -lah
 directory infotest is permanent
 EOF
-    assertEqual "$?" 0
+    assertEquals "$?" 0
 )
 
 ################################################################################
 
-source "${HERE}/bashunit/bashunit.bash"
+# Load and run shUnit2.
+source "./shunit2/shunit2"

@@ -1,8 +1,8 @@
 #!/bin/bash
-
+set -eu
 THIS="$(realpath "$0")"
-HERE="$(dirname "${THIS}")"
-SUT="$(dirname "${HERE}")/makeself.sh"
+THISDIR="$(dirname "${THIS}")"
+SUT="$(dirname "${THISDIR}")/makeself.sh"
 
 testWhiteSpaceLicense() {
     # for each license file: its canonical path is identical to its content
@@ -44,20 +44,21 @@ EOF
             "${file_name}" \
             "Label" \
             ls -lah
-        assertEqual "$?" 0
+        assertEquals "$?" 0
 
         # Assumes the license text is the first line of output
         license_text="$("${file_name}" --accept --nox11 | head -n1)"
 
         # This doesn't work for character tabulation...
-        #assertEqual "${license_text}" "${license_file}"
+        #assertEquals "${license_text}" "${license_file}"
 
         # ...so do this instead:
-        assertEqual \
+        assertEquals \
             "$(cat "${license_file}" | md5sum | cut -d' ' -f1)" \
             "$(echo "${license_text}" | md5sum | cut -d' ' -f1)"
     done
     rm -rf "${license_dir}" "${archive_dir}" "${file_name}"
 }
 
-source "${HERE}/bashunit/bashunit.bash"
+# Load and run shUnit2.
+source "./shunit2/shunit2"
