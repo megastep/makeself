@@ -40,6 +40,8 @@ jobs:
 
     - name: Checkout Makeself
       uses: actions/checkout@v3
+      with:
+        submodules: 'true'
 
     - name: Build release
       run: make
