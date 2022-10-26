@@ -86,6 +86,22 @@ jobs:
             pwd
             sh ./test/run-makeself.sh
 
+  test-netbsd:
+    needs: test
+    runs-on: macos-12
+    name: Test Makeself on NetBSD
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+      - name: Test on NetBSD
+        uses: vmactions/netbsd-vm@v0
+        with:
+          usesh: true
+          prepare: pkg_add pbzip2
+          run: |
+            pwd
+            sh ./test/run-makeself.sh
+
   test-solaris:
     needs: test
     runs-on: macos-12
@@ -143,7 +159,7 @@ jobs:
 
     steps:
     - name: Checkout Makeself
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Run ShellCheck
       uses: megastep/shell-linter@develop
       with:
