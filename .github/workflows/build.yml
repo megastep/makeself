@@ -56,7 +56,7 @@ jobs:
 
   test-freebsd:
     needs: test
-    runs-on: macos-10.15
+    runs-on: macos-12
     name: Test Makeself on FreeBSD
     steps:
       - uses: actions/checkout@v3
@@ -70,9 +70,25 @@ jobs:
             pwd; freebsd-version
             sh ./test/run-makeself.sh
 
+  test-openbsd:
+    needs: test
+    runs-on: macos-12
+    name: Test Makeself on OpenBSD
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+      - name: Test on OpenBSD
+        uses: vmactions/openbsd-vm@v0
+        with:
+          usesh: true
+          prepare: pkg_add pbzip2
+          run: |
+            pwd
+            sh ./test/run-makeself.sh
+
   test-solaris:
     needs: test
-    runs-on: macos-10.15
+    runs-on: macos-12
     name: Test Makeself on Solaris
     steps:
       - uses: actions/checkout@v3
