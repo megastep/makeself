@@ -92,7 +92,7 @@ MS_PrintLicense()
 MS_diskspace()
 {
 	(
-	df -kP "\$1" | tail -1 | awk '{ if (\$4 ~ /%/) {print \$3} else {print \$4} }'
+	df -k "\$1" | tail -1 | awk '{ if (\$4 ~ /%/) {print \$3} else {print \$4} }'
 	)
 }
 
