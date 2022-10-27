@@ -200,7 +200,7 @@ MS_Verify_Sig()
     MKTEMP_PATH=\`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp\`
     test -x "\$GPG_PATH" || GPG_PATH=\`exec <&- 2>&-; which gpg || command -v gpg || type gpg\`
     test -x "\$MKTEMP_PATH" || MKTEMP_PATH=\`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp\`
-	offset=\`head -n "\$skip" "\$1" | wc -c | tr -d " "\`
+	offset=\`head -n "\$skip" "\$1" | wc -c | sed "s/ //g"\`
     temp_sig=\`mktemp -t XXXXX\`
     echo \$SIGNATURE | base64 --decode > "\$temp_sig"
     gpg_output=\`MS_dd "\$1" \$offset \$totalsize | LC_ALL=C "\$GPG_PATH" --verify "\$temp_sig" - 2>&1\`
@@ -235,8 +235,8 @@ MS_Check()
     if test x"\$quiet" = xn; then
 		MS_Printf "Verifying archive integrity..."
     fi
-    offset=\`head -n "\$skip" "\$1" | wc -c | tr -d " "\`
-    fsize=\`cat "\$1" | wc -c | tr -d " "\`
+    offset=\`head -n "\$skip" "\$1" | wc -c | sed "s/ //g"\`
+    fsize=\`cat "\$1" | wc -c | sed "s/ //g"\`
     if test \$totalsize -ne \`expr \$fsize - \$offset\`; then
         echo " Unexpected archive size." >&2
         exit 2
@@ -424,7 +424,7 @@ EOLSM
 	;;
     --list)
 	echo Target directory: \$targetdir
-	offset=\`head -n "\$skip" "\$0" | wc -c | tr -d " "\`
+	offset=\`head -n "\$skip" "\$0" | wc -c | sed "s/ //g"\`
 	for s in \$filesizes
 	do
 	    MS_dd "\$0" \$offset \$s | MS_Decompress | UnTAR t
@@ -433,7 +433,7 @@ EOLSM
 	exit 0
 	;;
 	--tar)
-	offset=\`head -n "\$skip" "\$0" | wc -c | tr -d " "\`
+	offset=\`head -n "\$skip" "\$0" | wc -c | sed "s/ //g"\`
 	arg1="\$2"
     shift 2 || { MS_Help; exit 1; }
 	for s in \$filesizes
@@ -617,7 +617,7 @@ location="\`pwd\`"
 if test x"\$SETUP_NOCHECK" != x1; then
     MS_Check "\$0"
 fi
-offset=\`head -n "\$skip" "\$0" | wc -c | tr -d " "\`
+offset=\`head -n "\$skip" "\$0" | wc -c | sed "s/ //g"\`
 
 if test x"\$verbose" = xy; then
 	MS_Printf "About to extract $USIZE KB in \$tmpdir ... Proceed ? [Y/n] "
