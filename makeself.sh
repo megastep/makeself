@@ -110,11 +110,12 @@ MS_Usage()
     echo "    --zstd             : Compress with zstd"
     echo "    --bzip2            : Compress using bzip2 instead of gzip"
     echo "    --pbzip2           : Compress using pbzip2 instead of gzip"
+    echo "    --bzip3            : Compress using bzip3 instead of gzip"
     echo "    --xz               : Compress using xz instead of gzip"
     echo "    --lzo              : Compress using lzop instead of gzip"
     echo "    --lz4              : Compress using lz4 instead of gzip"
     echo "    --compress         : Compress using the UNIX 'compress' command"
-    echo "    --complevel lvl    : Compression level for gzip pigz zstd xz lzo lz4 bzip2 and pbzip2 (default 9)"
+    echo "    --complevel lvl    : Compression level for gzip pigz zstd xz lzo lz4 bzip2 pbzip2 and bzip3 (default 9)"
     echo "    --threads thds     : Number of threads to be used by compressors that support parallelization."
     echo "                         Omit to use compressor's default. Most useful (and required) for opting"
     echo "                         into xz's threading, usually with '--threads=0' for all available cores."
@@ -232,6 +233,10 @@ do
 	;;
     --pbzip2)
 	COMPRESS=pbzip2
+	shift
+	;;
+    --bzip3)
+	COMPRESS=bzip3
 	shift
 	;;
     --bzip2)
@@ -540,6 +545,16 @@ pbzip2)
         GZIP_CMD="$GZIP_CMD -p$THREADS"
     fi
     GUNZIP_CMD="bzip2 -d"
+    ;;
+bzip3)
+    # Map the compression level to a block size in MiB as 2^(level-1).
+    BZ3_COMPRESS_LEVEL=`echo "2^($COMPRESS_LEVEL-1)" | bc`
+    GZIP_CMD="bzip3 -b$BZ3_COMPRESS_LEVEL"
+    if test $THREADS -ne $DEFAULT_THREADS; then # Leave as the default if threads not indicated
+        GZIP_CMD="$GZIP_CMD -j$THREADS"
+    fi
+    JOBS=`echo "10-$COMPRESS_LEVEL" | bc`
+    GUNZIP_CMD="bzip3 -dj$JOBS"
     ;;
 bzip2)
     GZIP_CMD="bzip2 -$COMPRESS_LEVEL"
