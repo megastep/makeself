@@ -23,7 +23,7 @@ script="$SCRIPT"
 scriptargs="$SCRIPTARGS"
 cleanup_script="${CLEANUP_SCRIPT}"
 licensetxt="$LICENSE"
-helpheader='$HELPHEADER'
+helpheader="${HELPHEADER}"
 targetdir="$archdirname"
 filesizes="$filesizes"
 totalsize="$totalsize"
@@ -157,7 +157,7 @@ MS_dd_Progress()
 MS_Help()
 {
     cat << EOH >&2
-\${helpheader}Makeself version $MS_VERSION
+Makeself version $MS_VERSION
  1) Getting help or info about \$0 :
   \$0 --help   Print this message
   \$0 --info   Print embedded info : title, default target directory, embedded script ...
@@ -190,7 +190,7 @@ MS_Help()
                         on the current terminal.
   --cleanup-args args   Arguments to the cleanup script. Wrap in quotes to provide
                         multiple arguments.
-  --                    Following arguments will be passed to the embedded script
+  --                    Following arguments will be passed to the embedded script\${helpheader}
 EOH
 }
 
