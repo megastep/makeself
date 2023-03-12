@@ -20,7 +20,7 @@ testShStartsWith() {
       echo ">> Test $file_name"
       local etalon_head="$(printf '#!/bin/bash
 set -eu
-THIS="$(realpath "$0")"
+THIS="$(readlink -f "$0")"
 THISDIR="$(dirname "${THIS}")"
 ')"
       assertEquals  "$etalon_head" "$(cat "${test_sh}" | head -4)"
