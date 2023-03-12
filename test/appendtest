@@ -33,7 +33,7 @@ doInfoListCheckExec() {
 # rest : content basenames
 assertFileContains() {
     local file_name=""
-    file_name="$(realpath "$1")"
+    file_name="$(readlink -f "$1")"
     shift
     local target="${file_name}.d"
     rm -rf "${target}"
@@ -55,7 +55,7 @@ doTestOpts() {
         "${file_name}" \
         "${stem}" \
         "echo ${stem}"
-    file_name="$(realpath ${file_name})"
+    file_name="$(readlink -f ${file_name})"
     doInfoListCheckExec "${file_name}"
     assertFileContains "${file_name}" "fee\nfie"
 
