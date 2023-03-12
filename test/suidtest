@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eu
-THIS="$(realpath "$0")"
+THIS="$(readlink -f "$0")"
 THISDIR="$(dirname "${THIS}")"
 SUT="$(dirname "${THISDIR}")/makeself.sh"
 
