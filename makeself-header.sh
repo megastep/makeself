@@ -577,7 +577,7 @@ if test x"\$nox11" = xn; then
                         break
                     fi
                 done
-                chmod a+x \$0 || echo Please add execution rights on \$0
+                chmod a+x \$0 || echo Please add execution rights on \$0 >&2
                 if test \`echo "\$0" | cut -c1\` = "/"; then # Spawn a terminal!
                     exec \$XTERM -e "\$0 --xwin \$initargs"
                 else

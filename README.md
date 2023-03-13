@@ -78,6 +78,7 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--version`** : Prints the version number on stdout, then exits immediately
     * **`--gzip`** : Use gzip for compression (the default on platforms on which gzip is commonly available, like Linux)
     * **`--bzip2`** : Use bzip2 instead of gzip for better compression. The bzip2 command must be available in the command path. It is recommended that the archive extension be set to something like '.bz2.run', so that potential users know that they'll need bzip2 to extract it.
+    * **`--bzip3`** : Use bzip3 instead of gzip for better compression.
     * **`--pbzip2`** : Use pbzip2 instead of gzip for better and faster compression on machines having multiple CPUs. The pbzip2 command must be available in the command path. It is recommended that the archive extension be set to something like '.bz2.run', so that potential users know that they'll need bzip2 to extract it.
     * **`--xz`** : Use xz instead of gzip for better compression. The xz command must be available in the command path. It is recommended that the archive extension be set to something like '.xz.run' for the archive, so that potential users know that they'll need xz to extract it.
     * **`--lzo`** : Use lzop instead of gzip for better compression. The lzop command must be available in the command path. It is recommended that the archive extension be set to something like `.lzo.run` for the archive, so that potential users know that they'll need lzop to extract it.
@@ -108,11 +109,11 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
 
         For instance, in order to exclude the `.git` directory from the packaged archive directory using the GNU `tar`, one can use `makeself.sh --tar-extra "--exclude=.git" ...`
 
-    * **`--keep-umask`** : Keep the umask set to shell default, rather than overriding when executing self-extracting archive.
+    * **`--keep-umask`** : Keep the umask set to shell default, rather than overriding when executing the self-extracting archive.
     * **`--packaging-date date`** : Use provided string as the packaging date instead of the current date.
-    * **`--license`** : Append a license file.
+    * **`--license` _file_** : Append a license file.
     * **`--nooverwrite`** : Do not extract the archive if the specified target directory already exists.
-    * **`--help-header file`** : Add a header to the archive's `--help` output.
+    * **`--help-header` _file_** : Add a header to the archive's `--help` output.
   * `archive_dir` is the name of the directory that contains the files to be archived
   * `file_name` is the name of the archive to be created
   * `label` is an arbitrary text string describing the package. It will be displayed while extracting the files.
@@ -154,7 +155,7 @@ Any subsequent arguments to the archive will be passed as additional arguments t
 
 The startup script must be a regular Shell script. 
 
-Within the startup script, you can use the `$USER_PWD` variable to get the path of the folder from which the self-extracting script is executed. This is especially useful to access files that are located in the same folder as the script, as shown in the example below. 
+Within the startup script, you can use the `$USER_PWD` variable to get the path of the folder from which the self-extracting script is executed. This is especially useful to access files that are located in the same folder as the script, as shown in the example below.
 
 ```sh
 my-self-extracting-script.sh --fooBarFileParameter foo.bar
@@ -184,7 +185,7 @@ I will gladly consider merging your pull requests on the [GitHub][10] repository
 
 ## Download
 
-Get the latest official distribution [here][9] (version 2.4.2).
+Get the latest official distribution [here][9] (version 2.5.0).
 
 The latest development version can be grabbed from [GitHub][10]. Feel free to submit any patches there through the fork and pull request process.
 
@@ -213,6 +214,7 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
 * **v2.4.3:** Make explicit POSIX tar archives for increased compatibility.
 * **v2.4.4:** Fixed various compatibility issues (no longer use POSIX tar archives), Github Actions to check on Solaris and FreeBSD.
 * **v2.4.5:** Added `--tar-format` option to set the tar archive format (default is ustar)
+* **v2.5.0:** Expended support to NetBSD, OpenBSD, Busybox and other minimal distributions such as Alpine Linux. Added bzip3 compression support and expanded GPG arguments.
 
 ## Links
 
@@ -241,7 +243,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: https://github.com/megastep/makeself/releases/download/release-2.4.5/makeself-2.4.5.run
+   [9]: https://github.com/megastep/makeself/releases/download/release-2.5.0/makeself-2.5.0.run
    [10]: https://github.com/megastep/makeself
    [11]: https://github.com/megastep/loki_setup/
    [12]: http://www.unrealtournament2003.com/
