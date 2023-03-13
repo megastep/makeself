@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Makeself version 2.4.x
+# Makeself version 2.5.x
 #  by Stephane Peter <megastep@megastep.org>
 #
 # Utility to create self-extracting tar.gz archives.
@@ -8,79 +8,16 @@
 # a small Shell script stub that uncompresses the archive to a temporary
 # directory and then executes a given script from withing that directory.
 #
-# Makeself home page: https://makeself.io/
+# Makeself home page: https://makeself.io/ - Version history available on GitHub
 #
-# Version 2.0 is a rewrite of version 1.0 to make the code easier to read and maintain.
-#
-# Version history :
-# - 1.0 : Initial public release
-# - 1.1 : The archive can be passed parameters that will be passed on to
-#         the embedded script, thanks to John C. Quillan
-# - 1.2 : Package distribution, bzip2 compression, more command line options,
-#         support for non-temporary archives. Ideas thanks to Francois Petitjean
-# - 1.3 : More patches from Bjarni R. Einarsson and Francois Petitjean:
-#         Support for no compression (--nocomp), script is no longer mandatory,
-#         automatic launch in an xterm, optional verbose output, and -target 
-#         archive option to indicate where to extract the files.
-# - 1.4 : Improved UNIX compatibility (Francois Petitjean)
-#         Automatic integrity checking, support of LSM files (Francois Petitjean)
-# - 1.5 : Many bugfixes. Optionally disable xterm spawning.
-# - 1.5.1 : More bugfixes, added archive options -list and -check.
-# - 1.5.2 : Cosmetic changes to inform the user of what's going on with big 
-#           archives (Quake III demo)
-# - 1.5.3 : Check for validity of the DISPLAY variable before launching an xterm.
-#           More verbosity in xterms and check for embedded command's return value.
-#           Bugfix for Debian 2.0 systems that have a different "print" command.
-# - 1.5.4 : Many bugfixes. Print out a message if the extraction failed.
-# - 1.5.5 : More bugfixes. Added support for SETUP_NOCHECK environment variable to
-#           bypass checksum verification of archives.
-# - 1.6.0 : Compute MD5 checksums with the md5sum command (patch from Ryan Gordon)
-# - 2.0   : Brand new rewrite, cleaner architecture, separated header and UNIX ports.
-# - 2.0.1 : Added --copy
-# - 2.1.0 : Allow multiple tarballs to be stored in one archive, and incremental updates.
-#           Added --nochown for archives
-#           Stopped doing redundant checksums when not necesary
-# - 2.1.1 : Work around insane behavior from certain Linux distros with no 'uncompress' command
-#           Cleaned up the code to handle error codes from compress. Simplified the extraction code.
-# - 2.1.2 : Some bug fixes. Use head -n to avoid problems.
-# - 2.1.3 : Bug fixes with command line when spawning terminals.
-#           Added --tar for archives, allowing to give arbitrary arguments to tar on the contents of the archive.
-#           Added --noexec to prevent execution of embedded scripts.
-#           Added --nomd5 and --nocrc to avoid creating checksums in archives.
-#           Added command used to create the archive in --info output.
-#           Run the embedded script through eval.
-# - 2.1.4 : Fixed --info output.
-#           Generate random directory name when extracting files to . to avoid problems. (Jason Trent)
-#           Better handling of errors with wrong permissions for the directory containing the files. (Jason Trent)
-#           Avoid some race conditions (Ludwig Nussel)
-#           Unset the $CDPATH variable to avoid problems if it is set. (Debian)
-#           Better handling of dot files in the archive directory.
-# - 2.1.5 : Made the md5sum detection consistent with the header code.
-#           Check for the presence of the archive directory
-#           Added --encrypt for symmetric encryption through gpg (Eric Windisch)
-#           Added support for the digest command on Solaris 10 for MD5 checksums
-#           Check for available disk space before extracting to the target directory (Andreas Schweitzer)
-#           Allow extraction to run asynchronously (patch by Peter Hatch)
-#           Use file descriptors internally to avoid error messages (patch by Kay Tiong Khoo)
-# - 2.1.6 : Replaced one dot per file progress with a realtime progress percentage and a spining cursor (Guy Baconniere)
-#           Added --noprogress to prevent showing the progress during the decompression (Guy Baconniere)
-#           Added --target dir to allow extracting directly to a target directory (Guy Baconniere)
-# - 2.2.0 : Many bugfixes, updates and contributions from users. Check out the project page on Github for the details.
-# - 2.3.0 : Option to specify packaging date to enable byte-for-byte reproducibility. (Marc Pawlowsky)
-# - 2.4.0 : Optional support for SHA256 checksums in archives.
-# - 2.4.2 : Add support for threads for several compressors. (M. Limber)
-#           Added zstd support.
-# - 2.4.3 : Make explicit POSIX tar archives for increased compatibility.
-# - 2.4.5 : Added --tar-format to override ustar tar archive format
-#
-# (C) 1998-2021 by Stephane Peter <megastep@megastep.org>
+# (C) 1998-2023 by Stephane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 # Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
-MS_VERSION=2.4.5
+MS_VERSION=2.5.0
 MS_COMMAND="$0"
 unset CDPATH
 
