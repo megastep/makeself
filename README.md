@@ -30,19 +30,20 @@ installed on any functioning UNIX-compatible system. This script as well as
 the archives it generates should run on any Unix flavor, with any compatible
 Bourne shell, provided of course that the compression programs are available.
 
-As of version 2.1, Makeself has been rewritten and tested on the following
-platforms :
+Makeself has been rewritten and tested on the following platforms :
 
 * Linux (all distributions)
 * Sun Solaris (8 and above)
 * HP-UX (tested on 11.0 and 11i on HPPA RISC)
 * SCO OpenUnix and OpenServer
-* IBM AIX 5.1L
+* IBM AIX
 * macOS (Darwin)
 * SGI IRIX 6.5
 * FreeBSD
+* OpenBSD
+* NetBSD
 * UnicOS / Cray
-* Cygwin (Windows)
+* Windows (Cygwin, WSL)
 
 If you successfully run Makeself and/or archives created with it on another
 system, then please [let me know][2]!
