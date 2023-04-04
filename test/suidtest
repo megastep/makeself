@@ -25,7 +25,7 @@ testSuidDoesntGetBroken() {
     permissionsBefore=$(stat -c %A "${archive_dir}"/suidfile.bin)
     # We extract deployedfile, in hopes that it will not reset suid bit
     # from suidfile.bin
-    "${file_name}"
+    "${file_name}" --notemp
     assertEquals $? 0
     permissionsAfter=$(stat -c %A "${archive_dir}"/suidfile.bin)
     # And we check that permissions match
