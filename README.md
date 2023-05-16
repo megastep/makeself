@@ -107,7 +107,7 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--lsm` _file_** : Provide a Linux Software Map (LSM) file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the `--lsm` argument to the archive.
     * **`--tar-format opt`** : Specify the tar archive format (default is ustar); you may use any value accepted by your tar command (such as posix, v7, etc).
     * **`--tar-extra opt`** : Append more options to the tar command line.
-    * **`--target dir`** : Allows to extract the archive in an arbitrary place.
+    * **`--target dir`** : Specify the directory where the archive will be extracted.
 
         For instance, in order to exclude the `.git` directory from the packaged archive directory using the GNU `tar`, one can use `makeself.sh --tar-extra "--exclude=.git" ...`
 
