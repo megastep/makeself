@@ -3,7 +3,8 @@ description: A self-extracting archiving tool for Unix systems, in 100% shell sc
 google_tag: GTM-W2GH7BM
 show_downloads: true
 remote_theme: megastep/cayman
-
+github:
+  downloads_url: https://github.com/megastep/makeself/releases
 gems:
   - jekyll-remote-theme 
   - jekyll-mentions
