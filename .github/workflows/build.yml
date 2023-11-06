@@ -56,13 +56,13 @@ jobs:
 
   test-freebsd:
     needs: test
-    runs-on: macos-12
+    runs-on: ubuntu-22.04
     name: Test Makeself on FreeBSD
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
       - name: Test on FreeBSD
-        uses: vmactions/freebsd-vm@v0
+        uses: vmactions/freebsd-vm@v1
         with:
           usesh: true
           prepare: pkg install -y pbzip2
