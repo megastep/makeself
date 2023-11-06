@@ -191,6 +191,10 @@ Makeself version $MS_VERSION
   --cleanup-args args   Arguments to the cleanup script. Wrap in quotes to provide
                         multiple arguments.
   --                    Following arguments will be passed to the embedded script\${helpheader}
+
+  ENVIRONMENT
+      SETUP_NOCHECK
+          If set to 1, then checksum validation will be skipped.
 EOH
 }
 
