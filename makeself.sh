@@ -110,6 +110,10 @@ MS_Usage()
     echo "    --keep-umask       : Keep the umask set to shell default, rather than overriding when executing self-extracting archive."
     echo "    --export-conf      : Export configuration variables to startup_script"
     echo
+    echo "ENVIRONMENT"
+    echo "    SETUP_NOCHECK"
+    echo "        If set to 1, then checksum validation will be skipped."
+    echo
     echo "Do not forget to give a fully qualified startup script name"
     echo "(i.e. with a ./ prefix if inside the archive)."
     exit 1
