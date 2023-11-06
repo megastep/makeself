@@ -68,7 +68,7 @@ MS_PrintLicense()
   if test x"\$licensetxt" != x; then
     PAGER_PATH=\`exec <&- 2>&-; which \$PAGER || command -v \$PAGER || type \$PAGER\`
     if test -x "\$PAGER_PATH" && test x"\$accept" != xy; then
-      echo "\$licensetxt" | \$PAGER
+      echo "\$licensetxt" | \$PAGER -e
     else
       echo "\$licensetxt"
     fi
