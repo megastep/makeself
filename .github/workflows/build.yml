@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-22.04
     name: Test Makeself on FreeBSD
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
       - name: Test on FreeBSD
         uses: vmactions/freebsd-vm@v1
@@ -72,13 +72,13 @@ jobs:
 
   test-openbsd:
     needs: test
-    runs-on: macos-12
+    runs-on: ubuntu-22.04
     name: Test Makeself on OpenBSD
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
       - name: Test on OpenBSD
-        uses: vmactions/openbsd-vm@v0
+        uses: vmactions/openbsd-vm@v1
         with:
           usesh: true
           prepare: pkg_add pbzip2
@@ -88,13 +88,13 @@ jobs:
 
   test-netbsd:
     needs: test
-    runs-on: macos-12
+    runs-on: ubuntu-22.04
     name: Test Makeself on NetBSD
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
       - name: Test on NetBSD
-        uses: vmactions/netbsd-vm@v0
+        uses: vmactions/netbsd-vm@v1
         with:
           usesh: true
           prepare: pkg_add pbzip2
@@ -104,10 +104,10 @@ jobs:
 
   test-solaris:
     needs: test
-    runs-on: macos-12
+    runs-on: ubuntu-22.04
     name: Test Makeself on Solaris
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
       - name: Test on Solaris
         uses: vmactions/solaris-vm@v0
@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     container: alpine:latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
       - name: Test on Alpine
         run: sh ./test/run-makeself.sh
@@ -137,7 +137,7 @@ jobs:
       IMAGE_NAME: mcr.microsoft.com/windows/nanoserver:ltsc2022-amd64
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
 
       - name: pull windows container ${{ env.IMAGE_NAME }}
@@ -159,7 +159,7 @@ jobs:
 
     steps:
     - name: Checkout Makeself
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Run ShellCheck
       uses: megastep/shell-linter@develop
       with:
