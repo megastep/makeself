@@ -97,14 +97,14 @@ jobs:
         uses: vmactions/netbsd-vm@v1
         with:
           usesh: true
-          prepare: pkg_add pbzip2
+          prepare: /usr/sbin/pkg_add pbzip2
           run: |
             pwd
             sh ./test/run-makeself.sh
 
   test-solaris:
     needs: test
-    runs-on: ubuntu-22.04
+    runs-on: macos-12
     name: Test Makeself on Solaris
     steps:
       - uses: actions/checkout@v4
