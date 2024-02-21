@@ -49,14 +49,14 @@ jobs:
       run: brew install pbzip2 coreutils zstd
 
     - name: Checkout Makeself
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: 'true'
 
     - name: Build release
       run: make
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: build-${{ matrix.artifact }}
         path: release
@@ -66,11 +66,11 @@ jobs:
 
   test-freebsd:
     needs: test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Test Makeself on FreeBSD
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
       - name: Test on FreeBSD
         uses: vmactions/freebsd-vm@v1
         with:
@@ -82,11 +82,11 @@ jobs:
 
   test-openbsd:
     needs: test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Test Makeself on OpenBSD
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
       - name: Test on OpenBSD
         uses: vmactions/openbsd-vm@v1
         with:
@@ -98,11 +98,11 @@ jobs:
 
   test-netbsd:
     needs: test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Test Makeself on NetBSD
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
       - name: Test on NetBSD
         uses: vmactions/netbsd-vm@v1
         with:
@@ -114,13 +114,13 @@ jobs:
 
   test-solaris:
     needs: test
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     name: Test Makeself on Solaris
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
       - name: Test on Solaris
-        uses: vmactions/solaris-vm@v0
+        uses: vmactions/solaris-vm@v1
         with:
           mem: 2048
           prepare: pkgutil -y -i pbzip2
@@ -135,7 +135,7 @@ jobs:
     container: alpine:latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
       - name: Test on Alpine
         run: sh ./test/run-makeself.sh
 
@@ -148,7 +148,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
 
       - name: pull windows container ${{ env.IMAGE_NAME }}
         shell: cmd
