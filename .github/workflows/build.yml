@@ -56,7 +56,7 @@ jobs:
 
   test-freebsd:
     needs: test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Test Makeself on FreeBSD
     steps:
       - uses: actions/checkout@v4
@@ -72,7 +72,7 @@ jobs:
 
   test-openbsd:
     needs: test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Test Makeself on OpenBSD
     steps:
       - uses: actions/checkout@v4
@@ -88,7 +88,7 @@ jobs:
 
   test-netbsd:
     needs: test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Test Makeself on NetBSD
     steps:
       - uses: actions/checkout@v4
@@ -104,13 +104,13 @@ jobs:
 
   test-solaris:
     needs: test
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     name: Test Makeself on Solaris
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
       - name: Test on Solaris
-        uses: vmactions/solaris-vm@v0
+        uses: vmactions/solaris-vm@v1
         with:
           mem: 2048
           prepare: pkgutil -y -i pbzip2
