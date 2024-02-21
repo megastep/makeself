@@ -546,8 +546,8 @@ if test x"$ENCRYPT" = x"openssl"; then
         echo "Appending to existing archive is not compatible with OpenSSL encryption." >&2
     fi
     
-    ENCRYPT_CMD="openssl enc -aes-256-cbc -salt"
-    DECRYPT_CMD="openssl enc -aes-256-cbc -d"
+    ENCRYPT_CMD="openssl enc -aes-256-cbc -salt -pbkdf2"
+    DECRYPT_CMD="openssl enc -aes-256-cbc -d -salt -pbkdf2"
     
     if test x"$OPENSSL_NO_MD" != x"y"; then
         ENCRYPT_CMD="$ENCRYPT_CMD -md sha256"
