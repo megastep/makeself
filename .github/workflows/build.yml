@@ -12,10 +12,14 @@ jobs:
             container: 'ubuntu:latest'
             artifact: 'ubuntu'
 
-          - os: ubuntu-latest
+          - os: alpine-latest
             container: 'alpine:latest'
             artifact: 'alpine'
-
+            
+          - os: rockylinux
+            container: 'rockylinux:9' # they do not have latest, but 9 will be covered for all the defaults for all latest 9 version
+            artifact: 'rockylinux'
+            
           - os: windows-latest
             artifact: 'windows'
 
@@ -29,7 +33,13 @@ jobs:
       run: |
         apt update
         apt -y install git make pbzip2 binutils bzip2 zstd gnupg
-
+        
+    - name: Install RockyLinux packages
+      if: matrix.container == 'rockylinux:9'
+      run: |
+        dnf groupinstall -y "Development Tools" "RPM Development Tools"
+        dnf install -y zstd binutils binutils-devel gnupg2 pbzip2
+        
     - name: Install Alpine packages
       if: matrix.container == 'alpine:latest'
       run: apk add --no-cache bash git make libarchive-tools gnupg coreutils binutils bzip2 zstd
