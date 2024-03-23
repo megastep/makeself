@@ -110,6 +110,10 @@ MS_Usage()
     echo "    --keep-umask       : Keep the umask set to shell default, rather than overriding when executing self-extracting archive."
     echo "    --export-conf      : Export configuration variables to startup_script"
     echo
+    echo "ENVIRONMENT"
+    echo "    SETUP_NOCHECK"
+    echo "        If set to 1, then checksum validation will be skipped."
+    echo
     echo "Do not forget to give a fully qualified startup script name"
     echo "(i.e. with a ./ prefix if inside the archive)."
     exit 1
@@ -542,8 +546,8 @@ if test x"$ENCRYPT" = x"openssl"; then
         echo "Appending to existing archive is not compatible with OpenSSL encryption." >&2
     fi
     
-    ENCRYPT_CMD="openssl enc -aes-256-cbc -salt"
-    DECRYPT_CMD="openssl enc -aes-256-cbc -d"
+    ENCRYPT_CMD="openssl enc -aes-256-cbc -salt -pbkdf2"
+    DECRYPT_CMD="openssl enc -aes-256-cbc -d -salt -pbkdf2"
     
     if test x"$OPENSSL_NO_MD" != x"y"; then
         ENCRYPT_CMD="$ENCRYPT_CMD -md sha256"

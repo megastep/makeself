@@ -67,8 +67,8 @@ MS_PrintLicense()
   PAGER=\${PAGER:=more}
   if test x"\$licensetxt" != x; then
     PAGER_PATH=\`exec <&- 2>&-; which \$PAGER || command -v \$PAGER || type \$PAGER\`
-    if test -x "\$PAGER_PATH"; then
-      echo "\$licensetxt" | \$PAGER
+    if test -x "\$PAGER_PATH" && test x"\$accept" != xy; then
+      echo "\$licensetxt" | \$PAGER -e
     else
       echo "\$licensetxt"
     fi
@@ -191,6 +191,10 @@ Makeself version $MS_VERSION
   --cleanup-args args   Arguments to the cleanup script. Wrap in quotes to provide
                         multiple arguments.
   --                    Following arguments will be passed to the embedded script\${helpheader}
+
+  ENVIRONMENT
+      SETUP_NOCHECK
+          If set to 1, then checksum validation will be skipped.
 EOH
 }
 

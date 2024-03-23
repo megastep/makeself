@@ -104,12 +104,13 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--nowait`** : When executed from a new X11 terminal, disable the user prompt at the end of the script execution.
     * **`--nomd5`** and **`--nocrc`** : Disable the creation of a MD5 / CRC checksum for the archive. This speeds up the extraction process if integrity checking is not necessary.
     * **`--sha256`** : Adds a SHA256 checksum for the archive. This is in addition to the MD5 / CRC checksums unless `--nomd5` is also used.
-    * **`--lsm` _file_** : Provide a Linux Software Map (LSM) file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the `--lsm` argument to the archive. An example of a LSM file is provided with Makeself.
+    * **`--lsm` _file_** : Provide a Linux Software Map (LSM) file to makeself, that will be embedded in the generated archive. LSM files are describing a software package in a way that is easily parseable. The LSM entry can then be later retrieved using the `--lsm` argument to the archive.
     * **`--tar-format opt`** : Specify the tar archive format (default is ustar); you may use any value accepted by your tar command (such as posix, v7, etc).
     * **`--tar-extra opt`** : Append more options to the tar command line.
 
         For instance, in order to exclude the `.git` directory from the packaged archive directory using the GNU `tar`, one can use `makeself.sh --tar-extra "--exclude=.git" ...`
 
+    * **`--target dir`** : Specify the directory where the archive will be extracted.
     * **`--keep-umask`** : Keep the umask set to shell default, rather than overriding when executing the self-extracting archive.
     * **`--packaging-date date`** : Use provided string as the packaging date instead of the current date.
     * **`--license` _file_** : Append a license file.

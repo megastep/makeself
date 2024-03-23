@@ -1,0 +1,42 @@
+#!/bin/bash
+set -eu
+THIS="$(readlink -f "$0")"
+THISDIR="$(dirname "${THIS}")"
+SUT="$(dirname "${THISDIR}")/makeself.sh"
+
+testNoCheck() {
+    # Create a directory with a simple payload.
+    local archive_dir
+    archive_dir="$(mktemp -dt archive_dir.XXXXXX)"
+    (
+        cd "${archive_dir}"
+        touch foo.txt bar.txt qux.txt
+    )
+
+    # Create a self-extracting archive.
+    local file_name
+    file_name="$(mktemp -t file_name.XXXXXX)"
+    "${SUT}" --nox11 --sha256 "${archive_dir}" "${file_name}" "no check test" true
+    assertEquals "$?" 0
+
+    printf '\nArchive verification enabled:\n' >&2
+    sync
+    "${file_name}" 2>&1
+    assertEquals "$?" 0
+
+    "${file_name}" 2>&1 | grep -qF 'Verifying archive integrity...'
+    assertEquals "$?" 0
+
+    printf '\nArchive verification disabled:\n' >&2
+    SETUP_NOCHECK=1 "${file_name}" 2>&1
+    assertEquals "$?" 0
+
+    SETUP_NOCHECK=1 "${file_name}" 2>&1 | grep -qFv 'Verifying archive integrity...'
+    assertEquals "$?" 0
+
+    # Clean up.
+    rm -rf "${archive_dir}" "${file_name}"
+}
+
+# Load and run shUnit2.
+source "./shunit2/shunit2"
