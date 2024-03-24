@@ -24,14 +24,7 @@ scriptargs="$SCRIPTARGS"
 cleanup_script="${CLEANUP_SCRIPT}"
 licensetxt="$LICENSE"
 helpheader="${HELPHEADER}"
-preextract='
-EOF
-if test -n "${PREEXTRACT_FILE}"; then
-    sed -e "s/['\\]/\\\\&/g" "${PREEXTRACT_FILE}" >> "$archname"
-fi
-cat << EOF  >> "$archname"
-'
-preextract="\${preextract#?}"; preextract="\${preextract%?}"  # trim redundant newlines
+preextract="${PREEXTRACT_ENCODED}"
 targetdir="$archdirname"
 filesizes="$filesizes"
 totalsize="$totalsize"
@@ -326,8 +319,8 @@ MS_Preextract()
         fi
     fi
 
-    prescript=\`mktemp -t XXXXX -p "\$tmpdir"\`
-    echo "\$preextract" > "\$prescript"
+    prescript=\`mktemp "\$tmpdir/XXXXXX"\`
+    echo "\$preextract" | base64 -d > "\$prescript"
     chmod a+x "\$prescript"
 
     (cd "\$tmpdir"; eval "\"\$prescript\" \$scriptargs \"\\\$@\""); res=\$?
@@ -495,7 +488,7 @@ EOLSM
         echo "Pre-extraction script is not provided." >&2
         exit 1
     fi
-    echo "\$preextract"
+    echo "\$preextract" | base64 -d
     exit 0
     ;;
     --confirm)
