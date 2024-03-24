@@ -12,11 +12,11 @@ jobs:
             container: 'ubuntu:latest'
             artifact: 'ubuntu'
 
-          - os: alpine-latest
+          - os: ubicloud
             container: 'alpine:latest'
             artifact: 'alpine'
             
-          - os: rockylinux
+          - os: ubicloud
             container: 'rockylinux:9' # they do not have latest, but 9 will be covered for all the defaults for all latest 9 version
             artifact: 'rockylinux'
             
