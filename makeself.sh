@@ -93,6 +93,7 @@ MS_Usage()
     echo "    --nocrc            : Don't calculate a CRC for archive"
     echo "    --sha256           : Compute a SHA256 checksum for the archive"
     echo "    --header file      : Specify location of the header script"
+    echo "    --preextract file  : Specify a pre-extraction script"
     echo "    --cleanup file     : Specify a cleanup script that executes on interrupt and when finished successfully."
     echo "    --follow           : Follow the symlinks in the archive"
     echo "    --noprogress       : Do not show the progress during the decompression"
@@ -109,6 +110,10 @@ MS_Usage()
     echo
     echo "    --keep-umask       : Keep the umask set to shell default, rather than overriding when executing self-extracting archive."
     echo "    --export-conf      : Export configuration variables to startup_script"
+    echo
+    echo "ENVIRONMENT"
+    echo "    SETUP_NOCHECK"
+    echo "        If set to 1, then checksum validation will be skipped."
     echo
     echo "Do not forget to give a fully qualified startup script name"
     echo "(i.e. with a ./ prefix if inside the archive)."
@@ -307,6 +312,12 @@ do
 	HEADER="$2"
     shift 2 || { MS_Usage; exit 1; }
 	;;
+    --preextract)
+    preextract_file="$2"
+    shift 2 || { MS_Usage; exit 1; }
+    test -r "$preextract_file" || { echo "Unable to open pre-extraction script: $preextract_file" >&2; exit 1; }
+    PREEXTRACT_ENCODED=`base64 "$preextract_file"`
+    ;;
     --cleanup)
     CLEANUP_SCRIPT="$2"
     shift 2 || { MS_Usage; exit 1; }
@@ -542,8 +553,8 @@ if test x"$ENCRYPT" = x"openssl"; then
         echo "Appending to existing archive is not compatible with OpenSSL encryption." >&2
     fi
     
-    ENCRYPT_CMD="openssl enc -aes-256-cbc -salt"
-    DECRYPT_CMD="openssl enc -aes-256-cbc -d"
+    ENCRYPT_CMD="openssl enc -aes-256-cbc -salt -pbkdf2"
+    DECRYPT_CMD="openssl enc -aes-256-cbc -d -salt -pbkdf2"
     
     if test x"$OPENSSL_NO_MD" != x"y"; then
         ENCRYPT_CMD="$ENCRYPT_CMD -md sha256"

@@ -12,10 +12,14 @@ jobs:
             container: 'ubuntu:latest'
             artifact: 'ubuntu'
 
-          - os: ubuntu-latest
+          - os: ubicloud
             container: 'alpine:latest'
             artifact: 'alpine'
-
+            
+          - os: ubicloud
+            container: 'rockylinux:9' # they do not have latest, but 9 will be covered for all the defaults for all latest 9 version
+            artifact: 'rockylinux'
+            
           - os: windows-latest
             artifact: 'windows'
 
@@ -29,7 +33,13 @@ jobs:
       run: |
         apt update
         apt -y install git make pbzip2 binutils bzip2 zstd gnupg
-
+        
+    - name: Install RockyLinux packages
+      if: matrix.container == 'rockylinux:9'
+      run: |
+        dnf groupinstall -y "Development Tools" "RPM Development Tools"
+        dnf install -y zstd binutils binutils-devel gnupg2 pbzip2
+        
     - name: Install Alpine packages
       if: matrix.container == 'alpine:latest'
       run: apk add --no-cache bash git make libarchive-tools gnupg coreutils binutils bzip2 zstd
@@ -39,14 +49,14 @@ jobs:
       run: brew install pbzip2 coreutils zstd
 
     - name: Checkout Makeself
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: 'true'
 
     - name: Build release
       run: make
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: build-${{ matrix.artifact }}
         path: release
@@ -56,13 +66,13 @@ jobs:
 
   test-freebsd:
     needs: test
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     name: Test Makeself on FreeBSD
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
       - name: Test on FreeBSD
-        uses: vmactions/freebsd-vm@v0
+        uses: vmactions/freebsd-vm@v1
         with:
           usesh: true
           prepare: pkg install -y pbzip2
@@ -72,45 +82,45 @@ jobs:
 
   test-openbsd:
     needs: test
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     name: Test Makeself on OpenBSD
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
       - name: Test on OpenBSD
-        uses: vmactions/openbsd-vm@v0
+        uses: vmactions/openbsd-vm@v1
         with:
           usesh: true
-          prepare: pkg_add pbzip2
+          prepare: /usr/sbin/pkg_add pbzip2
           run: |
             pwd
             sh ./test/run-makeself.sh
 
   test-netbsd:
     needs: test
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     name: Test Makeself on NetBSD
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
       - name: Test on NetBSD
-        uses: vmactions/netbsd-vm@v0
+        uses: vmactions/netbsd-vm@v1
         with:
           usesh: true
-          prepare: pkg_add pbzip2
+          prepare: /usr/sbin/pkg_add pbzip2
           run: |
             pwd
             sh ./test/run-makeself.sh
 
   test-solaris:
     needs: test
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     name: Test Makeself on Solaris
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
       - name: Test on Solaris
-        uses: vmactions/solaris-vm@v0
+        uses: vmactions/solaris-vm@v1
         with:
           mem: 2048
           prepare: pkgutil -y -i pbzip2
@@ -124,8 +134,8 @@ jobs:
     runs-on: ubuntu-latest
     container: alpine:latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
       - name: Test on Alpine
         run: sh ./test/run-makeself.sh
 
@@ -137,8 +147,8 @@ jobs:
       IMAGE_NAME: mcr.microsoft.com/windows/nanoserver:ltsc2022-amd64
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
 
       - name: pull windows container ${{ env.IMAGE_NAME }}
         shell: cmd
@@ -159,7 +169,7 @@ jobs:
 
     steps:
     - name: Checkout Makeself
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Run ShellCheck
       uses: megastep/shell-linter@develop
       with:

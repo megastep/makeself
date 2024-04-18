@@ -24,6 +24,7 @@ scriptargs="$SCRIPTARGS"
 cleanup_script="${CLEANUP_SCRIPT}"
 licensetxt="$LICENSE"
 helpheader="${HELPHEADER}"
+preextract="${PREEXTRACT_ENCODED}"
 targetdir="$archdirname"
 filesizes="$filesizes"
 totalsize="$totalsize"
@@ -164,7 +165,8 @@ Makeself version $MS_VERSION
   \$0 --lsm    Print embedded lsm entry (or no LSM)
   \$0 --list   Print the list of files in the archive
   \$0 --check  Checks integrity of the archive
-  \$0 --verify-sig key Verify signature agains a provided key id
+  \$0 --verify-sig key Verify signature against a provided key id
+  \$0 --show-preextract Print pre-extraction script
 
  2) Running \$0 :
   \$0 [options] [--] [additional arguments to embedded script]
@@ -191,6 +193,10 @@ Makeself version $MS_VERSION
   --cleanup-args args   Arguments to the cleanup script. Wrap in quotes to provide
                         multiple arguments.
   --                    Following arguments will be passed to the embedded script\${helpheader}
+
+  ENVIRONMENT
+      SETUP_NOCHECK
+          If set to 1, then checksum validation will be skipped.
 EOH
 }
 
@@ -298,6 +304,31 @@ MS_Check()
     done
     if test x"\$quiet" = xn; then
 		echo " All good."
+    fi
+}
+
+MS_Preextract()
+{
+    if test -z "\$preextract"; then
+        return
+    elif test x"\$verbose" = xy; then
+        MS_Printf "About to run pre-extraction script ... Proceed ? [Y/n] "
+        read yn
+        if test x"\$yn" = xn; then
+            eval \$finish; exit 1
+        fi
+    fi
+
+    prescript=\`mktemp "\$tmpdir/XXXXXX"\`
+    echo "\$preextract" | base64 -d > "\$prescript"
+    chmod a+x "\$prescript"
+
+    (cd "\$tmpdir"; eval "\"\$prescript\" \$scriptargs \"\\\$@\""); res=\$?
+
+    rm -f "\$prescript"
+    if test \$res -ne 0; then
+        echo "Pre-extraction script returned an error code (\$res)" >&2
+        eval \$finish; exit 1
     fi
 }
 
@@ -452,6 +483,14 @@ EOLSM
     shift 2 || { MS_Help; exit 1; }
     MS_Verify_Sig "\$0"
     ;;
+    --show-preextract)
+    if test -z "\$preextract"; then
+        echo "Pre-extraction script is not provided." >&2
+        exit 1
+    fi
+    echo "\$preextract" | base64 -d
+    exit 0
+    ;;
     --confirm)
 	verbose=y
 	shift
@@ -459,6 +498,7 @@ EOLSM
 	--noexec)
 	script=""
     cleanup_script=""
+    preextract=""
 	shift
 	;;
     --noexec-cleanup)
@@ -618,6 +658,8 @@ if test x"\$SETUP_NOCHECK" != x1; then
     MS_Check "\$0"
 fi
 offset=\`head -n "\$skip" "\$0" | wc -c | sed "s/ //g"\`
+
+MS_Preextract "\$@"
 
 if test x"\$verbose" = xy; then
 	MS_Printf "About to extract $USIZE KB in \$tmpdir ... Proceed ? [Y/n] "

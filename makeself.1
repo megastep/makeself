@@ -105,6 +105,9 @@ Specify location of the header script.
 .B --help-header file
 Add a header to the archive's help output.
 .TP
+.B --preextract file
+Specify a pre-extraction script.
+.TP
 .B --cleanup file
 Specify a cleanup script that executes on interrupt and when finished successfully.
 .TP
@@ -140,7 +143,10 @@ Append a license file.
 .TP
 .B --packaging-date date
 Use provided string as the packaging date instead of the current date.
+.SH "ENVIRONMENT"
 .TP
+.B SETUP_NOCHECK
+If set to 1, then checksum validation will be skipped.
 .SH "EXAMPLES"
 Here is an example, assuming the user has a package image stored in a /home/joe/mysoft,
 and he wants to generate a self-extracting package named mysoft.sh, which will launch
