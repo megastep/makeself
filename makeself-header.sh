@@ -267,7 +267,7 @@ MS_Check()
 					echo "Error in SHA256 checksums: \$shasum is different from \$sha" >&2
 					exit 2
 				elif test x"\$quiet" = xn; then
-					MS_Printf " SHA256 checksums are OK." >&2
+					MS_Printf " SHA256 checksums are OK."
 				fi
 				crc="0000000000";
 			fi
@@ -285,7 +285,7 @@ MS_Check()
 					echo "Error in MD5 checksums: \$md5sum is different from \$md5" >&2
 					exit 2
 				elif test x"\$quiet" = xn; then
-					MS_Printf " MD5 checksums are OK." >&2
+					MS_Printf " MD5 checksums are OK."
 				fi
 				crc="0000000000"; verb=n
 			fi
@@ -298,7 +298,7 @@ MS_Check()
 				echo "Error in checksums: \$sum1 is different from \$crc" >&2
 				exit 2
 			elif test x"\$quiet" = xn; then
-				MS_Printf " CRC checksums are OK." >&2
+				MS_Printf " CRC checksums are OK."
 			fi
 		fi
 		i=\`expr \$i + 1\`
