@@ -32,7 +32,7 @@ jobs:
       if: matrix.container == 'ubuntu:latest'
       run: |
         apt update
-        apt -y install git make pbzip2 binutils bzip2 gnupg
+        apt -y install git make pbzip2 binutils bzip2 zstd gnupg
         
     - name: Install RockyLinux packages
       if: matrix.container == 'rockylinux:9'
@@ -46,7 +46,7 @@ jobs:
 
     - name: Install macOS packages
       if: runner.os == 'macOS'
-      run: brew install pbzip2 coreutils zstd
+      run: brew install pbzip2 coreutils
 
     - name: Checkout Makeself
       uses: actions/checkout@v4
