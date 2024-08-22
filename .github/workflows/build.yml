@@ -32,7 +32,7 @@ jobs:
       if: matrix.container == 'ubuntu:latest'
       run: |
         apt update
-        apt -y install git make pbzip2 binutils bzip2 zstd gnupg
+        apt -y install git make pbzip2 binutils bzip2 gnupg
         
     - name: Install RockyLinux packages
       if: matrix.container == 'rockylinux:9'
