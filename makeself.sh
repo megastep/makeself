@@ -316,7 +316,7 @@ do
     preextract_file="$2"
     shift 2 || { MS_Usage; exit 1; }
     test -r "$preextract_file" || { echo "Unable to open pre-extraction script: $preextract_file" >&2; exit 1; }
-    PREEXTRACT_ENCODED=`base64 "$preextract_file"`
+    PREEXTRACT_ENCODED=`base64 < "$preextract_file"`
     ;;
     --cleanup)
     CLEANUP_SCRIPT="$2"
