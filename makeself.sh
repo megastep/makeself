@@ -53,6 +53,7 @@ MS_Usage()
     echo "    --lz4              : Compress using lz4 instead of gzip"
     echo "    --compress         : Compress using the UNIX 'compress' command"
     echo "    --complevel lvl    : Compression level for gzip pigz zstd xz lzo lz4 bzip2 pbzip2 and bzip3 (default 9)"
+    echo "    --comp-extra       : Append extra options to the chosen compressor"
     echo "    --threads thds     : Number of threads to be used by compressors that support parallelization."
     echo "                         Omit to use compressor's default. Most useful (and required) for opting"
     echo "                         into xz's threading, usually with '--threads=0' for all available cores."
@@ -134,6 +135,7 @@ PASSWD=""
 PASSWD_SRC=""
 OPENSSL_NO_MD=n
 COMPRESS_LEVEL=9
+COMP_EXTRA=""
 DEFAULT_THREADS=123456 # Sentinel value
 THREADS=$DEFAULT_THREADS
 KEEP=n
@@ -251,6 +253,10 @@ do
 	;;
     --complevel)
 	COMPRESS_LEVEL="$2"
+    shift 2 || { MS_Usage; exit 1; }
+	;;
+    --comp-extra)
+	COMP_EXTRA="$2"
     shift 2 || { MS_Usage; exit 1; }
 	;;
     --threads)
@@ -547,6 +553,10 @@ none)
     GUNZIP_CMD="cat"
     ;;
 esac
+
+if test x"$COMP_EXTRA" != "x"; then
+    GZIP_CMD="$GZIP_CMD $COMP_EXTRA"
+fi
 
 if test x"$ENCRYPT" = x"openssl"; then
     if test x"$APPEND" = x"y"; then
