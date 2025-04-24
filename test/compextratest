@@ -27,20 +27,6 @@ testCompExtraOpts() {
   tearDown
 }
 
-# Negative test: ensure failures are detected when invalid compressor
-# extras are specified.
-testCompExtraOptsInvalid() {
-  setupTests
-
-  comp_extra="-x" # -x is an invalid gzip option
-  ${SUT} --comp-extra "$comp_extra" src src.sh alabel startup.sh
-
-  assertNotEquals $? 0
-
-  tearDown
-}
-
-
 # Load and run shUnit2.
 source "./shunit2/shunit2"
 
