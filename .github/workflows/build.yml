@@ -17,7 +17,7 @@ jobs:
             artifact: 'alpine'
             
           - os: ubicloud-standard-2
-            container: 'rockylinux/rockylinux:latest'
+            container: 'rockylinux:9'
             artifact: 'rockylinux'
             
           - os: windows-latest
