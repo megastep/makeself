@@ -15,8 +15,10 @@ SIGNATURE="$Signature"
 TMPROOT=\${TMPDIR:=/tmp}
 USER_PWD="\$PWD"
 export USER_PWD
-ARCHIVE_DIR=\`dirname "\$0"\`
+ARCHIVE_DIR=\` cd -- "\`dirname "\$0"\`" >/dev/null 2>&1 ; echo \$PWD \`
 export ARCHIVE_DIR
+ARCHIVE_BASE=\`basename "\$0"\`
+export ARCHIVE_BASE
 
 label="$LABEL"
 script="$SCRIPT"
