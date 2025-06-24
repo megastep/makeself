@@ -639,7 +639,7 @@ else
             exit 1
 	fi
 	if test x"\$quiet" = xn; then
-	    echo "Creating directory \$targetdir" >&2
+	    echo "Creating directory \$targetdir"
 	fi
 	tmpdir="\$targetdir"
 	dashp="-p"
