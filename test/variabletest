@@ -3,6 +3,7 @@ set -eu
 THIS="$(readlink -f "$0")"
 THISDIR="$(dirname "${THIS}")"
 SUT="$(dirname "${THISDIR}")/makeself.sh"
+ARCHIVE_NAME="makeself-test.run"
 
 setupTests() {
   temp=`mktemp -d -t XXXXX`
@@ -11,7 +12,7 @@ setupTests() {
   touch archive/file
 
   # $SUT archive makeself-test.run "Test $1" declare -p "${1}"
-  $SUT archive makeself-test.run "Test $1" echo \\\"\${${1}}\\\"
+  $SUT archive "${ARCHIVE_NAME}" "Test $1" echo \\\"\${${1}}\\\"
 }
 
 testArchiveDir()
@@ -46,6 +47,18 @@ testUserPWD()
   actual_user_pwd="$("${temp}/makeself-test.run" --quiet)"
 
   assertEquals "${actual_user_pwd}" "${ans}"
+}
+
+testArchiveName()
+{
+  setupTests ARCHIVE_NAME
+  local ans="${temp}"$'/complicated\n dir\twith  spaces'
+  mkdir -p "${ans}"
+  cd "${ans}"
+
+  actual_archive_name="$("${temp}/makeself-test.run" --quiet)"
+
+  assertEquals "${actual_archive_name}" "${ARCHIVE_NAME}"
 }
 
 # Load and run shUnit2.

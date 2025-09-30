@@ -17,6 +17,8 @@ USER_PWD="\$PWD"
 export USER_PWD
 ARCHIVE_DIR=\`dirname "\$0"\`
 export ARCHIVE_DIR
+ARCHIVE_NAME=\`basename "\$0"\`
+export ARCHIVE_NAME
 
 label="$LABEL"
 script="$SCRIPT"
