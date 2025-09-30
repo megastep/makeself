@@ -189,7 +189,7 @@ I will gladly consider merging your pull requests on the [GitHub][10] repository
 
 ## Download
 
-Get the latest official distribution [here][9] (version 2.5.0).
+Get the latest official distribution [here][9] (version 2.6.0).
 
 The latest development version can be grabbed from [GitHub][10]. Feel free to submit any patches there through the fork and pull request process.
 
@@ -219,6 +219,9 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
 * **v2.4.4:** Fixed various compatibility issues (no longer use POSIX tar archives), Github Actions to check on Solaris and FreeBSD.
 * **v2.4.5:** Added `--tar-format` option to set the tar archive format (default is ustar)
 * **v2.5.0:** Expended support to NetBSD, OpenBSD, Busybox and other minimal distributions such as Alpine Linux. Added bzip3 compression support and expanded GPG arguments.
+* **v2.6.0:** Added --preextract hook with --show-preextract, enabling scripted checks before extraction and full shUnit2 coverage.
+Introduced --comp-extra so archives can pass extra flags (e.g., --no-name) to any compressor, plus positive/negative tests.
+Documented SETUP_NOCHECK=1 to skip integrity verification; new regression test ensures behavior.
 
 ## Links
 
@@ -247,7 +250,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: https://github.com/megastep/makeself/releases/download/release-2.5.0/makeself-2.5.0.run
+   [9]: https://github.com/megastep/makeself/releases/download/release-2.6.0/makeself-2.6.0.run
    [10]: https://github.com/megastep/makeself
    [11]: https://github.com/megastep/loki_setup/
    [12]: http://www.unrealtournament2003.com/
