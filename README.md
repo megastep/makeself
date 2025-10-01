@@ -92,12 +92,14 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
     * **`--compress`** : Use the UNIX `compress` command to compress the data. This should be the default on all platforms that don't have gzip available.
     * **`--nocomp`** : Do not use any compression for the archive, which will then be an uncompressed TAR.
     * **`--complevel`** : Specify the compression level for gzip, bzip2, pbzip2, zstd, xz, lzo or lz4. (defaults to 9)
+    * **`--comp-extra`** : Append more options to the compressor's command line.
     * **`--threads`** : Specify the number of threads to be used by compressors that support parallelization. Omit to use compressor's default. Most useful (and required) for opting into xz's threading, usually with `--threads=0` for all available cores. pbzip2 and pigz are parallel by default, and setting this value allows limiting the number of threads they use.
     * **`--notemp`** : The generated archive will not extract the files to a temporary directory, but in a new directory created in the current directory. This is better to distribute software packages that may extract and compile by themselves (i.e. launch the compilation through the embedded script).
     * **`--current`** : Files will be extracted to the current directory, instead of in a subdirectory. This option implies `--notemp` above.
     * **`--follow`** : Follow the symbolic links inside of the archive directory, i.e. store the files that are being pointed to instead of the links themselves.
     * **`--append`** _(new in 2.1.x)_: Append data to an existing archive, instead of creating a new one. In this mode, the settings from the original archive are reused (compression type, label, embedded script), and thus don't need to be specified again on the command line.
     * **`--header`** : Makeself uses a separate file to store the header stub, called `makeself-header.sh`. By default, it is assumed that it is stored in the same location as makeself.sh. This option can be used to specify its actual location if it is stored someplace else.
+    * **`--preextract`** : Specify a pre-extraction script. The script is executed with the same environment and initial `script_args` as `startup_script`.
     * **`--cleanup`** : Specify a script that is run when execution is interrupted or finishes successfully. The script is executed with the same environment and initial `script_args` as `startup_script`. 
     * **`--copy`** : Upon extraction, the archive will first extract itself to a temporary directory. The main application of this is to allow self-contained installers stored in a Makeself archive on a CD, when the installer program will later need to unmount the CD and allow a new one to be inserted. This prevents "Filesystem busy" errors for installers that span multiple CDs.
     * **`--nox11`** : Disable the automatic spawning of a new terminal in X11.
@@ -187,7 +189,7 @@ I will gladly consider merging your pull requests on the [GitHub][10] repository
 
 ## Download
 
-Get the latest official distribution [here][9] (version 2.5.0).
+Get the latest official distribution [here][9] (version 2.6.0).
 
 The latest development version can be grabbed from [GitHub][10]. Feel free to submit any patches there through the fork and pull request process.
 
@@ -217,6 +219,9 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
 * **v2.4.4:** Fixed various compatibility issues (no longer use POSIX tar archives), Github Actions to check on Solaris and FreeBSD.
 * **v2.4.5:** Added `--tar-format` option to set the tar archive format (default is ustar)
 * **v2.5.0:** Expended support to NetBSD, OpenBSD, Busybox and other minimal distributions such as Alpine Linux. Added bzip3 compression support and expanded GPG arguments.
+* **v2.6.0:** Added --preextract hook with --show-preextract, enabling scripted checks before extraction and full shUnit2 coverage.
+Introduced --comp-extra so archives can pass extra flags (e.g., --no-name) to any compressor, plus positive/negative tests.
+Documented SETUP_NOCHECK=1 to skip integrity verification; new regression test ensures behavior.
 
 ## Links
 
@@ -245,7 +250,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: https://github.com/megastep/makeself/releases/download/release-2.5.0/makeself-2.5.0.run
+   [9]: https://github.com/megastep/makeself/releases/download/release-2.6.0/makeself-2.6.0.run
    [10]: https://github.com/megastep/makeself
    [11]: https://github.com/megastep/loki_setup/
    [12]: http://www.unrealtournament2003.com/

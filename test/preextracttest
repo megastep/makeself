@@ -1,0 +1,98 @@
+#!/bin/bash
+set -eu
+THIS="$(readlink -f "$0")"
+THISDIR="$(dirname "${THIS}")"
+SUT="$(dirname "${THISDIR}")/makeself.sh"
+
+setUp() {
+  temp=$(mktemp -d -t XXXXX)
+  pushd "${temp}"
+  mkdir src
+  echo "echo This is a test" > src/startup.sh
+  chmod a+x src/startup.sh
+}
+
+tearDown() {
+  popd
+  rm -rf "${temp}"
+}
+
+testPreextractOpts() {
+  echo 'echo A complex pre-extraction script.
+    sleep 99 &
+    cat a.txt 2>/dev/null || cat b.txt && cat c.txt
+    echo "$$ Some\toutput\n\a\b\0777 $var1 ${var2} `cat var3.txt` $(env)" > text.txt
+  ' > preextract.sh
+
+  ${SUT} --nox11 --preextract preextract.sh src src.sh alabel ./startup.sh
+  assertEquals 0 $?
+
+  ./src.sh --show-preextract > show-preextract.out
+  assertEquals 0 $?
+
+  diff preextract.sh show-preextract.out
+  assertEquals 0 $?
+}
+
+testWithNoPreextractOpts() {
+  ${SUT} src src.sh alabel ./startup.sh
+  assertEquals 0 $?
+
+  ./src.sh --show-preextract
+  assertEquals 1 $?
+}
+
+testPreextractRun() {
+  echo 'echo Validating provided options...' > preextract.sh
+  ${SUT} --nox11 --preextract preextract.sh src src.sh alabel ./startup.sh
+  assertEquals 0 $?
+
+  ./src.sh
+  assertEquals 0 $?
+
+  ./src.sh | grep -qF 'Validating provided options...'
+  assertEquals 0 $?
+}
+
+testPreextractNoexec() {
+  echo 'exit 2' > preextract.sh
+  ${SUT} --preextract preextract.sh src src.sh alabel ./startup.sh
+  assertEquals 0 $?
+
+  ./src.sh
+  assertEquals 1 $?
+
+  ./src.sh --noexec
+  assertEquals 0 $?
+}
+
+testPreextractArgs() {
+  echo 'echo $*' > preextract.sh
+  ${SUT} --nox11 --preextract preextract.sh src src.sh alabel ./startup.sh --logdir /var/log
+  assertEquals 0 $?
+
+  test_cmd='./src.sh -- --env dev'
+
+  eval "${test_cmd}"
+  assertEquals 0 $?
+
+  eval "${test_cmd}" | grep -qF -- '--logdir /var/log --env dev'
+  assertEquals 0 $?
+}
+
+testPreextractEnvPassing() {
+  # imitate user input
+  echo 'echo "export INSTALLATION_DIR=/usr/bin" > preextract.env' > preextract.sh
+  echo '. ./preextract.env; echo $INSTALLATION_DIR' > src/startup.sh
+  ${SUT} --nox11 --preextract preextract.sh src src.sh alabel ./startup.sh
+  assertEquals 0 $?
+
+  ./src.sh
+  assertEquals 0 $?
+
+  ./src.sh | grep -qF '/usr/bin'
+  assertEquals 0 $?
+}
+
+# Load and run shUnit2.
+source "./shunit2/shunit2"

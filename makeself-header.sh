@@ -17,6 +17,8 @@ USER_PWD="\$PWD"
 export USER_PWD
 ARCHIVE_DIR=\`dirname "\$0"\`
 export ARCHIVE_DIR
+ARCHIVE_NAME=\`basename "\$0"\`
+export ARCHIVE_NAME
 
 label="$LABEL"
 script="$SCRIPT"
@@ -24,6 +26,7 @@ scriptargs="$SCRIPTARGS"
 cleanup_script="${CLEANUP_SCRIPT}"
 licensetxt="$LICENSE"
 helpheader="${HELPHEADER}"
+preextract="${PREEXTRACT_ENCODED}"
 targetdir="$archdirname"
 filesizes="$filesizes"
 totalsize="$totalsize"
@@ -68,7 +71,9 @@ MS_PrintLicense()
   if test x"\$licensetxt" != x; then
     PAGER_PATH=\`exec <&- 2>&-; which \$PAGER || command -v \$PAGER || type \$PAGER\`
     if test -x "\$PAGER_PATH" && test x"\$accept" != xy; then
-      echo "\$licensetxt" | \$PAGER -e
+      if ! echo "\$licensetxt" | \$PAGER -e; then
+        echo "\$licensetxt" | \$PAGER
+      fi
     else
       echo "\$licensetxt"
     fi
@@ -127,7 +132,7 @@ MS_dd_Progress()
     blocks=\`expr \$length / \$bsize\`
     bytes=\`expr \$length % \$bsize\`
     (
-        dd ibs=\$offset skip=1 count=1 2>/dev/null
+        dd ibs=\$offset skip=1 count=0 2>/dev/null
         pos=\`expr \$pos \+ \$bsize\`
         MS_Printf "     0%% " 1>&2
         if test \$blocks -gt 0; then
@@ -164,7 +169,8 @@ Makeself version $MS_VERSION
   \$0 --lsm    Print embedded lsm entry (or no LSM)
   \$0 --list   Print the list of files in the archive
   \$0 --check  Checks integrity of the archive
-  \$0 --verify-sig key Verify signature agains a provided key id
+  \$0 --verify-sig key Verify signature against a provided key id
+  \$0 --show-preextract Print pre-extraction script
 
  2) Running \$0 :
   \$0 [options] [--] [additional arguments to embedded script]
@@ -263,7 +269,7 @@ MS_Check()
 					echo "Error in SHA256 checksums: \$shasum is different from \$sha" >&2
 					exit 2
 				elif test x"\$quiet" = xn; then
-					MS_Printf " SHA256 checksums are OK." >&2
+					MS_Printf " SHA256 checksums are OK."
 				fi
 				crc="0000000000";
 			fi
@@ -281,7 +287,7 @@ MS_Check()
 					echo "Error in MD5 checksums: \$md5sum is different from \$md5" >&2
 					exit 2
 				elif test x"\$quiet" = xn; then
-					MS_Printf " MD5 checksums are OK." >&2
+					MS_Printf " MD5 checksums are OK."
 				fi
 				crc="0000000000"; verb=n
 			fi
@@ -294,7 +300,7 @@ MS_Check()
 				echo "Error in checksums: \$sum1 is different from \$crc" >&2
 				exit 2
 			elif test x"\$quiet" = xn; then
-				MS_Printf " CRC checksums are OK." >&2
+				MS_Printf " CRC checksums are OK."
 			fi
 		fi
 		i=\`expr \$i + 1\`
@@ -302,6 +308,31 @@ MS_Check()
     done
     if test x"\$quiet" = xn; then
 		echo " All good."
+    fi
+}
+
+MS_Preextract()
+{
+    if test -z "\$preextract"; then
+        return
+    elif test x"\$verbose" = xy; then
+        MS_Printf "About to run pre-extraction script ... Proceed ? [Y/n] "
+        read yn
+        if test x"\$yn" = xn; then
+            eval \$finish; exit 1
+        fi
+    fi
+
+    prescript=\`mktemp "\$tmpdir/XXXXXX"\`
+    echo "\$preextract" | base64 -d > "\$prescript"
+    chmod a+x "\$prescript"
+
+    (cd "\$tmpdir"; eval "\"\$prescript\" \$scriptargs \"\\\$@\""); res=\$?
+
+    rm -f "\$prescript"
+    if test \$res -ne 0; then
+        echo "Pre-extraction script returned an error code (\$res)" >&2
+        eval \$finish; exit 1
     fi
 }
 
@@ -456,6 +487,14 @@ EOLSM
     shift 2 || { MS_Help; exit 1; }
     MS_Verify_Sig "\$0"
     ;;
+    --show-preextract)
+    if test -z "\$preextract"; then
+        echo "Pre-extraction script is not provided." >&2
+        exit 1
+    fi
+    echo "\$preextract" | base64 -d
+    exit 0
+    ;;
     --confirm)
 	verbose=y
 	shift
@@ -463,6 +502,7 @@ EOLSM
 	--noexec)
 	script=""
     cleanup_script=""
+    preextract=""
 	shift
 	;;
     --noexec-cleanup)
@@ -601,7 +641,7 @@ else
             exit 1
 	fi
 	if test x"\$quiet" = xn; then
-	    echo "Creating directory \$targetdir" >&2
+	    echo "Creating directory \$targetdir"
 	fi
 	tmpdir="\$targetdir"
 	dashp="-p"
@@ -622,6 +662,8 @@ if test x"\$SETUP_NOCHECK" != x1; then
     MS_Check "\$0"
 fi
 offset=\`head -n "\$skip" "\$0" | wc -c | sed "s/ //g"\`
+
+MS_Preextract "\$@"
 
 if test x"\$verbose" = xy; then
 	MS_Printf "About to extract $USIZE KB in \$tmpdir ... Proceed ? [Y/n] "

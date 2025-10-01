@@ -9,9 +9,10 @@ setupTests() {
   cd "$temp"
   mkdir archive
   touch archive/file
+  archive_name=${2:-"makeself-test.run"}
 
   # $SUT archive makeself-test.run "Test $1" declare -p "${1}"
-  $SUT archive makeself-test.run "Test $1" echo \\\"\${${1}}\\\"
+  $SUT archive "${archive_name}" "Test $1" echo \\\"\${${1}}\\\"
 }
 
 testArchiveDir()
@@ -46,6 +47,16 @@ testUserPWD()
   actual_user_pwd="$("${temp}/makeself-test.run" --quiet)"
 
   assertEquals "${actual_user_pwd}" "${ans}"
+}
+
+testArchiveName()
+{
+  local ans="`mktemp -u XXXXXX`.run"
+  setupTests ARCHIVE_NAME "${ans}"
+
+  actual_archive_name="$("${temp}/${ans}" --quiet)"
+
+  assertEquals "${actual_archive_name}" "${ans}"
 }
 
 # Load and run shUnit2.

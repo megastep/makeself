@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Makeself version 2.5.x
+# Makeself version 2.6.x
 #  by Stephane Peter <megastep@megastep.org>
 #
 # Utility to create self-extracting tar.gz archives.
@@ -17,7 +17,7 @@
 # Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
-MS_VERSION=2.5.0
+MS_VERSION=2.6.0
 MS_COMMAND="$0"
 unset CDPATH
 
@@ -53,6 +53,7 @@ MS_Usage()
     echo "    --lz4              : Compress using lz4 instead of gzip"
     echo "    --compress         : Compress using the UNIX 'compress' command"
     echo "    --complevel lvl    : Compression level for gzip pigz zstd xz lzo lz4 bzip2 pbzip2 and bzip3 (default 9)"
+    echo "    --comp-extra       : Append extra options to the chosen compressor"
     echo "    --threads thds     : Number of threads to be used by compressors that support parallelization."
     echo "                         Omit to use compressor's default. Most useful (and required) for opting"
     echo "                         into xz's threading, usually with '--threads=0' for all available cores."
@@ -93,6 +94,7 @@ MS_Usage()
     echo "    --nocrc            : Don't calculate a CRC for archive"
     echo "    --sha256           : Compute a SHA256 checksum for the archive"
     echo "    --header file      : Specify location of the header script"
+    echo "    --preextract file  : Specify a pre-extraction script"
     echo "    --cleanup file     : Specify a cleanup script that executes on interrupt and when finished successfully."
     echo "    --follow           : Follow the symlinks in the archive"
     echo "    --noprogress       : Do not show the progress during the decompression"
@@ -133,6 +135,7 @@ PASSWD=""
 PASSWD_SRC=""
 OPENSSL_NO_MD=n
 COMPRESS_LEVEL=9
+COMP_EXTRA=""
 DEFAULT_THREADS=123456 # Sentinel value
 THREADS=$DEFAULT_THREADS
 KEEP=n
@@ -252,6 +255,10 @@ do
 	COMPRESS_LEVEL="$2"
     shift 2 || { MS_Usage; exit 1; }
 	;;
+    --comp-extra)
+	COMP_EXTRA="$2"
+    shift 2 || { MS_Usage; exit 1; }
+	;;
     --threads)
 	THREADS="$2"
     shift 2 || { MS_Usage; exit 1; }
@@ -311,6 +318,12 @@ do
 	HEADER="$2"
     shift 2 || { MS_Usage; exit 1; }
 	;;
+    --preextract)
+    preextract_file="$2"
+    shift 2 || { MS_Usage; exit 1; }
+    test -r "$preextract_file" || { echo "Unable to open pre-extraction script: $preextract_file" >&2; exit 1; }
+    PREEXTRACT_ENCODED=`base64 < "$preextract_file"`
+    ;;
     --cleanup)
     CLEANUP_SCRIPT="$2"
     shift 2 || { MS_Usage; exit 1; }
@@ -540,6 +553,10 @@ none)
     GUNZIP_CMD="cat"
     ;;
 esac
+
+if test x"$COMP_EXTRA" != "x"; then
+    GZIP_CMD="$GZIP_CMD $COMP_EXTRA"
+fi
 
 if test x"$ENCRYPT" = x"openssl"; then
     if test x"$APPEND" = x"y"; then

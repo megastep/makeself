@@ -1,0 +1,32 @@
+#!/bin/bash
+set -eu
+THIS="$(readlink -f "$0")"
+THISDIR="$(dirname "${THIS}")"
+SUT="$(dirname "${THISDIR}")/makeself.sh"
+
+setupTests() {
+  temp=$(mktemp -d -t XXXXX)
+  pushd "${temp}"
+  mkdir src
+  echo "echo This is a test" > src/startup.sh
+}
+
+tearDown() {
+  popd
+  rm -rf "${temp}"
+}
+
+testCompExtraOpts() {
+  setupTests
+
+  comp_extra="--no-name"
+  ${SUT} --comp-extra "$comp_extra" src src.sh alabel startup.sh
+
+  assertEquals $? 0
+
+  tearDown
+}
+
+# Load and run shUnit2.
+source "./shunit2/shunit2"
+
