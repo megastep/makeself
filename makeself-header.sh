@@ -327,7 +327,8 @@ MS_Preextract()
     echo "\$preextract" | base64 -d > "\$prescript"
     chmod a+x "\$prescript"
 
-    (cd "\$tmpdir"; eval "\"\$prescript\" \$scriptargs \"\\\$@\""); res=\$?
+    prescript_basename=\$(basename "\$prescript")
+    (cd "\$tmpdir"; eval "\"./\$prescript_basename\" \$scriptargs \"\\\$@\""); res=\$?
 
     rm -f "\$prescript"
     if test \$res -ne 0; then
