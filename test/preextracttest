@@ -80,6 +80,18 @@ testPreextractArgs() {
   assertEquals 0 $?
 }
 
+testPreextractNotemp() {
+  echo 'echo Validating pre-extraction script execution.' > preextract.sh
+  ${SUT} --notemp --nox11 --preextract preextract.sh src src_notemp.sh alabel ./startup.sh
+  assertEquals 0 $?
+
+  ./src_notemp.sh
+  assertEquals 0 $?
+
+  ./src_notemp.sh | grep -qF 'Validating pre-extraction script execution.'
+  assertEquals 0 $?
+}
+
 testPreextractEnvPassing() {
   # imitate user input
   echo 'echo "export INSTALLATION_DIR=/usr/bin" > preextract.env' > preextract.sh
