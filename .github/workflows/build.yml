@@ -12,7 +12,7 @@ jobs:
             container: 'ubuntu:latest'
             artifact: 'ubuntu'
 
-          - os: ubicloud-standard-2
+          - os: ubicloud-standard-2-arm
             container: 'alpine:latest'
             artifact: 'alpine'
             
