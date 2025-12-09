@@ -10,7 +10,7 @@
 #
 # Makeself home page: https://makeself.io/ - Version history available on GitHub
 #
-# (C) 1998-2023 by Stephane Peter <megastep@megastep.org>
+# (C) 1998-2025 by Stephane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
@@ -19,11 +19,29 @@
 
 MS_VERSION=2.6.0
 MS_COMMAND="$0"
+MS_SIGN_NEXT=n
 unset CDPATH
 
 for f in ${1+"$@"}; do
+    if test "$MS_SIGN_NEXT" = y; then
+        arg_value="XXXX"
+        MS_SIGN_NEXT=n
+    else
+        case "$f" in
+            --sign)
+                MS_SIGN_NEXT=y
+                arg_value="$f"
+                ;;
+            --sign=*)
+                arg_value="--sign=XXXX"
+                ;;
+            *)
+                arg_value="$f"
+                ;;
+        esac
+    fi
     MS_COMMAND="$MS_COMMAND \\\\
-    \\\"$f\\\""
+    \\\"$arg_value\\\""
 done
 
 # For Solaris systems

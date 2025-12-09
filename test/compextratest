@@ -3,17 +3,26 @@ set -eu
 THIS="$(readlink -f "$0")"
 THISDIR="$(dirname "${THIS}")"
 SUT="$(dirname "${THISDIR}")/makeself.sh"
+temp=""
+pushed=n
 
 setupTests() {
   temp=$(mktemp -d -t XXXXX)
-  pushd "${temp}"
+  pushd "${temp}" >/dev/null
+  pushed=y
   mkdir src
   echo "echo This is a test" > src/startup.sh
 }
 
 tearDown() {
-  popd
-  rm -rf "${temp}"
+  if test "${pushed}" = y; then
+    popd >/dev/null || true
+  fi
+  if test -n "${temp}"; then
+    rm -rf "${temp}"
+  fi
+  temp=""
+  pushed=n
 }
 
 testCompExtraOpts() {

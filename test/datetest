@@ -4,18 +4,27 @@ THIS="$(readlink -f "$0")"
 THISDIR="$(dirname "${THIS}")"
 SRCDIR="$(dirname "${THISDIR}")"
 SUT="${SRCDIR}/makeself.sh"
+temp=""
+orig_dir=""
 
 setUp() {
   temp="$(mktemp -dt datetest.XXXXX)"
-  cd "${temp}"
+  orig_dir="$(pwd)"
+  pushd "${temp}" >/dev/null
   mkdir src
   echo "echo This is a test" > src/startup.sh
 }
 
 tearDown() {
   # Cleanup
-  cd -
-  rm -rf "${temp}"
+  if test -n "${orig_dir}"; then
+    popd >/dev/null || cd "${orig_dir}"
+  fi
+  if test -n "${temp}"; then
+    rm -rf "${temp}"
+  fi
+  temp=""
+  orig_dir=""
 }
 
 # Default behaviour is to insert the current date in the
