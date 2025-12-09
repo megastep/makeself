@@ -98,7 +98,7 @@ jobs:
 
   test-netbsd:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2-arm
     name: Test Makeself on NetBSD
     steps:
       - uses: actions/checkout@v5
