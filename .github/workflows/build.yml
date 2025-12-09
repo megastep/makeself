@@ -8,11 +8,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubicloud-standard-2-arm
             container: 'ubuntu:latest'
             artifact: 'ubuntu'
 
-          - os: ubicloud-standard-2-arm
+          - os: ubicloud-standard-2
             container: 'alpine:latest'
             artifact: 'alpine'
             
