@@ -46,7 +46,7 @@ jobs:
 
     - name: Install macOS packages
       if: runner.os == 'macOS'
-      run: brew install pbzip2 coreutils openssl zstd
+      run: brew install pbzip2 coreutils
 
     - name: Checkout Makeself
       uses: actions/checkout@v4
