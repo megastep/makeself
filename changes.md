@@ -2,6 +2,11 @@
 
 All notable changes to Makeself are documented here.
 
+## 2.7.1
+
+- Base64 encoding now runs after compression, consistent with other post-compression encryption/encoding options.
+- Documentation updated to reflect that compression can be combined with encryption/encoding.
+
 ## 2.7.0
 
 - Compression now precedes encryption so both can be enabled together.
