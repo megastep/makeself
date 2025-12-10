@@ -10,20 +10,38 @@
 #
 # Makeself home page: https://makeself.io/ - Version history available on GitHub
 #
-# (C) 1998-2023 by Stephane Peter <megastep@megastep.org>
+# (C) 1998-2025 by Stephane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html
 # Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
-MS_VERSION=2.6.0
+MS_VERSION=2.7.0
 MS_COMMAND="$0"
+MS_SIGN_NEXT=n
 unset CDPATH
 
 for f in ${1+"$@"}; do
+    if test "$MS_SIGN_NEXT" = y; then
+        arg_value="XXXX"
+        MS_SIGN_NEXT=n
+    else
+        case "$f" in
+            --sign)
+                MS_SIGN_NEXT=y
+                arg_value="$f"
+                ;;
+            --sign=*)
+                arg_value="--sign=XXXX"
+                ;;
+            *)
+                arg_value="$f"
+                ;;
+        esac
+    fi
     MS_COMMAND="$MS_COMMAND \\\\
-    \\\"$f\\\""
+    \\\"$arg_value\\\""
 done
 
 # For Solaris systems
@@ -131,6 +149,9 @@ else
     MS_Usage
 fi
 ENCRYPT=n
+ENCRYPT_MODE=n
+ENCRYPT_CMD=""
+DECRYPT_CMD=""
 PASSWD=""
 PASSWD_SRC=""
 OPENSSL_NO_MD=n
@@ -220,21 +241,21 @@ do
 	shift
 	;;
     --gpg-encrypt)
-	COMPRESS=gpg
-	shift
-	;;
+        ENCRYPT_MODE=gpg
+        shift
+        ;;
     --gpg-asymmetric-encrypt-sign)
-	COMPRESS=gpg-asymmetric
-	shift
-	;;
+        ENCRYPT_MODE=gpg-asymmetric
+        shift
+        ;;
     --gpg-extra)
 	GPG_EXTRA="$2"
     shift 2 || { MS_Usage; exit 1; }
 	;;
     --ssl-encrypt)
-	ENCRYPT=openssl
- 	shift
-	;;
+        ENCRYPT_MODE=openssl
+        shift
+        ;;
     --ssl-passwd)
 	PASSWD=$2
     shift 2 || { MS_Usage; exit 1; }
@@ -534,16 +555,6 @@ base64)
     GZIP_CMD="base64"
     GUNZIP_CMD="base64 --decode -i -"
     ;;
-gpg)
-    GZIP_CMD="gpg $GPG_EXTRA -ac -z$COMPRESS_LEVEL"
-    GUNZIP_CMD="gpg -d"
-    ENCRYPT="gpg"
-    ;;
-gpg-asymmetric)
-    GZIP_CMD="gpg $GPG_EXTRA -z$COMPRESS_LEVEL -es"
-    GUNZIP_CMD="gpg --yes -d"
-    ENCRYPT="gpg"
-    ;;
 compress)
     GZIP_CMD="compress -fc"
     GUNZIP_CMD="(type compress >/dev/null 2>&1 && compress -fcd || gzip -cd)"
@@ -558,14 +569,15 @@ if test x"$COMP_EXTRA" != "x"; then
     GZIP_CMD="$GZIP_CMD $COMP_EXTRA"
 fi
 
-if test x"$ENCRYPT" = x"openssl"; then
+case "$ENCRYPT_MODE" in
+openssl)
     if test x"$APPEND" = x"y"; then
         echo "Appending to existing archive is not compatible with OpenSSL encryption." >&2
     fi
-    
+
     ENCRYPT_CMD="openssl enc -aes-256-cbc -salt -pbkdf2"
     DECRYPT_CMD="openssl enc -aes-256-cbc -d -salt -pbkdf2"
-    
+
     if test x"$OPENSSL_NO_MD" != x"y"; then
         ENCRYPT_CMD="$ENCRYPT_CMD -md sha256"
         DECRYPT_CMD="$DECRYPT_CMD -md sha256"
@@ -576,7 +588,20 @@ if test x"$ENCRYPT" = x"openssl"; then
     elif test -n "$PASSWD"; then 
         ENCRYPT_CMD="$ENCRYPT_CMD -pass pass:$PASSWD"
     fi
-fi
+    ;;
+gpg)
+    ENCRYPT_CMD="gpg $GPG_EXTRA -ac -z$COMPRESS_LEVEL -o -"
+    DECRYPT_CMD="gpg $GPG_EXTRA -d"
+    ;;
+gpg-asymmetric)
+    ENCRYPT_CMD="gpg $GPG_EXTRA -z$COMPRESS_LEVEL -es -o -"
+    DECRYPT_CMD="gpg $GPG_EXTRA --yes -d"
+    ;;
+n)
+    ;;
+esac
+
+ENCRYPT="$ENCRYPT_MODE"
 
 tmpfile="${TMPDIR:-/tmp}/mkself$$"
 
@@ -669,9 +694,9 @@ eval "$GZIP_CMD" <"$tmparch" >"$tmpfile" || {
 }
 rm -f "$tmparch"
 
-if test x"$ENCRYPT" = x"openssl"; then
+if test x"$ENCRYPT_MODE" != xn; then
     echo "About to encrypt archive \"$archname\"..."
-    { eval "$ENCRYPT_CMD -in $tmpfile -out ${tmpfile}.enc" && mv -f ${tmpfile}.enc $tmpfile; } || \
+    { eval "$ENCRYPT_CMD" < "$tmpfile" > "${tmpfile}.enc" && mv -f "${tmpfile}.enc" "$tmpfile"; } || \
         { echo Aborting: could not encrypt temporary file: "$tmpfile".; rm -f "$tmpfile"; exit 1; }
 fi
 

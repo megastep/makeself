@@ -3,18 +3,27 @@ set -eu
 THIS="$(readlink -f "$0")"
 THISDIR="$(dirname "${THIS}")"
 SUT="$(dirname "${THISDIR}")/makeself.sh"
+temp=""
+pushed=n
 
 setUp() {
   temp=$(mktemp -d -t XXXXX)
-  pushd "${temp}"
+  pushd "${temp}" >/dev/null
+  pushed=y
   mkdir src
   echo "echo This is a test" > src/startup.sh
   chmod a+x src/startup.sh
 }
 
 tearDown() {
-  popd
-  rm -rf "${temp}"
+  if test "${pushed}" = y; then
+    popd >/dev/null || true
+  fi
+  if test -n "${temp}"; then
+    rm -rf "${temp}"
+  fi
+  temp=""
+  pushed=n
 }
 
 testPreextractOpts() {
@@ -77,6 +86,18 @@ testPreextractArgs() {
   assertEquals 0 $?
 
   eval "${test_cmd}" | grep -qF -- '--logdir /var/log --env dev'
+  assertEquals 0 $?
+}
+
+testPreextractNotemp() {
+  echo 'echo Validating pre-extraction script execution.' > preextract.sh
+  ${SUT} --notemp --nox11 --preextract preextract.sh src src_notemp.sh alabel ./startup.sh
+  assertEquals 0 $?
+
+  ./src_notemp.sh
+  assertEquals 0 $?
+
+  ./src_notemp.sh | grep -qF 'Validating pre-extraction script execution.'
   assertEquals 0 $?
 }
 

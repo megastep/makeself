@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubicloud-standard-2-arm
             container: 'ubuntu:latest'
             artifact: 'ubuntu'
 
@@ -32,17 +32,17 @@ jobs:
       if: matrix.container == 'ubuntu:latest'
       run: |
         apt update
-        apt -y install git make pbzip2 binutils bzip2 zstd gnupg
+        apt -y install git make pbzip2 binutils bzip2 zstd gnupg openssl
         
     - name: Install RockyLinux packages
       if: matrix.container == 'rockylinux:9'
       run: |
         dnf groupinstall -y "Development Tools" "RPM Development Tools"
-        dnf install -y zstd binutils binutils-devel gnupg2 pbzip2
+        dnf install -y zstd binutils binutils-devel gnupg2 pbzip2 openssl
         
     - name: Install Alpine packages
       if: matrix.container == 'alpine:latest'
-      run: apk add --no-cache bash git make libarchive-tools gnupg coreutils binutils bzip2 zstd
+      run: apk add --no-cache bash git make libarchive-tools gnupg coreutils binutils bzip2 zstd openssl
 
     - name: Install macOS packages
       if: runner.os == 'macOS'
@@ -98,7 +98,7 @@ jobs:
 
   test-netbsd:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2-arm
     name: Test Makeself on NetBSD
     steps:
       - uses: actions/checkout@v5
