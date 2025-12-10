@@ -47,6 +47,14 @@ sslDiffInfo() {
     diffInfo "$@"
 }
 
+base64DiffInfo() {
+    if ! command -v base64 >/dev/null 2>&1; then
+        # Skip gracefully if base64 is not available
+        return 0
+    fi
+    diffInfo "$@"
+}
+
 gpgDiffInfo() {
     if ! command -v gpg >/dev/null 2>&1; then
         # Skip gracefully if gpg is not available
@@ -272,6 +280,62 @@ Build command was: ./makeself.sh \\
     "--gpg-encrypt" \\
     "--gpg-extra" \\
     "--batch --yes --pinentry-mode=loopback --passphrase=secret" \\
+    "--zstd" \\
+    "./infotest" \\
+    "./infotest.run" \\
+    "infotest" \\
+    "ls" \\
+    "-lah"
+Script run after extraction:
+     ls -lah
+infotest will be removed after extraction
+EOF
+    assertEquals "$?" 0
+)
+
+testBase64WithGzipCompression() (
+    cd "$(mktemp -d)" || return 1
+    base64DiffInfo --packaging-date "@0" --base64 <<EOF
+Identification: infotest
+Target directory: infotest
+Uncompressed size: ${UNCOMPRESSED_PLACEHOLDER}
+Compression: gzip
+Encryption: base64
+Date of packaging: @0
+Built with Makeself version ${VERSION}
+Build command was: ./makeself.sh \\
+    "--packaging-date" \\
+    "@0" \\
+    "--base64" \\
+    "./infotest" \\
+    "./infotest.run" \\
+    "infotest" \\
+    "ls" \\
+    "-lah"
+Script run after extraction:
+     ls -lah
+infotest will be removed after extraction
+EOF
+    assertEquals "$?" 0
+)
+
+testBase64WithZstdCompression() (
+    cd "$(mktemp -d)" || return 1
+    if ! command -v zstd >/dev/null 2>&1; then
+        return 0
+    fi
+    base64DiffInfo --packaging-date "@0" --base64 --zstd <<EOF
+Identification: infotest
+Target directory: infotest
+Uncompressed size: ${UNCOMPRESSED_PLACEHOLDER}
+Compression: zstd
+Encryption: base64
+Date of packaging: @0
+Built with Makeself version ${VERSION}
+Build command was: ./makeself.sh \\
+    "--packaging-date" \\
+    "@0" \\
+    "--base64" \\
     "--zstd" \\
     "./infotest" \\
     "./infotest.run" \\

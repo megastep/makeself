@@ -17,7 +17,7 @@
 # Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
-MS_VERSION=2.7.0
+MS_VERSION=2.7.1
 MS_COMMAND="$0"
 MS_SIGN_NEXT=n
 unset CDPATH
@@ -152,6 +152,7 @@ ENCRYPT=n
 ENCRYPT_MODE=n
 ENCRYPT_CMD=""
 DECRYPT_CMD=""
+BASE64_MODE=n
 PASSWD=""
 PASSWD_SRC=""
 OPENSSL_NO_MD=n
@@ -237,8 +238,9 @@ do
 	shift
 	;;
     --base64)
-	COMPRESS=base64
-	shift
+        ENCRYPT_MODE=base64
+        BASE64_MODE=y
+        shift
 	;;
     --gpg-encrypt)
         ENCRYPT_MODE=gpg
@@ -551,10 +553,6 @@ lz4)
     GZIP_CMD="lz4 -c$COMPRESS_LEVEL"
     GUNZIP_CMD="lz4 -d"
     ;;
-base64)
-    GZIP_CMD="base64"
-    GUNZIP_CMD="base64 --decode -i -"
-    ;;
 compress)
     GZIP_CMD="compress -fc"
     GUNZIP_CMD="(type compress >/dev/null 2>&1 && compress -fcd || gzip -cd)"
@@ -596,6 +594,10 @@ gpg)
 gpg-asymmetric)
     ENCRYPT_CMD="gpg $GPG_EXTRA -z$COMPRESS_LEVEL -es -o -"
     DECRYPT_CMD="gpg $GPG_EXTRA --yes -d"
+    ;;
+base64)
+    ENCRYPT_CMD="base64"
+    DECRYPT_CMD="base64 --decode"
     ;;
 n)
     ;;
@@ -656,7 +658,11 @@ test -x "$TAR" || TAR=tar
 tmparch="${TMPDIR:-/tmp}/mkself$$.tar"
 (
     if test "$APPEND" = "y"; then
-        tail -n "+$OLDSKIP" "$archname" | eval "$GUNZIP_CMD" > "$tmparch"
+        if test x"$ENCRYPT_MODE" != xn; then
+            tail -n "+$OLDSKIP" "$archname" | eval "$DECRYPT_CMD" | eval "$GUNZIP_CMD" > "$tmparch"
+        else
+            tail -n "+$OLDSKIP" "$archname" | eval "$GUNZIP_CMD" > "$tmparch"
+        fi
     fi
     cd "$archdir"
     # "Determining if a directory is empty"

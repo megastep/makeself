@@ -86,9 +86,9 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
   * **`--lz4`** : Use lz4 instead of gzip for better compression. The lz4 command must be available in the command path. It is recommended that the archive extension be set to something like '.lz4.run' for the archive, so that potential users know that they'll need lz4 to extract it.
   * **`--zstd`** : Use zstd instead of gzip for better compression. The zstd command must be available in the command path. It is recommended that the archive extension be set to something like '.zstd.run' for the archive, so that potential users know that they'll need zstd to extract it.
   * **`--pigz`** : Use pigz for compression.
-  * **`--base64`** : Encode the archive to ASCII in Base64 format instead of compressing (base64 command required).
-  * **`--gpg-encrypt`** : Encrypt the archive using `gpg -ac -z $COMPRESS_LEVEL`. This will prompt for a password to encrypt with. Assumes that potential users have `gpg` installed.
-  * **`--ssl-encrypt`** : Encrypt the archive using `openssl aes-256-cbc -a -salt`. This will prompt for a password to encrypt with. Assumes that the potential users have the OpenSSL tools installed.
+  * **`--base64`** : Base64-encode the final compressed archive (base64 command required). This is applied after compression and can be combined with any compressor.
+  * **`--gpg-encrypt`** : Encrypt the archive using `gpg -ac -z $COMPRESS_LEVEL`. This is applied after compression. Assumes that potential users have `gpg` installed.
+  * **`--ssl-encrypt`** : Encrypt the archive using `openssl aes-256-cbc -a -salt`. This is applied after compression. Assumes that the potential users have the OpenSSL tools installed.
   * **`--compress`** : Use the UNIX `compress` command to compress the data. This should be the default on all platforms that don't have gzip available.
   * **`--nocomp`** : Do not use any compression for the archive, which will then be an uncompressed TAR.
   * **`--complevel`** : Specify the compression level for gzip, bzip2, pbzip2, zstd, xz, lzo or lz4. (defaults to 9)
@@ -189,13 +189,13 @@ I will gladly consider merging your pull requests on the [GitHub][10] repository
 
 ## Download
 
-Get the latest official distribution [on Github here][9] (version 2.7.0).
+Get the latest official distribution [on Github here][9] (version 2.7.1).
 
 The latest development version can be grabbed from [GitHub][10]. Feel free to submit any patches there through the fork and pull request process.
 
 ## Changelog
 
-The full release history has moved to `CHANGELOG.md`.
+The full release history has moved to [`CHANGELOG.md`](https://makeself.io/changes).
 
 ## Links
 
@@ -224,7 +224,7 @@ This project is now hosted on GitHub. Feel free to submit patches and bug report
    [6]: http://earth.google.com/
    [7]: http://www.virtualbox.org/
    [8]: http://www.gnu.org/copyleft/gpl.html
-   [9]: https://github.com/megastep/makeself/releases/download/release-2.7.0/makeself-2.7.0.run
+   [9]: https://github.com/megastep/makeself/releases/download/release-2.7.1/makeself-2.7.1.run
    [10]: https://github.com/megastep/makeself
    [11]: https://github.com/megastep/loki_setup/
    [14]: http://bre.klaki.net/programs/setup.sh/
