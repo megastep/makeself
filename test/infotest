@@ -39,6 +39,20 @@ diffInfo() {
     return "${rc}"
 }
 
+gpgDiffInfo() {
+    if ! command -v gpg >/dev/null 2>&1; then
+        # Skip gracefully if gpg is not available
+        return 0
+    fi
+    local rc=""
+    local gnupg=""
+    gnupg="$(mktemp -d)"
+    GNUPGHOME="${gnupg}" diffInfo "$@"
+    rc="$?"
+    rm -rf "${gnupg}"
+    return "${rc}"
+}
+
 testDefault() (
     cd "$(mktemp -d)" || return 1
     diffInfo --packaging-date "@0" <<EOF
@@ -131,6 +145,120 @@ Build command was: ./makeself.sh \\
     "@0" \\
     "--sign" \\
     "XXXX" \\
+    "./infotest" \\
+    "./infotest.run" \\
+    "infotest" \\
+    "ls" \\
+    "-lah"
+Script run after extraction:
+     ls -lah
+infotest will be removed after extraction
+EOF
+    assertEquals "$?" 0
+)
+
+testSslEncryptWithCompression() (
+    cd "$(mktemp -d)" || return 1
+    diffInfo --packaging-date "@0" --ssl-encrypt --ssl-passwd "secret" <<EOF
+Identification: infotest
+Target directory: infotest
+Uncompressed size: ${UNCOMPRESSED_PLACEHOLDER}
+Compression: gzip
+Encryption: openssl
+Date of packaging: @0
+Built with Makeself version ${VERSION}
+Build command was: ./makeself.sh \\
+    "--packaging-date" \\
+    "@0" \\
+    "--ssl-encrypt" \\
+    "--ssl-passwd" \\
+    "secret" \\
+    "./infotest" \\
+    "./infotest.run" \\
+    "infotest" \\
+    "ls" \\
+    "-lah"
+Script run after extraction:
+     ls -lah
+infotest will be removed after extraction
+EOF
+    assertEquals "$?" 0
+)
+
+testSslEncryptWithZstdCompression() (
+    cd "$(mktemp -d)" || return 1
+    diffInfo --packaging-date "@0" --ssl-encrypt --ssl-passwd "secret" --zstd <<EOF
+Identification: infotest
+Target directory: infotest
+Uncompressed size: ${UNCOMPRESSED_PLACEHOLDER}
+Compression: zstd
+Encryption: openssl
+Date of packaging: @0
+Built with Makeself version ${VERSION}
+Build command was: ./makeself.sh \\
+    "--packaging-date" \\
+    "@0" \\
+    "--ssl-encrypt" \\
+    "--ssl-passwd" \\
+    "secret" \\
+    "--zstd" \\
+    "./infotest" \\
+    "./infotest.run" \\
+    "infotest" \\
+    "ls" \\
+    "-lah"
+Script run after extraction:
+     ls -lah
+infotest will be removed after extraction
+EOF
+    assertEquals "$?" 0
+)
+
+testGpgEncryptWithGzipCompression() (
+    cd "$(mktemp -d)" || return 1
+    gpgDiffInfo --packaging-date "@0" --gpg-encrypt --gpg-extra "--batch --yes --pinentry-mode=loopback --passphrase=secret" <<EOF
+Identification: infotest
+Target directory: infotest
+Uncompressed size: ${UNCOMPRESSED_PLACEHOLDER}
+Compression: gzip
+Encryption: gpg
+Date of packaging: @0
+Built with Makeself version ${VERSION}
+Build command was: ./makeself.sh \\
+    "--packaging-date" \\
+    "@0" \\
+    "--gpg-encrypt" \\
+    "--gpg-extra" \\
+    "--batch --yes --pinentry-mode=loopback --passphrase=secret" \\
+    "./infotest" \\
+    "./infotest.run" \\
+    "infotest" \\
+    "ls" \\
+    "-lah"
+Script run after extraction:
+     ls -lah
+infotest will be removed after extraction
+EOF
+    assertEquals "$?" 0
+)
+
+testGpgEncryptWithZstdCompression() (
+    cd "$(mktemp -d)" || return 1
+    gpgDiffInfo --packaging-date "@0" --gpg-encrypt --gpg-extra "--batch --yes --pinentry-mode=loopback --passphrase=secret" --zstd <<EOF
+Identification: infotest
+Target directory: infotest
+Uncompressed size: ${UNCOMPRESSED_PLACEHOLDER}
+Compression: zstd
+Encryption: gpg
+Date of packaging: @0
+Built with Makeself version ${VERSION}
+Build command was: ./makeself.sh \\
+    "--packaging-date" \\
+    "@0" \\
+    "--gpg-encrypt" \\
+    "--gpg-extra" \\
+    "--batch --yes --pinentry-mode=loopback --passphrase=secret" \\
+    "--zstd" \\
     "./infotest" \\
     "./infotest.run" \\
     "infotest" \\
