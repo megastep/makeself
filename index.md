@@ -195,7 +195,7 @@ The latest development version can be grabbed from [GitHub][10]. Feel free to su
 
 ## Changelog
 
-The full release history has moved to `CHANGELOG.md`.
+The full release history has moved to [a new page](/changes).
 
 ## Links
 
