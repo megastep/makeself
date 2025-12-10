@@ -39,6 +39,14 @@ diffInfo() {
     return "${rc}"
 }
 
+sslDiffInfo() {
+    if ! command -v openssl >/dev/null 2>&1; then
+        # Skip gracefully if openssl is not available
+        return 0
+    fi
+    diffInfo "$@"
+}
+
 gpgDiffInfo() {
     if ! command -v gpg >/dev/null 2>&1; then
         # Skip gracefully if gpg is not available
@@ -159,7 +167,7 @@ EOF
 
 testSslEncryptWithCompression() (
     cd "$(mktemp -d)" || return 1
-    diffInfo --packaging-date "@0" --ssl-encrypt --ssl-passwd "secret" <<EOF
+    sslDiffInfo --packaging-date "@0" --ssl-encrypt --ssl-passwd "secret" <<EOF
 Identification: infotest
 Target directory: infotest
 Uncompressed size: ${UNCOMPRESSED_PLACEHOLDER}
@@ -187,7 +195,10 @@ EOF
 
 testSslEncryptWithZstdCompression() (
     cd "$(mktemp -d)" || return 1
-    diffInfo --packaging-date "@0" --ssl-encrypt --ssl-passwd "secret" --zstd <<EOF
+    if ! command -v zstd >/dev/null 2>&1; then
+        return 0
+    fi
+    sslDiffInfo --packaging-date "@0" --ssl-encrypt --ssl-passwd "secret" --zstd <<EOF
 Identification: infotest
 Target directory: infotest
 Uncompressed size: ${UNCOMPRESSED_PLACEHOLDER}
@@ -244,6 +255,9 @@ EOF
 
 testGpgEncryptWithZstdCompression() (
     cd "$(mktemp -d)" || return 1
+    if ! command -v zstd >/dev/null 2>&1; then
+        return 0
+    fi
     gpgDiffInfo --packaging-date "@0" --gpg-encrypt --gpg-extra "--batch --yes --pinentry-mode=loopback --passphrase=secret" --zstd <<EOF
 Identification: infotest
 Target directory: infotest
