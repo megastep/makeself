@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Makeself version 2.6.x
+# Makeself version 2.7.1
 #  by Stephane Peter <megastep@megastep.org>
 #
 # Utility to create self-extracting tar.gz archives.
@@ -77,12 +77,12 @@ MS_Usage()
     echo "                         into xz's threading, usually with '--threads=0' for all available cores."
     echo "                         pbzip2 and pigz are parallel by default, and setting this value allows"
     echo "                         limiting the number of threads they use."
-    echo "    --base64           : Instead of compressing, encode the data using base64"
-    echo "    --gpg-encrypt      : Instead of compressing, encrypt the data using GPG"
+    echo "    --base64           : Base64-encode the final compressed archive (post-compression)"
+    echo "    --gpg-encrypt      : Encrypt the compressed archive using GPG"
     echo "    --gpg-asymmetric-encrypt-sign"
-    echo "                       : Instead of compressing, asymmetrically encrypt and sign the data using GPG"
+    echo "                       : Asymmetrically encrypt and sign the compressed archive using GPG"
     echo "    --gpg-extra opt    : Append more options to the gpg command line"
-    echo "    --ssl-encrypt      : Instead of compressing, encrypt the data using OpenSSL"
+    echo "    --ssl-encrypt      : Encrypt the compressed archive using OpenSSL"
     echo "    --ssl-passwd pass  : Use the given password to encrypt the data using OpenSSL"
     echo "    --ssl-pass-src src : Use the given src as the source of password to encrypt the data"
     echo "                         using OpenSSL. See \"PASS PHRASE ARGUMENTS\" in man openssl."
