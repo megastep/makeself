@@ -410,9 +410,11 @@ do
 	echo Target directory: "\$targetdir"
 	echo Uncompressed size: $USIZE KB
 	echo Compression: $COMPRESS
-	if test x"$ENCRYPT" != x""; then
-	    echo Encryption: $ENCRYPT
-	fi
+    if test x"$ENCRYPT" = x"base64"; then
+        echo "Encoding: base64"
+    elif test x"$ENCRYPT" != x""; then
+        echo "Encryption: $ENCRYPT"
+    fi
 	echo Date of packaging: $DATE
 	echo Built with Makeself version $MS_VERSION
 	echo Build command was: "$MS_COMMAND"
