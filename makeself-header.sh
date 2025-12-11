@@ -658,6 +658,7 @@ else
 	eval \$finish
 	exit 1
     }
+    find "\$tmpdir" -mindepth 1 -delete
 fi
 
 location="\`pwd\`"
