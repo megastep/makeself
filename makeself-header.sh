@@ -753,6 +753,7 @@ if test x"\$script" != x; then
     fi
 fi
 
+cd ".."
 MS_exec_cleanup
 
 if test x"\$keep" = xn; then
