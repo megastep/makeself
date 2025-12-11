@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Makeself version 2.7.1
+# Makeself version 2.7.2
 #  by Stephane Peter <megastep@megastep.org>
 #
 # Utility to create self-extracting tar.gz archives.
@@ -17,7 +17,7 @@
 # Self-extracting archives created with this script are explictly NOT released under the term of the GPL
 #
 
-MS_VERSION=2.7.1
+MS_VERSION=2.7.2
 MS_COMMAND="$0"
 MS_SIGN_NEXT=n
 unset CDPATH
@@ -701,9 +701,13 @@ eval "$GZIP_CMD" <"$tmparch" >"$tmpfile" || {
 rm -f "$tmparch"
 
 if test x"$ENCRYPT_MODE" != xn; then
-    echo "About to encrypt archive \"$archname\"..."
+    action="encrypt"
+    if test x"$ENCRYPT_MODE" = x"base64"; then
+        action="encode"
+    fi
+    echo "About to $action archive \"$archname\"..."
     { eval "$ENCRYPT_CMD" < "$tmpfile" > "${tmpfile}.enc" && mv -f "${tmpfile}.enc" "$tmpfile"; } || \
-        { echo Aborting: could not encrypt temporary file: "$tmpfile".; rm -f "$tmpfile"; exit 1; }
+        { echo Aborting: could not $action temporary file: "$tmpfile".; rm -f "$tmpfile"; exit 1; }
 fi
 
 fsize=`cat "$tmpfile" | wc -c | tr -d " "`

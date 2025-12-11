@@ -675,13 +675,13 @@ if test x"\$verbose" = xy; then
 fi
 
 if test x"\$quiet" = xn; then
-    # Decrypting with openssl will ask for password,
-    # the prompt needs to start on new line
-	if test x"$ENCRYPT" = x"openssl"; then
-	    echo "Decrypting and uncompressing \$label..."
-	else
-        MS_Printf "Uncompressing \$label"
-	fi
+    action="Uncompressing"
+    if test x"\$ENCRYPT" = x"base64"; then
+        action="Decoding and uncompressing"
+    elif test x"\$ENCRYPT" != x""; then
+        action="Decrypting and uncompressing"
+    fi
+    echo "\$action \$label..."
 fi
 res=3
 if test x"\$keep" = xn; then
