@@ -300,7 +300,7 @@ Identification: infotest
 Target directory: infotest
 Uncompressed size: ${UNCOMPRESSED_PLACEHOLDER}
 Compression: gzip
-Encryption: base64
+Encoding: base64
 Date of packaging: @0
 Built with Makeself version ${VERSION}
 Build command was: ./makeself.sh \\
@@ -329,7 +329,7 @@ Identification: infotest
 Target directory: infotest
 Uncompressed size: ${UNCOMPRESSED_PLACEHOLDER}
 Compression: zstd
-Encryption: base64
+Encoding: base64
 Date of packaging: @0
 Built with Makeself version ${VERSION}
 Build command was: ./makeself.sh \\
