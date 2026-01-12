@@ -105,10 +105,14 @@ MS_dd()
 {
     blocks=\`expr \$3 / 1024\`
     bytes=\`expr \$3 % 1024\`
-    # Test for ibs, obs, fullblock and conv feature
-    if dd if=/dev/zero of=/dev/null count=1 ibs=512 obs=512 iflag=fullblock conv=sync 2> /dev/null; then
+    # Test for ibs, obs and conv feature
+    if dd if=/dev/zero of=/dev/null count=1 ibs=512 obs=512 conv=sync 2> /dev/null; then
+        # Test for fullblock feature
+        if dd if=/dev/zero of=/dev/null count=1 iflag=fullblock 2> /dev/null; then
+            iflag="iflag=fullblock"
+        fi
         dd if="\$1" ibs=\$2 skip=1 obs=1024 conv=sync 2> /dev/null | \\
-        { test \$blocks -gt 0 && dd ibs=1024 iflag=fullblock obs=1024 count=\$blocks ; \\
+        { test \$blocks -gt 0 && dd ibs=1024 obs=1024 count=\$blocks \$iflag ; \\
           test \$bytes  -gt 0 && dd ibs=1 obs=1024 count=\$bytes ; } 2> /dev/null
     else
         dd if="\$1" bs=\$2 skip=1 2> /dev/null
