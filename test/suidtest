@@ -13,7 +13,7 @@ testSuidDoesntGetBroken() {
     )
     # Create the self extracting that should extract deployedfile
     local file_name="$(mktemp -t file_name.XXXXXX)"
-    "${SUT}" --target "${archive_dir}" "${archive_dir}" "${file_name}" "suid test"
+    "${SUT}" --notemp --target "${archive_dir}" "${archive_dir}" "${file_name}" "suid test"
     assertEquals $? 0
     # Target directory now has another file with sudo permissions
     # This will get broken because of chown -R
