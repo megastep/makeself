@@ -107,6 +107,7 @@ MS_dd()
     bytes=\`expr \$3 % 1024\`
     # Test for ibs, obs and conv feature
     if dd if=/dev/zero of=/dev/null count=1 ibs=512 obs=512 conv=sync 2> /dev/null; then
+        iflag=""
         # Test for fullblock feature
         if dd if=/dev/zero of=/dev/null count=1 iflag=fullblock 2> /dev/null; then
             iflag="iflag=fullblock"
