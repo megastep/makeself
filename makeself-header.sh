@@ -96,9 +96,9 @@ MS_PrintLicense()
 
 MS_diskspace()
 {
-	(
-	df -k "\$1" | tail -1 | awk '{ if (\$4 ~ /%/) {print \$3} else {print \$4} }'
-	)
+    (
+    df -k "\$1" | tail -1 | awk '{ if (\$4 ~ /%/) {print \$3} else {print \$4} }'
+    )
 }
 
 MS_dd()
@@ -215,7 +215,7 @@ MS_Verify_Sig()
     MKTEMP_PATH=\`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp\`
     test -x "\$GPG_PATH" || GPG_PATH=\`exec <&- 2>&-; which gpg || command -v gpg || type gpg\`
     test -x "\$MKTEMP_PATH" || MKTEMP_PATH=\`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp\`
-	offset=\`head -n "\$skip" "\$1" | wc -c | sed "s/ //g"\`
+    offset=\`head -n "\$skip" "\$1" | wc -c | sed "s/ //g"\`
     temp_sig=\`mktemp -t XXXXX\`
     echo \$SIGNATURE | base64 --decode > "\$temp_sig"
     gpg_output=\`MS_dd "\$1" \$offset \$totalsize | LC_ALL=C "\$GPG_PATH" --verify "\$temp_sig" - 2>&1\`
@@ -238,7 +238,7 @@ MS_Check()
 {
     OLD_PATH="\$PATH"
     PATH=\${GUESS_MD5_PATH:-"\$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
-	MD5_ARG=""
+    MD5_ARG=""
     MD5_PATH=\`exec <&- 2>&-; which md5sum || command -v md5sum || type md5sum\`
     test -x "\$MD5_PATH" || MD5_PATH=\`exec <&- 2>&-; which md5 || command -v md5 || type md5\`
     test -x "\$MD5_PATH" || MD5_PATH=\`exec <&- 2>&-; which digest || command -v digest || type digest\`
@@ -248,7 +248,7 @@ MS_Check()
     test -x "\$SHA_PATH" || SHA_PATH=\`exec <&- 2>&-; which sha256sum || command -v sha256sum || type sha256sum\`
 
     if test x"\$quiet" = xn; then
-		MS_Printf "Verifying archive integrity..."
+        MS_Printf "Verifying archive integrity..."
     fi
     offset=\`head -n "\$skip" "\$1" | wc -c | sed "s/ //g"\`
     fsize=\`cat "\$1" | wc -c | sed "s/ //g"\`
@@ -260,59 +260,59 @@ MS_Check()
     i=1
     for s in \$filesizes
     do
-		crc=\`echo \$CRCsum | cut -d" " -f\$i\`
-		if test -x "\$SHA_PATH"; then
-			if test x"\`basename \$SHA_PATH\`" = xshasum; then
-				SHA_ARG="-a 256"
-			fi
-			sha=\`echo \$SHA | cut -d" " -f\$i\`
-			if test x"\$sha" = x0000000000000000000000000000000000000000000000000000000000000000; then
-				test x"\$verb" = xy && echo " \$1 does not contain an embedded SHA256 checksum." >&2
-			else
-				shasum=\`MS_dd_Progress "\$1" \$offset \$s | eval "\$SHA_PATH \$SHA_ARG" | cut -b-64\`;
-				if test x"\$shasum" != x"\$sha"; then
-					echo "Error in SHA256 checksums: \$shasum is different from \$sha" >&2
-					exit 2
-				elif test x"\$quiet" = xn; then
-					MS_Printf " SHA256 checksums are OK."
-				fi
-				crc="0000000000";
-			fi
-		fi
-		if test -x "\$MD5_PATH"; then
-			if test x"\`basename \$MD5_PATH\`" = xdigest; then
-				MD5_ARG="-a md5"
-			fi
-			md5=\`echo \$MD5 | cut -d" " -f\$i\`
-			if test x"\$md5" = x00000000000000000000000000000000; then
-				test x"\$verb" = xy && echo " \$1 does not contain an embedded MD5 checksum." >&2
-			else
-				md5sum=\`MS_dd_Progress "\$1" \$offset \$s | eval "\$MD5_PATH \$MD5_ARG" | cut -b-32\`;
-				if test x"\$md5sum" != x"\$md5"; then
-					echo "Error in MD5 checksums: \$md5sum is different from \$md5" >&2
-					exit 2
-				elif test x"\$quiet" = xn; then
-					MS_Printf " MD5 checksums are OK."
-				fi
-				crc="0000000000"; verb=n
-			fi
-		fi
-		if test x"\$crc" = x0000000000; then
-			test x"\$verb" = xy && echo " \$1 does not contain a CRC checksum." >&2
-		else
-			sum1=\`MS_dd_Progress "\$1" \$offset \$s | CMD_ENV=xpg4 cksum | awk '{print \$1}'\`
-			if test x"\$sum1" != x"\$crc"; then
-				echo "Error in checksums: \$sum1 is different from \$crc" >&2
-				exit 2
-			elif test x"\$quiet" = xn; then
-				MS_Printf " CRC checksums are OK."
-			fi
-		fi
-		i=\`expr \$i + 1\`
-		offset=\`expr \$offset + \$s\`
+        crc=\`echo \$CRCsum | cut -d" " -f\$i\`
+        if test -x "\$SHA_PATH"; then
+            if test x"\`basename \$SHA_PATH\`" = xshasum; then
+                SHA_ARG="-a 256"
+            fi
+            sha=\`echo \$SHA | cut -d" " -f\$i\`
+            if test x"\$sha" = x0000000000000000000000000000000000000000000000000000000000000000; then
+                test x"\$verb" = xy && echo " \$1 does not contain an embedded SHA256 checksum." >&2
+            else
+                shasum=\`MS_dd_Progress "\$1" \$offset \$s | eval "\$SHA_PATH \$SHA_ARG" | cut -b-64\`;
+                if test x"\$shasum" != x"\$sha"; then
+                    echo "Error in SHA256 checksums: \$shasum is different from \$sha" >&2
+                    exit 2
+                elif test x"\$quiet" = xn; then
+                    MS_Printf " SHA256 checksums are OK."
+                fi
+                crc="0000000000";
+            fi
+        fi
+        if test -x "\$MD5_PATH"; then
+            if test x"\`basename \$MD5_PATH\`" = xdigest; then
+                MD5_ARG="-a md5"
+            fi
+            md5=\`echo \$MD5 | cut -d" " -f\$i\`
+            if test x"\$md5" = x00000000000000000000000000000000; then
+                test x"\$verb" = xy && echo " \$1 does not contain an embedded MD5 checksum." >&2
+            else
+                md5sum=\`MS_dd_Progress "\$1" \$offset \$s | eval "\$MD5_PATH \$MD5_ARG" | cut -b-32\`;
+                if test x"\$md5sum" != x"\$md5"; then
+                    echo "Error in MD5 checksums: \$md5sum is different from \$md5" >&2
+                    exit 2
+                elif test x"\$quiet" = xn; then
+                    MS_Printf " MD5 checksums are OK."
+                fi
+                crc="0000000000"; verb=n
+            fi
+        fi
+        if test x"\$crc" = x0000000000; then
+            test x"\$verb" = xy && echo " \$1 does not contain a CRC checksum." >&2
+        else
+            sum1=\`MS_dd_Progress "\$1" \$offset \$s | CMD_ENV=xpg4 cksum | awk '{print \$1}'\`
+            if test x"\$sum1" != x"\$crc"; then
+                echo "Error in checksums: \$sum1 is different from \$crc" >&2
+                exit 2
+            elif test x"\$quiet" = xn; then
+                MS_Printf " CRC checksums are OK."
+            fi
+        fi
+        i=\`expr \$i + 1\`
+        offset=\`expr \$offset + \$s\`
     done
     if test x"\$quiet" = xn; then
-		echo " All good."
+        echo " All good."
     fi
 }
 
@@ -358,9 +358,9 @@ MS_Decompress()
 UnTAR()
 {
     if test x"\$quiet" = xn; then
-		tar \$1vf - $UNTAR_EXTRA 2>&1 || { echo " ... Extraction failed." >&2; kill -15 \$$; }
+        tar \$1vf - $UNTAR_EXTRA 2>&1 || { echo " ... Extraction failed." >&2; kill -15 \$$; }
     else
-		tar \$1f - $UNTAR_EXTRA 2>&1 || { echo Extraction failed. >&2; kill -15 \$$; }
+        tar \$1f - $UNTAR_EXTRA 2>&1 || { echo Extraction failed. >&2; kill -15 \$$; }
     fi
 }
 
@@ -398,98 +398,98 @@ while true
 do
     case "\$1" in
     -h | --help)
-	MS_Help
-	exit 0
-	;;
+    MS_Help
+    exit 0
+    ;;
     -q | --quiet)
-	quiet=y
-	noprogress=y
-	shift
-	;;
-	--accept)
-	accept=y
-	shift
-	;;
+    quiet=y
+    noprogress=y
+    shift
+    ;;
+    --accept)
+    accept=y
+    shift
+    ;;
     --info)
-	echo Identification: "\$label"
-	echo Target directory: "\$targetdir"
-	echo Uncompressed size: $USIZE KB
-	echo Compression: $COMPRESS
+    echo Identification: "\$label"
+    echo Target directory: "\$targetdir"
+    echo Uncompressed size: $USIZE KB
+    echo Compression: $COMPRESS
     if test x"$ENCRYPT" = x"base64"; then
         echo "Encoding: base64"
     elif test x"$ENCRYPT" != x""; then
         echo "Encryption: $ENCRYPT"
     fi
-	echo Date of packaging: $DATE
-	echo Built with Makeself version $MS_VERSION
-	echo Build command was: "$MS_COMMAND"
-	if test x"\$script" != x; then
-	    echo Script run after extraction:
-	    echo "    " \$script \$scriptargs
-	fi
-	if test x"$copy" = xcopy; then
-		echo "Archive will copy itself to a temporary location"
-	fi
-	if test x"$NEED_ROOT" = xy; then
-		echo "Root permissions required for extraction"
-	fi
-	if test x"$KEEP" = xy; then
-	    echo "directory \$targetdir is permanent"
-	else
-	    echo "\$targetdir will be removed after extraction"
-	fi
-	exit 0
-	;;
+    echo Date of packaging: $DATE
+    echo Built with Makeself version $MS_VERSION
+    echo Build command was: "$MS_COMMAND"
+    if test x"\$script" != x; then
+        echo Script run after extraction:
+        echo "    " \$script \$scriptargs
+    fi
+    if test x"$copy" = xcopy; then
+        echo "Archive will copy itself to a temporary location"
+    fi
+    if test x"$NEED_ROOT" = xy; then
+        echo "Root permissions required for extraction"
+    fi
+    if test x"$KEEP" = xy; then
+        echo "directory \$targetdir is permanent"
+    else
+        echo "\$targetdir will be removed after extraction"
+    fi
+    exit 0
+    ;;
     --dumpconf)
-	echo LABEL=\"\$label\"
-	echo SCRIPT=\"\$script\"
-	echo SCRIPTARGS=\"\$scriptargs\"
+    echo LABEL=\"\$label\"
+    echo SCRIPT=\"\$script\"
+    echo SCRIPTARGS=\"\$scriptargs\"
     echo CLEANUPSCRIPT=\"\$cleanup_script\"
-	echo archdirname=\"$archdirname\"
-	echo KEEP=$KEEP
-	echo NOOVERWRITE=$NOOVERWRITE
-	echo COMPRESS=$COMPRESS
-	echo filesizes=\"\$filesizes\"
+    echo archdirname=\"$archdirname\"
+    echo KEEP=$KEEP
+    echo NOOVERWRITE=$NOOVERWRITE
+    echo COMPRESS=$COMPRESS
+    echo filesizes=\"\$filesizes\"
     echo totalsize=\"\$totalsize\"
-	echo CRCsum=\"\$CRCsum\"
-	echo MD5sum=\"\$MD5sum\"
-	echo SHAsum=\"\$SHAsum\"
-	echo SKIP=\"\$skip\"
-	exit 0
-	;;
+    echo CRCsum=\"\$CRCsum\"
+    echo MD5sum=\"\$MD5sum\"
+    echo SHAsum=\"\$SHAsum\"
+    echo SKIP=\"\$skip\"
+    exit 0
+    ;;
     --lsm)
 cat << EOLSM
 EOF
 eval "$LSM_CMD"
 cat << EOF  >> "$archname"
 EOLSM
-	exit 0
-	;;
+    exit 0
+    ;;
     --list)
-	echo Target directory: \$targetdir
-	offset=\`head -n "\$skip" "\$0" | wc -c | sed "s/ //g"\`
-	for s in \$filesizes
-	do
-	    MS_dd "\$0" \$offset \$s | MS_Decompress | UnTAR t
-	    offset=\`expr \$offset + \$s\`
-	done
-	exit 0
-	;;
-	--tar)
-	offset=\`head -n "\$skip" "\$0" | wc -c | sed "s/ //g"\`
-	arg1="\$2"
+    echo Target directory: \$targetdir
+    offset=\`head -n "\$skip" "\$0" | wc -c | sed "s/ //g"\`
+    for s in \$filesizes
+    do
+        MS_dd "\$0" \$offset \$s | MS_Decompress | UnTAR t
+        offset=\`expr \$offset + \$s\`
+    done
+    exit 0
+    ;;
+    --tar)
+    offset=\`head -n "\$skip" "\$0" | wc -c | sed "s/ //g"\`
+    arg1="\$2"
     shift 2 || { MS_Help; exit 1; }
-	for s in \$filesizes
-	do
-	    MS_dd "\$0" \$offset \$s | MS_Decompress | tar "\$arg1" - "\$@"
-	    offset=\`expr \$offset + \$s\`
-	done
-	exit 0
-	;;
+    for s in \$filesizes
+    do
+        MS_dd "\$0" \$offset \$s | MS_Decompress | tar "\$arg1" - "\$@"
+        offset=\`expr \$offset + \$s\`
+    done
+    exit 0
+    ;;
     --check)
-	MS_Check "\$0" y
-	exit 0
-	;;
+    MS_Check "\$0" y
+    exit 0
+    ;;
     --verify-sig)
     sig_key="\$2"
     shift 2 || { MS_Help; exit 1; }
@@ -504,92 +504,92 @@ EOLSM
     exit 0
     ;;
     --confirm)
-	verbose=y
-	shift
-	;;
-	--noexec)
-	script=""
+    verbose=y
+    shift
+    ;;
+    --noexec)
+    script=""
     cleanup_script=""
     preextract=""
-	shift
-	;;
+    shift
+    ;;
     --noexec-cleanup)
     cleanup_script=""
     shift
     ;;
     --keep)
-	keep=y
-	shift
-	;;
+    keep=y
+    shift
+    ;;
     --target)
-	keep=y
-	targetdir="\${2:-.}"
+    keep=y
+    targetdir="\${2:-.}"
     shift 2 || { MS_Help; exit 1; }
-	;;
+    ;;
     --noprogress)
-	noprogress=y
-	shift
-	;;
+    noprogress=y
+    shift
+    ;;
     --nox11)
-	nox11=y
-	shift
-	;;
+    nox11=y
+    shift
+    ;;
     --nochown)
-	ownership=n
-	shift
-	;;
+    ownership=n
+    shift
+    ;;
     --chown)
         ownership=y
         shift
         ;;
     --nodiskspace)
-	nodiskspace=y
-	shift
-	;;
+    nodiskspace=y
+    shift
+    ;;
     --xwin)
-	if test "$NOWAIT" = n; then
-		finish="echo Press Return to close this window...; read junk"
-	fi
-	xterm_loop=1
-	shift
-	;;
+    if test "$NOWAIT" = n; then
+        finish="echo Press Return to close this window...; read junk"
+    fi
+    xterm_loop=1
+    shift
+    ;;
     --phase2)
-	copy=phase2
-	shift
-	;;
-	--ssl-pass-src)
-	if test x"$ENCRYPT" != x"openssl"; then
-	    echo "Invalid option --ssl-pass-src: \$0 was not encrypted with OpenSSL!" >&2
-	    exit 1
-	fi
-	decrypt_cmd="\$decrypt_cmd -pass \$2"
+    copy=phase2
+    shift
+    ;;
+    --ssl-pass-src)
+    if test x"$ENCRYPT" != x"openssl"; then
+        echo "Invalid option --ssl-pass-src: \$0 was not encrypted with OpenSSL!" >&2
+        exit 1
+    fi
+    decrypt_cmd="\$decrypt_cmd -pass \$2"
     shift 2 || { MS_Help; exit 1; }
-	;;
+    ;;
     --cleanup-args)
     cleanupargs="\$2"
     shift 2 || { MS_Help; exit 1; }
     ;;
     --)
-	shift
-	break ;;
+    shift
+    break ;;
     -*)
-	echo Unrecognized flag : "\$1" >&2
-	MS_Help
-	exit 1
-	;;
+    echo Unrecognized flag : "\$1" >&2
+    MS_Help
+    exit 1
+    ;;
     *)
-	break ;;
+    break ;;
     esac
 done
 
 if test x"\$quiet" = xy -a x"\$verbose" = xy; then
-	echo Cannot be verbose and quiet at the same time. >&2
-	exit 1
+    echo Cannot be verbose and quiet at the same time. >&2
+    exit 1
 fi
 
 if test x"$NEED_ROOT" = xy -a \`id -u\` -ne 0; then
-	echo "Administrative privileges required for this archive (use su or sudo)" >&2
-	exit 1	
+    echo "Administrative privileges required for this archive (use su or sudo)" >&2
+    exit 1    
 fi
 
 if test x"\$copy" \!= xphase2; then
@@ -600,8 +600,8 @@ case "\$copy" in
 copy)
     tmpdir="\$TMPROOT"/makeself.\$RANDOM.\`date +"%y%m%d%H%M%S"\`.\$\$
     mkdir "\$tmpdir" || {
-	echo "Could not create temporary directory \$tmpdir" >&2
-	exit 1
+    echo "Could not create temporary directory \$tmpdir" >&2
+    exit 1
     }
     SCRIPT_COPY="\$tmpdir/makeself"
     echo "Copying to a temporary location..." >&2
@@ -618,7 +618,7 @@ esac
 
 if test x"\$nox11" = xn; then
     if test -t 1; then  # Do we have a terminal on stdout?
-	:
+    :
     else
         if test x"\$DISPLAY" != x -a x"\$xterm_loop" = x; then  # No, but do we have X?
             if xset q > /dev/null 2>&1; then # Check for valid DISPLAY variable
@@ -644,24 +644,24 @@ if test x"\$targetdir" = x.; then
     tmpdir="."
 else
     if test x"\$keep" = xy; then
-	if test x"\$nooverwrite" = xy && test -d "\$targetdir"; then
+    if test x"\$nooverwrite" = xy && test -d "\$targetdir"; then
             echo "Target directory \$targetdir already exists, aborting." >&2
             exit 1
-	fi
-	if test x"\$quiet" = xn; then
-	    echo "Creating directory \$targetdir"
-	fi
-	tmpdir="\$targetdir"
-	dashp="-p"
+    fi
+    if test x"\$quiet" = xn; then
+        echo "Creating directory \$targetdir"
+    fi
+    tmpdir="\$targetdir"
+    dashp="-p"
     else
-	tmpdir="\$TMPROOT/selfgz\$\$\$RANDOM"
-	dashp=""
+    tmpdir="\$TMPROOT/selfgz\$\$\$RANDOM"
+    dashp=""
     fi
     mkdir \$dashp "\$tmpdir" || {
-	echo 'Cannot create target directory' \$tmpdir >&2
-	echo 'You should try option --target dir' >&2
-	eval \$finish
-	exit 1
+    echo 'Cannot create target directory' \$tmpdir >&2
+    echo 'You should try option --target dir' >&2
+    eval \$finish
+    exit 1
     }
 fi
 
@@ -674,11 +674,11 @@ offset=\`head -n "\$skip" "\$0" | wc -c | sed "s/ //g"\`
 MS_Preextract "\$@"
 
 if test x"\$verbose" = xy; then
-	MS_Printf "About to extract $USIZE KB in \$tmpdir ... Proceed ? [Y/n] "
-	read yn
-	if test x"\$yn" = xn; then
-		eval \$finish; exit 1
-	fi
+    MS_Printf "About to extract $USIZE KB in \$tmpdir ... Proceed ? [Y/n] "
+    read yn
+    if test x"\$yn" = xn; then
+        eval \$finish; exit 1
+    fi
 fi
 
 if test x"\$quiet" = xn; then
@@ -713,18 +713,18 @@ fi
 for s in \$filesizes
 do
     if MS_dd_Progress "\$0" \$offset \$s | MS_Decompress | ( cd "\$tmpdir"; umask \$ORIG_UMASK ; UnTAR xp ) 1>/dev/null; then
-		if test x"\$ownership" = xy; then
-			(cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
-		fi
+        if test x"\$ownership" = xy; then
+            (cd "\$tmpdir"; chown -R \`id -u\` .;  chgrp -R \`id -g\` .)
+        fi
     else
-		echo >&2
-		echo "Unable to decompress \$0" >&2
-		eval \$finish; exit 1
+        echo >&2
+        echo "Unable to decompress \$0" >&2
+        eval \$finish; exit 1
     fi
     offset=\`expr \$offset + \$s\`
 done
 if test x"\$quiet" = xn; then
-	echo
+    echo
 fi
 
 cd "\$tmpdir"
@@ -745,16 +745,16 @@ if test x"\$script" != x; then
     fi
 
     if test x"\$verbose" = x"y"; then
-		MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
-		read yn
-		if test x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY; then
-			eval "\"\$script\" \$scriptargs \"\\\$@\""; res=\$?;
-		fi
+        MS_Printf "OK to execute: \$script \$scriptargs \$* ? [Y/n] "
+        read yn
+        if test x"\$yn" = x -o x"\$yn" = xy -o x"\$yn" = xY; then
+            eval "\"\$script\" \$scriptargs \"\\\$@\""; res=\$?;
+        fi
     else
-		eval "\"\$script\" \$scriptargs \"\\\$@\""; res=\$?
+        eval "\"\$script\" \$scriptargs \"\\\$@\""; res=\$?
     fi
     if test "\$res" -ne 0; then
-		test x"\$verbose" = xy && echo "The program '\$script' returned an error code (\$res)" >&2
+        test x"\$verbose" = xy && echo "The program '\$script' returned an error code (\$res)" >&2
     fi
 fi
 
