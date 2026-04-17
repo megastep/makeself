@@ -723,7 +723,7 @@ if test "$NOCRC" = y; then
         echo "skipping crc at user request"
     fi
 else
-    crcsum=`CMD_ENV=xpg4 cksum < "$tmpfile" | sed -e 's/ /Z/' -e 's/    /Z/' | cut -dZ -f1`
+    crcsum=`CMD_ENV=xpg4 cksum < "$tmpfile" | sed -e 's/ /Z/' -e 's/	/Z/' | cut -dZ -f1`
     if test "$QUIET" = "n"; then
         echo "CRC: $crcsum"
     fi
