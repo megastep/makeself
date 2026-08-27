@@ -499,7 +499,10 @@ fi
 
 case $COMPRESS in
 gzip)
-    GZIP_CMD="gzip -c$COMPRESS_LEVEL"
+    # --no-name: omit the filename/timestamp from the gzip member
+    # header. Without it, the compressed output differ on every run even
+    # when the input is byte-for-byte identical.
+    GZIP_CMD="gzip --no-name -c$COMPRESS_LEVEL"
     GUNZIP_CMD="gzip -cd"
     ;;
 pigz) 
