@@ -94,10 +94,9 @@ testByteforbyte()
 {
   date='Sat Mar  3 19:35:21 EST 2016'
 
-  # bsdtar does not have option --mtime
-  # TODO: unstable test: first second differ: char 242, line 10
-
-  startSkipping
+  # GNU tar supports --tar-extra's --mtime option used below. 
+  # bsdtar (Mac/BSD) does not.
+  tar --version 2>/dev/null | grep -q GNU || startSkipping
 
   # Exercise
   ${SUT} --packaging-date "${date}" --tar-extra "--mtime 20160303" \
