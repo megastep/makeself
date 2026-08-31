@@ -6,7 +6,7 @@
 [makeself.sh][1] is a small shell script that generates a self-extractable
 compressed tar archive from a directory. The resulting file appears as a shell script
 (many of those have a **.run** suffix), and can be launched as is. The archive
-will then uncompress itself to a temporary directory and an optional arbitrary
+will then decompress itself to a temporary directory and an optional arbitrary
 command will be executed (for example an installation script). This is pretty
 similar to archives generated with WinZip Self-Extractor in the Windows world.
 Makeself archives also include checksums for integrity self-validation (CRC
@@ -58,11 +58,11 @@ Examples of publicly available archives made using makeself are :
 * The [Makeself][1] distribution itself ;-)
 * and countless others...
 
-**Important note for Apache users:** By default, most Web servers will think that Makeself archives are regular text files and thus they may show up as text in a Web browser. The correct way to prevent this is to add a MIME type for this file format, like so (in httpd.conf) :
+**Important note for Apache users:** By default, most Web servers will think that Makeself archives are regular text files, and thus they may show up as text in a Web browser. The correct way to prevent this is to add a MIME type for this file format, like so (in httpd.conf) :
 
 `AddType application/x-makeself .run`
 
-**Important note for certain GNU/Linux distributions:** Archives created with Makeself prior to v2.1.2 were using an old syntax for the _head_ and _tail_ Unix commands that is being progressively obsoleted in their GNU forms. Therefore you may have problems uncompressing some of these archives. A workaround for this is to set the environment variable $_POSIX2_VERSION to enable the old syntax, i.e. :
+**Important note for certain GNU/Linux distributions:** Archives created with Makeself prior to v2.1.2 were using an old syntax for the _head_ and _tail_ Unix commands that is being progressively obsoleted in their GNU forms. Therefore, you may have problems decompressing some of these archives. A workaround for this is to set the environment variable $_POSIX2_VERSION to enable the old syntax, i.e. :
 
 `export _POSIX2_VERSION=199209`
 
@@ -96,7 +96,7 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
   * **`--threads`** : Specify the number of threads to be used by compressors that support parallelization. Omit to use compressor's default. Most useful (and required) for opting into xz's threading, usually with `--threads=0` for all available cores. pbzip2 and pigz are parallel by default, and setting this value allows limiting the number of threads they use.
   * **`--notemp`** : The generated archive will not extract the files to a temporary directory, but in a new directory created in the current directory. This is better to distribute software packages that may extract and compile by themselves (i.e. launch the compilation through the embedded script).
   * **`--current`** : Files will be extracted to the current directory, instead of in a subdirectory. This option implies `--notemp` above.
-  * **`--follow`** : Follow the symbolic links inside of the archive directory, i.e. store the files that are being pointed to instead of the links themselves.
+  * **`--follow`** : Follow the symbolic links inside the archive directory, i.e. store the files that are being pointed to instead of the links themselves.
   * **`--append`** _(new in 2.1.x)_: Append data to an existing archive, instead of creating a new one. In this mode, the settings from the original archive are reused (compression type, label, embedded script), and thus don't need to be specified again on the command line.
   * **`--header`** : Makeself uses a separate file to store the header stub, called `makeself-header.sh`. By default, it is assumed that it is stored in the same location as makeself.sh. This option can be used to specify its actual location if it is stored someplace else.
   * **`--preextract`** : Specify a pre-extraction script. The script is executed with the same environment and initial `script_args` as `startup_script`.
