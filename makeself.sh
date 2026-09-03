@@ -62,6 +62,7 @@ MS_Usage()
     echo "    --quiet | -q       : Do not print any messages other than errors."
     echo "    --gzip             : Compress using gzip (default if detected)"
     echo "    --pigz             : Compress with pigz"
+    echo "    --zopfli           : Compress with zopfli"
     echo "    --zstd             : Compress with zstd"
     echo "    --bzip2            : Compress using bzip2 instead of gzip"
     echo "    --pbzip2           : Compress using pbzip2 instead of gzip"
@@ -215,6 +216,10 @@ do
     ;;
     --pigz)
         COMPRESS=pigz
+        shift
+        ;;
+    --zopfli)
+        COMPRESS=zopfli
         shift
         ;;
     --zstd)
@@ -510,6 +515,10 @@ pigz)
     if test $THREADS -ne $DEFAULT_THREADS; then # Leave as the default if threads not indicated
         GZIP_CMD="$GZIP_CMD --processes $THREADS"
     fi
+    GUNZIP_CMD="gzip -cd"
+    ;;
+zopfli)
+    GZIP_CMD="zopfli -c"
     GUNZIP_CMD="gzip -cd"
     ;;
 zstd)

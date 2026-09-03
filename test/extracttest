@@ -58,6 +58,16 @@ testZstd()
   assertEquals $? 0
 }
 
+testZopfli()
+{
+  # Skip if zopfli is not available
+  which zopfli || startSkipping
+  setupTests --zopfli
+
+  ./makeself-test.run --check
+  assertEquals $? 0
+}
+
 # Load and run shUnit2.
 source "./shunit2/shunit2"
 
