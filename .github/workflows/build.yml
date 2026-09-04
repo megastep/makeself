@@ -38,7 +38,7 @@ jobs:
       if: matrix.container == 'rockylinux:9'
       run: |
         dnf groupinstall -y "Development Tools" "RPM Development Tools"
-        dnf install -y zstd binutils binutils-devel gnupg2 pbzip2 openssl zopfli
+        dnf install -y zstd binutils binutils-devel gnupg2 pbzip2 openssl
         
     - name: Install Alpine packages
       if: matrix.container == 'alpine:latest'
