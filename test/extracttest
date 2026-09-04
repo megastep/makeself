@@ -61,7 +61,7 @@ testZstd()
 testZopfli()
 {
   # Skip if zopfli is not available
-  which zopfli || startSkipping
+  command -v zopfli >/dev/null 2>&1 || startSkipping
   setupTests --zopfli
 
   ./makeself-test.run --check
