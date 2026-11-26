@@ -67,21 +67,29 @@ MS_Printf()
 
 MS_PrintLicense()
 {
-  PAGER=\${PAGER:=more}
+  if test -z "\${PAGER:-}"; then
+    PAGER=$LICENSE_PAGER_DEFAULT
+    PAGER_OPTS="$LICENSE_PAGER_OPTS_DEFAULT"
+  else
+    PAGER_OPTS="$LICENSE_PAGER_OPTS_USER"
+  fi
   if test x"\$licensetxt" != x; then
-    PAGER_PATH=\`exec <&- 2>&-; which \$PAGER || command -v \$PAGER || type \$PAGER\`
+    $LICENSE_BLANK
+    PAGER_CMD=\${PAGER%% *}
+    PAGER_PATH=\`exec <&- 2>&-; which \$PAGER_CMD || command -v \$PAGER_CMD || type \$PAGER_CMD\`
     if test -x "\$PAGER_PATH" && test x"\$accept" != xy; then
-      if ! echo "\$licensetxt" | \$PAGER -e; then
-        echo "\$licensetxt" | \$PAGER
+      if ! echo "\$licensetxt" | \$PAGER \$PAGER_OPTS; then
+        echo "\$licensetxt"
       fi
     else
       echo "\$licensetxt"
     fi
+    $LICENSE_BLANK
     if test x"\$accept" != xy; then
       while true
       do
         MS_Printf "Please type y to accept, n otherwise: "
-        read yn
+        read yn || yn=n
         if test x"\$yn" = xn; then
           keep=n
           eval \$finish; exit 1

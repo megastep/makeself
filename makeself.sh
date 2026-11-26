@@ -96,6 +96,8 @@ MS_Usage()
     echo "                         and uncompress in ./archive_dir"
     echo "                         Note: persistent archives do not strictly require a startup_script"
     echo "    --needroot         : Check that the root user is extracting the archive before proceeding"
+    echo "    --less-pager       : Display the license with 'less -e -X' (blank lines around it) instead of 'more';"
+    echo "                         a PAGER that the user sets wins: it is used as it is, without these options"
     echo "    --copy             : Upon extraction, the archive will first copy itself to"
     echo "                         a temporary directory"
     echo "    --append           : Append more files to an existing Makeself archive"
@@ -171,6 +173,7 @@ QUIET=n
 NOPROGRESS=n
 COPY=none
 NEED_ROOT=n
+LICENSE_LESS=n
 TAR_ARGS=rvf
 TAR_FORMAT=ustar
 TAR_EXTRA=""
@@ -335,6 +338,10 @@ do
         ;;
     --needroot)
 	NEED_ROOT=y
+	shift
+	;;
+    --less-pager)
+	LICENSE_LESS=y
 	shift
 	;;
     --header)
@@ -604,6 +611,21 @@ n)
 esac
 
 ENCRYPT="$ENCRYPT_MODE"
+
+# The license dialog of the archive (the header uses these variables). With --less-pager the DEFAULT pager is less, with -e -X, and there is
+# a blank line around the license. A PAGER that the user sets wins completely: it is used as it is, without any option of ours
+# (a pager such as cat or more would refuse -e -X, and a user who set PAGER=less or less -+X chose it that way).
+if test "$LICENSE_LESS" = y; then
+    LICENSE_PAGER_DEFAULT=less
+    LICENSE_PAGER_OPTS_DEFAULT="-e -X"
+    LICENSE_PAGER_OPTS_USER=""
+    LICENSE_BLANK='echo ""'
+else
+    LICENSE_PAGER_DEFAULT=more
+    LICENSE_PAGER_OPTS_DEFAULT="-e"
+    LICENSE_PAGER_OPTS_USER="-e"
+    LICENSE_BLANK=":"
+fi
 
 tmpfile="${TMPDIR:-/tmp}/mkself$$"
 

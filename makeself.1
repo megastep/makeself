@@ -177,6 +177,9 @@ Use provided string as the packaging date instead of the current date.
 .B --needroot
 Require root permissions for extraction.
 .TP
+.B --less-pager
+Display the license text with \fBless -e -X\fP instead of \fBmore\fP, with a blank line before and after it. A \fB$PAGER\fP that the user sets at extraction time wins: it is used as it is, without these options (so \fBPAGER=cat\fP or \fBPAGER=less\fP get none). A \fB$PAGER\fP with arguments (for example \fBless -R\fP) is found by its first word and used with them. When the pager cannot show the text, the license is printed as plain text.
+.TP
 .B --export-conf
 Export configuration variables to the startup script.
 .SH "ENVIRONMENT"
